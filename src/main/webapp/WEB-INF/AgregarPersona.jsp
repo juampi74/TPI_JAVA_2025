@@ -8,6 +8,7 @@
     <link href="style/bootstrap.css" rel="stylesheet">
 </head>
 <body>
+<jsp:include page="Navbar.jsp"></jsp:include>
 <div class="container">
     <h2>Agregar Persona</h2>
     <form action="accionpersona" method="post">

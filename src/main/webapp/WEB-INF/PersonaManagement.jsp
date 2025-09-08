@@ -27,6 +27,7 @@
 	
 </head>
 <body>
+	<jsp:include page="Navbar.jsp"></jsp:include>
 	<div class="container">
 		<div class="row">
         	<h4>Personas</h4>
