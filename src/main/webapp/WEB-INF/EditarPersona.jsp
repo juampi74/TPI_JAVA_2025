@@ -14,7 +14,8 @@
 <body>
 <div class="container">
     <h2>Editar Persona</h2>
-    <form action="editarpersona" method="post">
+    <form action="accionpersona" method="post">
+    	<input type="hidden" name="action" value="edit" />
         <input type="hidden" name="id" value="<%=persona.getId()%>" />
         
         <div class="form-group">

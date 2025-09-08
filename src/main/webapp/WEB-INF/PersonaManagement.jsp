@@ -30,7 +30,8 @@
 	<div class="container">
 		<div class="row">
         	<h4>Personas</h4>
-        	<form action="agregarpersona" method="get" style="margin:0;">
+        	<form action="accionpersona" method="get" style="margin:0;">
+        		<input type="hidden" name="action" value="add" />
         		<button type="submit" class="btn btn-success">Nueva Persona</button>
     		</form>
             	<div class="col-12 col-sm-12 col-lg-12">
@@ -54,13 +55,15 @@
                     				<td><%=per.getFecha_nacimiento()%></td>
                     				<td><%=per.getDireccion()%></td>
                     				<td>
-                    					<form method="get" action="editarpersona" style="display:inline;">
+                    					<form method="get" action="accionpersona" style="display:inline;">
+                    						<input type="hidden" name="action" value="edit" />
 		        							<input type="hidden" name="id" value="<%=per.getId()%>" />
 		        							<button type="submit" class="btn btn-warning btn-sm">!</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="eliminarpersona" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta persona?');">
+                    					<form method="post" action="accionpersona" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta persona?');">
+											<input type="hidden" name="action" value="delete" />
 											<input type="hidden" name="id" value="<%=per.getId()%>" />
 											<button type="submit" class="btn btn-danger btn-sm">X</button>
 										</form>

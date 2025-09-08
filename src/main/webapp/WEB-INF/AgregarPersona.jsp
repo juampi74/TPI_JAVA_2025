@@ -10,7 +10,8 @@
 <body>
 <div class="container">
     <h2>Agregar Persona</h2>
-    <form action="agregarpersona" method="post">
+    <form action="accionpersona" method="post">
+    	<input type="hidden" name="action" value="add" />
         <div class="form-group">
             <label for="dni">DNI:</label>
             <input type="text" class="form-control" id="dni" name="dni" required />
