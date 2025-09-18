@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import entities.Persona;
+import entities.Person;
 import logic.Logic;
 
 /**
@@ -33,11 +33,11 @@ public class Signin extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Logic ctrl = new Logic();
 		
-	    LinkedList<Persona> personas = ctrl.getAll();
+	    LinkedList<Person> people = ctrl.getAllPeople();
 	    
-	    request.setAttribute("listaPersonas", personas);
+	    request.setAttribute("peopleList", people);
 	    
-	    request.getRequestDispatcher("/WEB-INF/PersonaManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("/WEB-INF/PersonManagement.jsp").forward(request, response);
 	}
 
 	/**

@@ -17,7 +17,10 @@
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <!-- Enlace directo al JSP -->
-                        <a class="nav-link" href="signin">Personas</a>
+                        <a class="nav-link" href="actionperson">Personas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="actionstadium">Estadios</a>
                     </li>
                 </ul>
             </div>

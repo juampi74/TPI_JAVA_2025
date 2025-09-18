@@ -10,20 +10,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import entities.Persona;
+import entities.Person;
 import logic.Logic;
 
 /**
  * Servlet implementation class AccionPersona
  */
-@WebServlet("/accionpersona")
-public class AccionPersona extends HttpServlet {
+@WebServlet("/actionperson")
+public class ActionPerson extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AccionPersona() {
+    public ActionPerson() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,13 +39,17 @@ public class AccionPersona extends HttpServlet {
 		
 		if ("edit".equals(action)){
 			int id = Integer.parseInt(request.getParameter("id"));
-			Persona p = new Persona();
+			Person p = new Person();
 			p.setId(id);
-			Persona persona = ctrl.getById(p);
-			request.setAttribute("persona", persona);
-			request.getRequestDispatcher("WEB-INF/EditarPersona.jsp").forward(request, response);
+			Person person = ctrl.getPersonById(p);
+			request.setAttribute("person", person);
+			request.getRequestDispatcher("WEB-INF/EditPerson.jsp").forward(request, response);
 		} else if ("add".equals(action)) {
-			request.getRequestDispatcher("WEB-INF/AgregarPersona.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/AddPerson.jsp").forward(request, response);
+		} else {
+			LinkedList<Person> people = ctrl.getAllPeople();
+		    request.setAttribute("peopleList", people);
+		    request.getRequestDispatcher("/WEB-INF/PersonManagement.jsp").forward(request, response);
 		}
 	}
 
@@ -60,46 +64,44 @@ public class AccionPersona extends HttpServlet {
         
         
         if ("add".equals(action)) {
-        	String dni = request.getParameter("dni");
-    		String apellido_nombre = request.getParameter("apellido_nombre");
-    		LocalDate fechaNacimiento = LocalDate.parse(request.getParameter("fecha_nacimiento"));
-    	    String direccion = request.getParameter("direccion");
+        	int id = Integer.parseInt(request.getParameter("id"));
+    		String fullname = request.getParameter("fullname");
+    		LocalDate birthdate = LocalDate.parse(request.getParameter("birthdate"));
+    	    String adress = request.getParameter("adress");
     		
-    	    Persona p = new Persona();
-    	    p.setDni(dni);
-    	    p.setApellido_nombre(apellido_nombre);
-    	    p.setFecha_nacimiento(fechaNacimiento);
-    	    p.setDireccion(direccion);
+    	    Person p = new Person();
+    	    p.setId(id);
+    	    p.setFullname(fullname);
+    	    p.setBirthdate(birthdate);
+    	    p.setAdress(adress);
     	    
-    	    ctrl.addPersona(p);
+    	    ctrl.addPerson(p);
         	
         } else if ("edit".equals(action)) {
         	int id = Integer.parseInt(request.getParameter("id"));
-    		String dni = request.getParameter("dni");
-    		String apellido_nombre = request.getParameter("apellido_nombre");
-    		LocalDate fechaNacimiento = LocalDate.parse(request.getParameter("fecha_nacimiento"));
-    	    String direccion = request.getParameter("direccion");
+        	String fullname = request.getParameter("fullname");
+    		LocalDate birthdate = LocalDate.parse(request.getParameter("birthdate"));
+    	    String adress = request.getParameter("adress");
     		
-    	    Persona p = new Persona();
+    	    Person p = new Person();
     	    p.setId(id);
-    	    p.setDni(dni);
-    	    p.setApellido_nombre(apellido_nombre);
-    	    p.setFecha_nacimiento(fechaNacimiento);
-    	    p.setDireccion(direccion);
+    	    p.setFullname(fullname);
+    	    p.setBirthdate(birthdate);
+    	    p.setAdress(adress);
     	    
-    	    ctrl.updatePersona(p);
+    	    ctrl.updatePerson(p);
     	    
         } else if ("delete".equals(action)){
         	int id = Integer.parseInt(request.getParameter("id"));
         	
-    	    Persona p = new Persona();
+    	    Person p = new Person();
     	    p.setId(id);
-    	    ctrl.deletePersona(p);
+    	    ctrl.deletePerson(p);
         }
 	    
-	    LinkedList<Persona> personas = ctrl.getAll();
-		request.setAttribute("listaPersonas", personas);
-	    request.getRequestDispatcher("WEB-INF/PersonaManagement.jsp").forward(request, response);
+	    LinkedList<Person> people = ctrl.getAllPeople();
+		request.setAttribute("peopleList", people);
+	    request.getRequestDispatcher("WEB-INF/PersonManagement.jsp").forward(request, response);
 	}
 
 }

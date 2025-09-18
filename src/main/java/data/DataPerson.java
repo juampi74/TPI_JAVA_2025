@@ -6,24 +6,23 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.time.*;
 
-public class DataPersona {
+public class DataPerson {
 	
-	public LinkedList<Persona> getAll(){
+	public LinkedList<Person> getAll(){
 		Statement stmt=null;
 		ResultSet rs=null;
-		LinkedList<Persona> pers= new LinkedList<>();
+		LinkedList<Person> pers= new LinkedList<>();
 		
 		try {
 			stmt= DbConnector.getInstancia().getConn().createStatement();
-			rs= stmt.executeQuery("select id,dni,apellido_nombre,fecha_nacimiento,direccion from persona");
+			rs= stmt.executeQuery("select id,fullname,birthdate,adress from person");
 			if(rs!=null) {
 				while(rs.next()) {
-					Persona p=new Persona();
+					Person p=new Person();
 					p.setId(rs.getInt("id"));
-					p.setDni(rs.getString("dni"));
-					p.setApellido_nombre(rs.getString("apellido_nombre"));
-					p.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class)); // Para que no de error si fecha_nacimiento es null
-					p.setDireccion(rs.getString("direccion"));
+					p.setFullname(rs.getString("fullname"));
+					p.setBirthdate(rs.getObject("birthdate", LocalDate.class)); // Para que no de error si birthdate es null
+					p.setAdress(rs.getString("adress"));
 
 					
 					pers.add(p);
@@ -48,23 +47,22 @@ public class DataPersona {
 	}
 
 	
-	public Persona getById(Persona per) {
-		Persona p=null;
+	public Person getById(Person per) {
+		Person p=null;
 		PreparedStatement stmt=null;
 		ResultSet rs=null;
 		try {
 			stmt=DbConnector.getInstancia().getConn().prepareStatement(
-					"select id,dni,apellido_nombre,fecha_nacimiento,direccion from persona where id=?"
+					"select id,fullname,birthdate,adress from person where id=?"
 					);
 			stmt.setInt(1, per.getId());
 			rs=stmt.executeQuery();
 			if(rs!=null && rs.next()) {
-				p=new Persona();
+				p=new Person();
 				p.setId(rs.getInt("id"));
-				p.setDni(rs.getString("dni"));
-				p.setApellido_nombre(rs.getString("apellido_nombre"));
-				p.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class));
-				p.setDireccion(rs.getString("direccion"));
+				p.setFullname(rs.getString("fullname"));
+				p.setBirthdate(rs.getObject("birthdate", LocalDate.class));
+				p.setAdress(rs.getString("adress"));
 				
 			}
 		} catch (SQLException e) {
@@ -82,59 +80,25 @@ public class DataPersona {
 		return p;
 	}
 	
-	public Persona getByDni(Persona per) {
-		Persona p=null;
-		PreparedStatement stmt=null;
-		ResultSet rs=null;
-		try {
-			stmt=DbConnector.getInstancia().getConn().prepareStatement(
-					"select id,dni,apellido_nombre,fecha_nacimiento,direccion from persona where dni=?"
-					);
-			stmt.setString(1, per.getDni());
-			rs=stmt.executeQuery();
-			if(rs!=null && rs.next()) {
-				p=new Persona();
-				p.setId(rs.getInt("id"));
-				p.setDni(rs.getString("dni"));
-				p.setApellido_nombre(rs.getString("apellido_nombre"));
-				p.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class)); // Para que no de error si fecha_nacimiento es null
-				p.setDireccion(rs.getString("direccion"));
-				
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(rs!=null) {rs.close();}
-				if(stmt!=null) {stmt.close();}
-				DbConnector.getInstancia().releaseConn();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return p;
-	}
 	
-	public LinkedList<Persona> getByApellidoNombre(String apellido_nombre){
+	public LinkedList<Person> getByFullname(String apellido_nombre){
 		PreparedStatement stmt=null;
 		ResultSet rs=null;
-		LinkedList<Persona> pers= new LinkedList<>();
+		LinkedList<Person> pers= new LinkedList<>();
 		
 		try {
 			stmt=DbConnector.getInstancia().getConn().prepareStatement(
-					"select id,dni,apellido_nombre,fecha_nacimiento,direccion from persona where apellido_nombre=?"
+					"select id,fullname,birthdate,adress from person where fullname=?"
 					);
 			stmt.setString(1, apellido_nombre);
 			rs=stmt.executeQuery();
 			if(rs!=null) {
 				while(rs.next()) {
-					Persona p=new Persona();
+					Person p=new Person();
 					p.setId(rs.getInt("id"));
-					p.setDni(rs.getString("dni"));
-					p.setApellido_nombre(rs.getString("apellido_nombre"));
-					p.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class)); // Para que no de error si fecha_nacimiento es null
-					p.setDireccion(rs.getString("direccion"));
+					p.setFullname(rs.getString("fullname"));
+					p.setBirthdate(rs.getObject("birthdate", LocalDate.class)); // Para que no de error si birthdate es null
+					p.setAdress(rs.getString("adress"));
 					
 					pers.add(p);
 				}
@@ -156,19 +120,19 @@ public class DataPersona {
 		
 	}
 	
-	public void add(Persona p) {
+	public void add(Person p) {
 		PreparedStatement stmt= null;
 		ResultSet keyResultSet=null;
 		try {
 			stmt=DbConnector.getInstancia().getConn().
 					prepareStatement(
-							"insert into persona(dni,apellido_nombre,fecha_nacimiento,direccion) values(?,?,?,?)",
+							"insert into person(id,fullname,birthdate,adress) values(?,?,?,?)",
 							PreparedStatement.RETURN_GENERATED_KEYS
 							);
-			stmt.setString(1, p.getDni());
-			stmt.setString(2, p.getApellido_nombre());
-			stmt.setObject(3, p.getFecha_nacimiento());
-			stmt.setString(4, p.getDireccion());
+			stmt.setInt(1, p.getId());
+			stmt.setString(2, p.getFullname());
+			stmt.setObject(3, p.getBirthdate());
+			stmt.setString(4, p.getAdress());
 			stmt.executeUpdate();
 			
 			keyResultSet=stmt.getGeneratedKeys();
@@ -190,18 +154,17 @@ public class DataPersona {
 		}
     }
 	
-	public void updatePersona(Persona p) {
+	public void updatePersona(Person p) {
 		PreparedStatement stmt= null;
 		try {
 			stmt=DbConnector.getInstancia().getConn().
 					prepareStatement(
-							"UPDATE persona SET dni=?, apellido_nombre=?, fecha_nacimiento=?, direccion=? WHERE id=?"
+							"UPDATE person SET fullname=?, birthdate=?, adress=? WHERE id=?"
 							);
-			stmt.setString(1, p.getDni());
-			stmt.setString(2, p.getApellido_nombre());
-			stmt.setObject(3, p.getFecha_nacimiento());
-			stmt.setString(4, p.getDireccion());
-			stmt.setInt(5, p.getId());
+			stmt.setString(1, p.getFullname());
+			stmt.setObject(2, p.getBirthdate());
+			stmt.setString(3, p.getAdress());
+			stmt.setInt(4, p.getId());
 			stmt.executeUpdate();
 
 			
@@ -218,12 +181,12 @@ public class DataPersona {
 	}
 	
 	
-	public void deletePersona(Persona p) {
+	public void deletePersona(Person p) {
 		PreparedStatement stmt= null;
 		try {
 			stmt=DbConnector.getInstancia().getConn().
 					prepareStatement(
-							"DELETE FROM persona WHERE id=?"
+							"DELETE FROM person WHERE id=?"
 							);
 			
 			stmt.setInt(1, p.getId());

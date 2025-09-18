@@ -11,26 +11,26 @@
 <jsp:include page="Navbar.jsp"></jsp:include>
 <div class="container">
     <h2>Agregar Persona</h2>
-    <form action="accionpersona" method="post">
+    <form action="actionperson" method="post">
     	<input type="hidden" name="action" value="add" />
         <div class="form-group">
-            <label for="dni">DNI:</label>
-            <input type="text" class="form-control" id="dni" name="dni" required />
+            <label for="id">DNI:</label>
+            <input type="text" class="form-control" id="id" name="id" required />
         </div>
 
         <div class="form-group">
-            <label for="apellido_nombre">Apellido y Nombre:</label>
-            <input type="text" class="form-control" id="apellido_nombre" name="apellido_nombre" required />
+            <label for="fullname">Apellido y Nombre:</label>
+            <input type="text" class="form-control" id="fullname" name="fullname" required />
         </div>
 
         <div class="form-group">
-            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required />
+            <label for="birthdate">Fecha de Nacimiento:</label>
+            <input type="date" class="form-control" id="birthdate" name="birthdate" required />
         </div>
 
         <div class="form-group">
-            <label for="direccion">Dirección:</label>
-            <input type="text" class="form-control" id="direccion" name="direccion" required />
+            <label for="adress">Dirección:</label>
+            <input type="text" class="form-control" id="adress" name="adress" required />
         </div>
 
         <button type="submit" class="btn btn-primary">Agregar</button>
