@@ -6,64 +6,87 @@ import data.*;
 import entities.*;
 
 public class Logic {
-private DataPerson dp;
-private DataStadium dt;
+	
+	private DataPerson dp;
+	private DataStadium ds;
 	
 	public Logic() {
-		dp=new DataPerson();
-		dt=new DataStadium();
+		
+		dp = new DataPerson();
+		ds = new DataStadium();
+	
 	}
 
-	public LinkedList<Person> getAllPeople(){
+	public LinkedList<Person> getAllPeople() {
+		
 		return dp.getAll();
+	
 	}
 	
-	public Person getPersonById(Person per) {
-		return dp.getById(per);
-	}
+	public Person getPersonById(Person p) {
+		
+		return dp.getById(p);
 	
+	}
 	
 	public LinkedList<Person> getPersonByFullname(String fullname) {
+		
 		return dp.getByFullname(fullname);
+	
 	}
 	
 	public void addPerson(Person p) {
+		
 		dp.add(p);
+	
 	}
 	
+	public void updatePerson(Person p) {
+		
+		dp.update(p);
 	
-	public void updatePerson(Person per) {
-		dp.updatePersona(per);
 	}
 	
-	public void deletePerson(Person per) {
-		dp.deletePersona(per);
+	public void deletePerson(Person p) {
+		
+		dp.delete(p);
+	
 	}
 	
-	public LinkedList<Stadium> getAllStadiums(){
-		return dt.getAll();
+	public LinkedList<Stadium> getAllStadiums() {
+		
+		return ds.getAll();
+	
 	}
 	
-	public Stadium getStadiumById(Stadium st) {
-		return dt.getById(st);
-	}
+	public Stadium getStadiumById(Stadium s) {
+		
+		return ds.getById(s);
 	
+	}
 	
 	public LinkedList<Stadium> getStadiumByName(String name) {
-		return dt.getByName(name);
+		
+		return ds.getByName(name);
+	
 	}
 	
-	public void addStadium(Stadium st) {
-		dt.addStadium(st);
+	public void addStadium(Stadium s) {
+		
+		ds.add(s);
+	
 	}
 	
+	public void updateStadium(Stadium s) {
+		
+		ds.update(s);
 	
-	public void updateStadium(Stadium st) {
-		dt.updateStadium(st);
 	}
 	
-	public void deleteStadium(Stadium st) {
-		dt.deleteStadium(st);
+	public void deleteStadium(Stadium s) {
+		
+		ds.delete(s);
+	
 	}
 
 }

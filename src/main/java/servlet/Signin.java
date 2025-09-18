@@ -12,25 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import entities.Person;
 import logic.Logic;
 
-/**
- * Servlet implementation class Signin
- */
 @WebServlet({ "/signin", "/SIGNIN", "/Signin", "/SignIn", "/signIn" })
 public class Signin extends HttpServlet {
+
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Signin() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		Logic ctrl = new Logic();
 		
 	    LinkedList<Person> people = ctrl.getAllPeople();
@@ -38,13 +26,11 @@ public class Signin extends HttpServlet {
 	    request.setAttribute("peopleList", people);
 	    
 	    request.getRequestDispatcher("/WEB-INF/PersonManagement.jsp").forward(request, response);
+	
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	// TODO
+		// TODO
 	}
 
 }
