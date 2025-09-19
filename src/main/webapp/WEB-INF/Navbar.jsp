@@ -22,6 +22,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="actionstadium">Estadios</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="actionclub">Clubes</a>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Club {
 	private int id;
 	private String name;
-	private LocalDate fundation_date;
+	private LocalDate foundation_date;
 	private String phone_number;
 	private String email;
 	private String badge_image;
@@ -24,11 +24,11 @@ public class Club {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public LocalDate getFundation_date() {
-		return fundation_date;
+	public LocalDate getFoundation_date() {
+		return foundation_date;
 	}
-	public void setFundation_date(LocalDate fundation_date) {
-		this.fundation_date = fundation_date;
+	public void setFoundation_date(LocalDate fundation_date) {
+		this.foundation_date = fundation_date;
 	}
 	public String getPhone_number() {
 		return phone_number;

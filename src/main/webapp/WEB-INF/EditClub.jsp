@@ -1,0 +1,61 @@
+<%@page import="entities.Club"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+
+
+    Club club = (Club) request.getAttribute("club");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Equipo</title>
+    <link href="style/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+<jsp:include page="Navbar.jsp"></jsp:include>
+<div class="container">
+    <h2>Editar Equipo</h2>
+    <form action="actionclub" method="post">
+    	<input type="hidden" name="action" value="edit" />
+        <input type="hidden" name="id" value="<%=club.getId()%>" />
+        
+        <div class="form-group">
+            <label for="name">Nombre:</label>
+            <input type="text" class="form-control" id="name" name="name" required />
+        </div>
+
+        <div class="form-group">
+            <label for="foundation_date">Fecha de Fundacion:</label>
+            <input type="date" class="form-control" id="foundation_date" name="foundation_date" required />
+        </div>
+
+        <div class="form-group">
+            <label for="phone_number">Numero de telefono:</label>
+            <input type="text" class="form-control" id="phone_number" name="phone_number" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" name="email" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="badge_image">Escudo:</label>
+            <input type="text" class="form-control" id="badge_image" name="badge_image" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="budget">Presupuesto:</label>
+            <input type="text" class="form-control" id="budget" name="budget" required />
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+    <form action="actionclub" method="post">
+    	<button type="submit" class="btn btn-secondary">Cancelar</button>
+	</form>
+</div>
+</body>
+</html>
