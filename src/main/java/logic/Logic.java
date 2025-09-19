@@ -9,11 +9,15 @@ public class Logic {
     private DataPerson dp;
     private DataStadium ds;
     private DataClub dc;
+    private DataAssociation da;
 
     public Logic() {
-        dp = new DataPerson();
+        
+    	dp = new DataPerson();
         ds = new DataStadium();
         dc = new DataClub();
+        da = new DataAssociation();
+    
     }
 
     public LinkedList<Person> getAllPeople() {
@@ -89,27 +93,75 @@ public class Logic {
     }
 
     public LinkedList<Club> getAllClubs() {
-        return dc.getAll();
+        
+    	return dc.getAll();
+    
     }
 
-    public Club getClubById(Club club) {
-        return dc.getById(club);
+    public Club getClubById(Club c) {
+        
+    	return dc.getById(c);
+    
     }
 
     public LinkedList<Club> getClubByName(String name) {
-        return dc.getByName(name);
+        
+    	return dc.getByName(name);
+    
     }
 
     public void addClub(Club c) {
-        dc.add(c);
+        
+    	dc.add(c);
+    
     }
 
     public void updateClub(Club c) {
-        dc.update(c);
+        
+    	dc.update(c);
+    
     }
 
     public void deleteClub(Club c) {
-        dc.delete(c);
+    
+    	dc.delete(c);
+    
+    }
+    
+    public LinkedList<Association> getAllAssociations() {
+        
+    	return da.getAll();
+    
+    }
+
+    public Association getAssociationById(Association a) {
+        
+    	return da.getById(a);
+    
+    }
+
+    public LinkedList<Association> getAssociationByName(String name) {
+        
+    	return da.getByName(name);
+    
+    }
+
+    public void addAssociation(Association a) {
+        
+    	da.add(a);
+    
+    }
+
+    public void updateAssociation(Association a) {
+        
+    	da.update(a);
+    
+    }
+
+    public void deleteAssociation(Association a) {
+    
+    	da.delete(a);
+    
     }
 
 }

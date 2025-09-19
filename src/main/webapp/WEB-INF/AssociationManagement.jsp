@@ -1,5 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
-<%@ page import="entities.Person"%>
+<%@ page import="entities.Association"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -11,14 +11,14 @@
 	    <meta name="description" content="">
 	    <meta name="author" content="">
 	    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
-		<title>Personas</title>
+		<title>Asociaciones</title>
 		
 		<link href="style/bootstrap.css" rel="stylesheet">
 	
 	    <link href="style/start.css" rel="stylesheet">
 		
 		<%
-			LinkedList<Person> pl = (LinkedList<Person>) request.getAttribute("peopleList");
+			LinkedList<Association> al = (LinkedList<Association>) request.getAttribute("associationsList");
 		%>
 		
 	</head>
@@ -27,10 +27,10 @@
 		<div class="container">
 			<div class="row">
 				<div class="d-flex justify-content-between my-4">
-	        		<h4>Personas</h4>
-		        	<form action="actionperson" method="get" style="margin:0;">
+	        		<h4>Asociaciones</h4>
+		        	<form action="actionassociation" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
-		        		<button type="submit" class="btn btn-success">Nueva Persona</button>
+		        		<button type="submit" class="btn btn-success">Nueva Asociación</button>
 		    		</form>				
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
@@ -38,34 +38,30 @@
                     	<table class="table">
                     		<thead>
                     			<tr>
-                    				<th>DNI</th>
-                    		    	<th>Apellido y Nombre</th>
-                        			<th>Fecha Nacimiento</th>
-                        			<th>Dirección</th>
-                        			<th>Editar</th>
+                    				<th>Nombre</th>
+                    		    	<th>Fecha de Creación</th>
+                    		    	<th>Editar</th>
                         			<th>Eliminar</th>
                       			</tr>
                       		</thead>
                     		<tbody>
                     		<%
-                    	    	for (Person p : pl) {
+                    	    	for (Association a : al) {
                     		%>
                     			<tr>
-                    				<td><%=p.getId()%></td>
-                    				<td><%=p.getFullname()%></td>
-                    				<td><%=p.getBirthdate()%></td>
-                    				<td><%=p.getAddress()%></td>
+                    				<td><%=a.getName()%></td>
+                    				<td><%=a.getCreationDate()%></td>
                     				<td>
-                    					<form method="get" action="actionperson" style="display:inline;">
+                    					<form method="get" action="actionassociation" style="display:inline;">
                     						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=p.getId()%>" />
+		        							<input type="hidden" name="id" value="<%=a.getId()%>" />
 		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="actionperson" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta persona?');">
+                    					<form method="post" action="actionassociation" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta asociación?');">
 											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=p.getId()%>" />
+											<input type="hidden" name="id" value="<%=a.getId()%>" />
 											<button type="submit" class="btn btn-dark btn-sm">❌</button>
 										</form>
                     				</td>

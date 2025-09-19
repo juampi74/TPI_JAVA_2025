@@ -26,9 +26,8 @@ public class ActionPerson extends HttpServlet {
 		
 		if ("edit".equals(action)){
 			
-			int id = Integer.parseInt(request.getParameter("id"));
 			Person p = new Person();
-			p.setId(id);
+			p.setId(Integer.parseInt(request.getParameter("id")));
 			Person person = ctrl.getPersonById(p);
 			request.setAttribute("person", person);
 			request.getRequestDispatcher("WEB-INF/EditPerson.jsp").forward(request, response);

@@ -9,12 +9,20 @@
 	    <meta charset="UTF-8">
 	    <title>Editar Persona</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
+	    <style>
+	        .button-container {
+	            display: flex;
+	            justify-content: space-between;
+	            align-items: center;
+	            margin-top: 20px;
+	        }
+	    </style>
 	</head>
 	<body>
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container">
-		    <h2>Editar Persona</h2>
-		    <form action="actionperson" method="post">
+		    <h2 class="mt-4">Editar Persona</h2>
+		    <form action="actionperson" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
 		        <input type="hidden" name="id" value="<%=person.getId()%>" />
 		        
@@ -33,11 +41,11 @@
 		            <input type="text" class="form-control" id="address" name="address" value="<%=person.getAddress()%>" required />
 		        </div>
 		        
-		        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+		        <div class="button-container mb-3">
+			          <button type="button" class="btn btn-secondary" onclick="history.back()">Cancelar</button>
+			          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+		        </div>
 		    </form>
-		    <form action="actionperson" method="post">
-		    	<button type="submit" class="btn btn-secondary">Cancelar</button>
-			</form>
 		</div>
 	</body>
 </html>

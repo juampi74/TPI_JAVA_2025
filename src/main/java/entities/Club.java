@@ -11,6 +11,7 @@ public class Club {
     private String email;
     private String badgeImage;
     private double budget;
+    private Stadium stadium;
 
     public int getId() {
 
@@ -96,12 +97,21 @@ public class Club {
 
     }
 
-    @Override
-    public String toString() {
+    public Stadium getStadium() {
+		return stadium;
+	}
 
-        return "Club [id=" + id + ", name=" + name + ", foundationDate=" + foundationDate + ", phoneNumber="
-                + phoneNumber + ", email=" + email + ", badgeImage=" + badgeImage + ", budget=" + budget + "]";
+	public void setStadium(Stadium stadium) {
+		this.stadium = stadium;
+	}
 
-    }
+	@Override
+	public String toString() {
+		
+		return "Club [id=" + id + ", name=" + name + ", foundationDate=" + foundationDate + ", phoneNumber="
+				+ phoneNumber + ", email=" + email + ", badgeImage=" + badgeImage + ", budget=" + budget + ", stadium="
+				+ stadium + "]";
+	
+	}
 
 }

@@ -25,9 +25,8 @@ public class ActionStadium extends HttpServlet {
 		
 		if ("edit".equals(action)){
 			
-			int id = Integer.parseInt(request.getParameter("id"));
 			Stadium s = new Stadium();
-			s.setId(id);
+			s.setId(Integer.parseInt(request.getParameter("id")));
 			Stadium stadium = ctrl.getStadiumById(s);
 			request.setAttribute("stadium", stadium);
 			request.getRequestDispatcher("WEB-INF/EditStadium.jsp").forward(request, response);
@@ -54,35 +53,28 @@ public class ActionStadium extends HttpServlet {
         
         if ("add".equals(action)) {
     		
-        	String name = request.getParameter("name");
-    		int capacity = Integer.parseInt(request.getParameter("capacity"));
-    		
-    	    Stadium s = new Stadium();   
-    	    s.setName(name);
-    	    s.setCapacity(capacity);
+        	Stadium s = new Stadium();   
+    	    s.setName(request.getParameter("name"));
+    	    s.setCapacity(Integer.parseInt(request.getParameter("capacity")));
     	    
     	    ctrl.addStadium(s);
         	
         } else if ("edit".equals(action)) {
         	
-        	int id = Integer.parseInt(request.getParameter("id"));
-        	String name = request.getParameter("name");
-    		int capacity = Integer.parseInt(request.getParameter("capacity"));
-    	    
     		Stadium s = new Stadium();
-    	    s.setId(id);
-    	    s.setName(name);
-    	    s.setCapacity(capacity);
+    	    s.setId(Integer.parseInt(request.getParameter("id")));
+    	    s.setName(request.getParameter("name"));
+    	    s.setCapacity(Integer.parseInt(request.getParameter("capacity")));
     	    
     	    ctrl.updateStadium(s);
     	    
         } else if ("delete".equals(action)){
         	
-        	int id = Integer.parseInt(request.getParameter("id"));
-        	
     	    Stadium s = new Stadium();
-    	    s.setId(id);
+    	    s.setId(Integer.parseInt(request.getParameter("id")));
+    	    
     	    ctrl.deleteStadium(s);
+    	    
         }
 	    
 	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();

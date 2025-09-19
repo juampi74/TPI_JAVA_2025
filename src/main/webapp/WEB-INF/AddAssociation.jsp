@@ -3,22 +3,22 @@
 <html>
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Agregar Estadio</title>
+	    <title>Agregar Asociación</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <style>
 	        .button-container {
 	            display: flex;
 	            justify-content: space-between;
 	            align-items: center;
-	            margin: 20px;
+	            margin-top: 20px;
 	        }
 	    </style>
 	</head>
 	<body>
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container">
-		    <h2 class="mt-4">Agregar Estadio</h2>
-		    <form action="actionstadium" method="post" class="mt-4">
+		    <h2 class="mt-4">Agregar Asociacion</h2>
+		    <form action="actionassociation" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />
 		        
 		        <div class="form-group">
@@ -27,8 +27,8 @@
 		        </div>
 		
 		        <div class="form-group">
-		            <label for="capacity">Capacidad:</label>
-		            <input type="number" class="form-control" id="capacity" name="capacity" required />
+		            <label for="creationDate">Fecha de Creación:</label>
+		            <input type="date" class="form-control" id="creationDate" name="creationDate" required />
 		        </div>
 		
 		        <div class="button-container mb-3">

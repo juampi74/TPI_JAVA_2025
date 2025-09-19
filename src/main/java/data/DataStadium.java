@@ -18,7 +18,7 @@ public class DataStadium {
 		
 		try {
 			
-			stmt= DbConnector.getInstance().getConn().createStatement();
+			stmt = DbConnector.getInstance().getConn().createStatement();
 			rs = stmt.executeQuery("SELECT id, name, capacity FROM stadium");
 			
 			if (rs != null) {
@@ -68,7 +68,7 @@ public class DataStadium {
 		
 		try {
 			
-			stmt=DbConnector.getInstance().getConn().prepareStatement(
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
 				"SELECT id, name, capacity FROM stadium WHERE id = ?"
 			);
 			stmt.setInt(1, s.getId());

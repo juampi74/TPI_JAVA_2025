@@ -26,11 +26,13 @@
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container">
 			<div class="row">
-	        	<h4>Estadios</h4>
-	        	<form action="actionstadium" method="get" style="margin:0;">
-	        		<input type="hidden" name="action" value="add" />
-	        		<button type="submit" class="btn btn-success">Nuevo Estadio</button>
-	    		</form>
+				<div class="d-flex justify-content-between my-4">
+	        		<h4>Estadios</h4>
+		        	<form action="actionstadium" method="get" style="margin:0;">
+		        		<input type="hidden" name="action" value="add" />
+		        		<button type="submit" class="btn btn-success">Nuevo Estadio</button>
+		    		</form>				
+				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
                 	<div class="table-responsive">
                     	<table class="table">
@@ -53,14 +55,14 @@
                     					<form method="get" action="actionstadium" style="display:inline;">
                     						<input type="hidden" name="action" value="edit" />
 		        							<input type="hidden" name="id" value="<%=s.getId()%>" />
-		        							<button type="submit" class="btn btn-warning btn-sm">!</button>
+		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
 		    							</form>
                     				</td>
                     				<td>
                     					<form method="post" action="actionstadium" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este estadio?');">
 											<input type="hidden" name="action" value="delete" />
 											<input type="hidden" name="id" value="<%=s.getId()%>" />
-											<button type="submit" class="btn btn-danger btn-sm">X</button>
+											<button type="submit" class="btn btn-dark btn-sm">❌</button>
 										</form>
                     				</td>
                     			</tr>
