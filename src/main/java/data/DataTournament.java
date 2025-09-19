@@ -1,54 +1,55 @@
 package data;
 
-import entities.*;
-
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.LinkedList;
-import java.time.*;
 
-public class DataClub {
+import entities.Tournament;
+import entities.Association;
+import entities.Club;
 
-    public LinkedList<Club> getAll() {
+public class DataTournament {
+
+	public LinkedList<Tournament> getAll() {
         
     	Statement stmt = null;
         ResultSet rs = null;
-        LinkedList<Club> clubs = new LinkedList<>();
+        LinkedList<Tournament> tournaments = new LinkedList<>();
 
         try {
             
         	stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery("SELECT id, name, foundation_date, email, badge_image, phone_number, budget, id_stadium FROM club");
+            rs = stmt.executeQuery("SELECT id, name, start_date, end_date, format, season, id_association FROM tournament");
             if (rs != null) {
                 
             	while (rs.next()) {
                     
-            		Club club = new Club();
-            		club.setId(rs.getInt("id"));
-            		club.setName(rs.getString("name"));
-            		club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-            		club.setPhoneNumber(rs.getString("phone_number"));
-            		club.setEmail(rs.getString("email"));
-            		club.setBadgeImage(rs.getString("badge_image"));
-            		club.setBudget(rs.getDouble("budget"));
+            		Tournament tournament = new Tournament();
+            		tournament.setId(rs.getInt("id"));
+            		tournament.setName(rs.getString("name"));
+            		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
+            		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
+            		tournament.setFormat(rs.getString("format"));
+            		tournament.setSeason(rs.getString("season"));
 
             		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            			"SELECT id, name, capacity FROM stadium WHERE id = ?"
+            			"SELECT id, name, creation_date FROM association WHERE id = ?"
                 	);
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
+                    stmt2.setInt(1, rs.getInt("id_association"));
                     ResultSet rs2 = stmt2.executeQuery();
                     
                     if (rs2 != null && rs2.next()) {
                     	
-                    	Stadium stadium = new Stadium();
-                    	stadium.setId(rs2.getInt("id"));
-                    	stadium.setName(rs2.getString("name"));
-                    	stadium.setCapacity(rs2.getInt("capacity"));
+                    	Association association = new Association();
+                    	association.setId(rs2.getInt("id"));
+                    	association.setName(rs2.getString("name"));
+                    	association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
                     	
-                    	club.setStadium(stadium);
+                    	tournament.setAssociation(association);
                     	
                     }
             		
-                    clubs.add(club);
+                    tournaments.add(tournament);
                 }
             
             }
@@ -73,48 +74,47 @@ public class DataClub {
         
         }
 
-        return clubs;
+        return tournaments;
     }
 
-    public Club getById(Club c) {
+    public Tournament getById(Tournament t) {
         
-    	Club club = null;
+    	Tournament tournament = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE id = ?"
+            	"SELECT id, name, start_date, end_date, format, season, id_association FROM tournament WHERE id = ?"
             );
-            stmt.setInt(1, c.getId());
+            stmt.setInt(1, t.getId());
             rs = stmt.executeQuery();
             
             if (rs != null && rs.next()) {
                 
-            	club = new Club();
-            	club.setId(rs.getInt("id"));
-            	club.setName(rs.getString("name"));
-            	club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-            	club.setPhoneNumber(rs.getString("phone_number"));
-            	club.setEmail(rs.getString("email"));
-            	club.setBadgeImage(rs.getString("badge_image"));
-            	club.setBudget(rs.getDouble("budget"));
-            	
-            	PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            		"SELECT id, name, capacity FROM stadium WHERE id = ?"
+            	tournament = new Tournament();
+        		tournament.setId(rs.getInt("id"));
+        		tournament.setName(rs.getString("name"));
+        		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
+        		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
+        		tournament.setFormat(rs.getString("format"));
+        		tournament.setSeason(rs.getString("season"));
+
+        		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+        			"SELECT id, name, creation_date FROM association WHERE id = ?"
             	);
-                stmt2.setInt(1, rs.getInt("id_stadium"));
+                stmt2.setInt(1, rs.getInt("id_association"));
                 ResultSet rs2 = stmt2.executeQuery();
                 
                 if (rs2 != null && rs2.next()) {
                 	
-                	Stadium stadium = new Stadium();
-                	stadium.setId(rs2.getInt("id"));
-                	stadium.setName(rs2.getString("name"));
-                	stadium.setCapacity(rs2.getInt("capacity"));
+                	Association association = new Association();
+                	association.setId(rs2.getInt("id"));
+                	association.setName(rs2.getString("name"));
+                	association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
                 	
-                	club.setStadium(stadium);
+                	tournament.setAssociation(association);
                 	
                 }
             
@@ -140,19 +140,19 @@ public class DataClub {
         
         }
         
-        return club;
+        return tournament;
     }
 
-    public LinkedList<Club> getByName(String name) {
+    public LinkedList<Tournament> getByName(String name) {
         
     	PreparedStatement stmt = null;
         ResultSet rs = null;
-        LinkedList<Club> clubs = new LinkedList<>();
+        LinkedList<Tournament> tournaments = new LinkedList<>();
 
         try {
             
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
-        		"SELECT id, name, foundation_date, phone_number, email, badge_image, budget FROM club WHERE name = ?"
+        		"SELECT id, name, start_date, end_date, format, season, id_association FROM tournament WHERE name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -161,35 +161,33 @@ public class DataClub {
             	
                 while (rs.next()) {
                     
-                	Club club = new Club();
-                    club.setId(rs.getInt("id"));
-                    club.setName(rs.getString("name"));
-                    club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-                    club.setPhoneNumber(rs.getString("phone_number"));
-                    club.setEmail(rs.getString("email"));
-                    club.setBadgeImage(rs.getString("badge_image"));
-                    club.setBudget(rs.getDouble("budget"));
-                    
-                    PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                    	"SELECT id, name, capacity FROM stadium WHERE id = ?"
-                    );
-                        
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
+                	Tournament tournament = new Tournament();
+            		tournament.setId(rs.getInt("id"));
+            		tournament.setName(rs.getString("name"));
+            		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
+            		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
+            		tournament.setFormat(rs.getString("format"));
+            		tournament.setSeason(rs.getString("season"));
+
+            		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+            			"SELECT id, name, creation_date FROM association WHERE id = ?"
+                	);
+                    stmt2.setInt(1, rs.getInt("id_association"));
                     ResultSet rs2 = stmt2.executeQuery();
                     
                     if (rs2 != null && rs2.next()) {
                     	
-                    	Stadium stadium = new Stadium();
-                    	stadium.setId(rs2.getInt("id"));
-                    	stadium.setName(rs2.getString("name"));
-                    	stadium.setCapacity(rs2.getInt("capacity"));
+                    	Association association = new Association();
+                    	association.setId(rs2.getInt("id"));
+                    	association.setName(rs2.getString("name"));
+                    	association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
                     	
-                    	club.setStadium(stadium);
+                    	tournament.setAssociation(association);
                     	
                     }
+            		
+                    tournaments.add(tournament);
                     
-                    clubs.add(club);
-                
                 }
             
             }
@@ -214,11 +212,11 @@ public class DataClub {
         
         }
 
-        return clubs;
+        return tournaments;
 
     }
-
-    public void add(Club c) {
+    
+    public void add(Tournament t) {
         
     	PreparedStatement stmt = null;
         ResultSet keyResultSet = null;
@@ -226,22 +224,21 @@ public class DataClub {
         try {
         	
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            	"INSERT INTO tournament (name, start_date, end_date, format, season, id_association) VALUES (?, ?, ?, ?, ?, ?)",
             	PreparedStatement.RETURN_GENERATED_KEYS
             );
-            stmt.setString(1, c.getName());
-            stmt.setObject(2, c.getFoundationDate());
-            stmt.setString(3, c.getPhoneNumber());
-            stmt.setString(4, c.getEmail());
-            stmt.setString(5, c.getBadgeImage());
-            stmt.setDouble(6, c.getBudget());
-            stmt.setInt(7, c.getStadium().getId());
+            stmt.setString(1, t.getName());
+            stmt.setObject(2, t.getStartDate());
+            stmt.setObject(3, t.getEndDate());
+            stmt.setString(4, t.getFormat());
+            stmt.setString(5, t.getSeason());
+            stmt.setInt(6, t.getAssociation().getId());
             stmt.executeUpdate();
 
             keyResultSet = stmt.getGeneratedKeys();
             if (keyResultSet != null && keyResultSet.next()) {
                 
-            	c.setId(keyResultSet.getInt(1));
+            	t.setId(keyResultSet.getInt(1));
             
             }
         
@@ -267,22 +264,21 @@ public class DataClub {
         
     }
 
-    public void update(Club c) {
+    public void update(Tournament t) {
         
     	PreparedStatement stmt = null;
         
     	try {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"UPDATE club SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ? WHERE id = ?"
+            	"UPDATE club SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? WHERE id = ?"
             );
-            stmt.setString(1, c.getName());
-            stmt.setObject(2, c.getFoundationDate());
-            stmt.setString(3, c.getPhoneNumber());
-            stmt.setString(4, c.getEmail());
-            stmt.setString(5, c.getBadgeImage());
-            stmt.setDouble(6, c.getBudget());
-            stmt.setInt(7, c.getStadium().getId());
-            stmt.setInt(8, c.getId());
+            stmt.setString(1, t.getName());
+            stmt.setObject(2, t.getStartDate());
+            stmt.setObject(3, t.getEndDate());
+            stmt.setString(4, t.getFormat());
+            stmt.setString(5, t.getSeason());
+            stmt.setInt(6, t.getAssociation().getId());
+            stmt.setInt(7, t.getId());
             stmt.executeUpdate();
             
         } catch (SQLException e) {
@@ -306,16 +302,16 @@ public class DataClub {
     
     }
 
-    public void delete(Club c) {
+    public void delete(Tournament t) {
         
     	PreparedStatement stmt = null;
         
     	try {
         
     		stmt = DbConnector.getInstance().getConn().prepareStatement(
-    			"DELETE FROM club WHERE id = ?"
+    			"DELETE FROM tournament WHERE id = ?"
             );
-            stmt.setInt(1, c.getId());
+            stmt.setInt(1, t.getId());
             stmt.executeUpdate();
             
         } catch (SQLException e) {

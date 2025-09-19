@@ -10,6 +10,7 @@ public class Logic {
     private DataStadium ds;
     private DataClub dc;
     private DataAssociation da;
+    private DataTournament dt;
 
     public Logic() {
         
@@ -17,6 +18,7 @@ public class Logic {
         ds = new DataStadium();
         dc = new DataClub();
         da = new DataAssociation();
+        dt = new DataTournament();
     
     }
 
@@ -161,6 +163,42 @@ public class Logic {
     public void deleteAssociation(Association a) {
     
     	da.delete(a);
+    
+    }
+    
+    public LinkedList<Tournament> getAllTournaments() {
+        
+    	return dt.getAll();
+    
+    }
+
+    public Tournament getTournamentById(Tournament t) {
+        
+    	return dt.getById(t);
+    
+    }
+
+    public LinkedList<Tournament> getTournamentByName(String name) {
+        
+    	return dt.getByName(name);
+    
+    }
+
+    public void addTournament(Tournament t) {
+        
+    	dt.add(t);
+    
+    }
+
+    public void updateTournament(Tournament t) {
+        
+    	dt.update(t);
+    
+    }
+
+    public void deleteTournament(Tournament t) {
+    
+    	dt.delete(t);
     
     }
 
