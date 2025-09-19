@@ -12,24 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import entities.Stadium;
 import logic.Logic;
 
-/**
- * Servlet implementation class ActionStadium
- */
 @WebServlet("/actionstadium")
 public class ActionStadium extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ActionStadium() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+	private static final long serialVersionUID = 1L;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -37,64 +24,71 @@ public class ActionStadium extends HttpServlet {
 		Logic ctrl = new Logic();
 		
 		if ("edit".equals(action)){
+			
 			int id = Integer.parseInt(request.getParameter("id"));
-			Stadium st = new Stadium();
-			st.setId(id);
-			Stadium stadium = ctrl.getStadiumById(st);
+			Stadium s = new Stadium();
+			s.setId(id);
+			Stadium stadium = ctrl.getStadiumById(s);
 			request.setAttribute("stadium", stadium);
 			request.getRequestDispatcher("WEB-INF/EditStadium.jsp").forward(request, response);
+		
 		} else if ("add".equals(action)) {
+			
 			request.getRequestDispatcher("WEB-INF/AddStadium.jsp").forward(request, response);
+		
 		} else {
+			
 			LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
 		    request.setAttribute("stadiumsList", stadiums);
 		    request.getRequestDispatcher("/WEB-INF/StadiumManagement.jsp").forward(request, response);
+		
 		}
+	
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
 
         Logic ctrl = new Logic();
         
-        
         if ("add".equals(action)) {
-    		String name = request.getParameter("name");
+    		
+        	String name = request.getParameter("name");
     		int capacity = Integer.parseInt(request.getParameter("capacity"));
     		
-    	    Stadium st = new Stadium();   
-    	    st.setName(name);
-    	    st.setCapacity(capacity);
+    	    Stadium s = new Stadium();   
+    	    s.setName(name);
+    	    s.setCapacity(capacity);
     	    
-    	    ctrl.addStadium(st);
+    	    ctrl.addStadium(s);
         	
         } else if ("edit".equals(action)) {
+        	
         	int id = Integer.parseInt(request.getParameter("id"));
         	String name = request.getParameter("name");
     		int capacity = Integer.parseInt(request.getParameter("capacity"));
     	    
-    		Stadium st = new Stadium();
-    	    st.setId(id);
-    	    st.setName(name);
-    	    st.setCapacity(capacity);
+    		Stadium s = new Stadium();
+    	    s.setId(id);
+    	    s.setName(name);
+    	    s.setCapacity(capacity);
     	    
-    	    ctrl.updateStadium(st);
+    	    ctrl.updateStadium(s);
     	    
         } else if ("delete".equals(action)){
+        	
         	int id = Integer.parseInt(request.getParameter("id"));
         	
-    	    Stadium st = new Stadium();
-    	    st.setId(id);
-    	    ctrl.deleteStadium(st);
+    	    Stadium s = new Stadium();
+    	    s.setId(id);
+    	    ctrl.deleteStadium(s);
         }
 	    
 	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
 		request.setAttribute("stadiumsList", stadiums);
 	    request.getRequestDispatcher("WEB-INF/StadiumManagement.jsp").forward(request, response);
+	
 	}
 
 }

@@ -1,5 +1,5 @@
 package data;
-//orig
+
 import entities.*;
 
 import java.sql.*;
@@ -9,200 +9,270 @@ import java.time.*;
 public class DataPerson {
 	
 	public LinkedList<Person> getAll(){
-		Statement stmt=null;
-		ResultSet rs=null;
-		LinkedList<Person> pers= new LinkedList<>();
+		
+		Statement stmt = null;
+		ResultSet rs = null;
+		LinkedList<Person> people = new LinkedList<>();
 		
 		try {
-			stmt= DbConnector.getInstancia().getConn().createStatement();
-			rs= stmt.executeQuery("select id,fullname,birthdate,adress from person");
-			if(rs!=null) {
-				while(rs.next()) {
-					Person p=new Person();
-					p.setId(rs.getInt("id"));
-					p.setFullname(rs.getString("fullname"));
-					p.setBirthdate(rs.getObject("birthdate", LocalDate.class)); // Para que no de error si birthdate es null
-					p.setAdress(rs.getString("adress"));
-
+			
+			stmt= DbConnector.getInstance().getConn().createStatement();
+			rs = stmt.executeQuery("SELECT id, fullname, birthdate, address FROM person");
+			
+			if (rs != null) {
+				
+				while (rs.next()) {
 					
-					pers.add(p);
+					Person person = new Person();
+					person.setId(rs.getInt("id"));
+					person.setFullname(rs.getString("fullname"));
+					person.setBirthdate(rs.getObject("birthdate", LocalDate.class));
+					person.setAddress(rs.getString("address"));
+
+					people.add(person);
+					
 				}
 			}
 			
 		} catch (SQLException e) {
+			
 			e.printStackTrace();
 			
 		} finally {
+			
 			try {
-				if(rs!=null) {rs.close();}
-				if(stmt!=null) {stmt.close();}
-				DbConnector.getInstancia().releaseConn();
+				
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+				DbConnector.getInstance().releaseConn();
+			
 			} catch (SQLException e) {
+			
 				e.printStackTrace();
+			
 			}
+		
 		}
 		
+		return people;
 		
-		return pers;
 	}
 
-	
-	public Person getById(Person per) {
-		Person p=null;
-		PreparedStatement stmt=null;
-		ResultSet rs=null;
+	public Person getById(Person p) {
+		
+		Person person = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
 		try {
-			stmt=DbConnector.getInstancia().getConn().prepareStatement(
-					"select id,fullname,birthdate,adress from person where id=?"
-					);
-			stmt.setInt(1, per.getId());
-			rs=stmt.executeQuery();
-			if(rs!=null && rs.next()) {
-				p=new Person();
-				p.setId(rs.getInt("id"));
-				p.setFullname(rs.getString("fullname"));
-				p.setBirthdate(rs.getObject("birthdate", LocalDate.class));
-				p.setAdress(rs.getString("adress"));
+		
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"SELECT id, fullname, birthdate, address FROM person WHERE id = ?"
+			);
+			stmt.setInt(1, p.getId());
+			rs = stmt.executeQuery();
+			
+			if (rs != null && rs.next()) {
+			
+				person = new Person();
+				person.setId(rs.getInt("id"));
+				person.setFullname(rs.getString("fullname"));
+				person.setBirthdate(rs.getObject("birthdate", LocalDate.class));
+				person.setAddress(rs.getString("address"));
 				
 			}
+			
 		} catch (SQLException e) {
+			
 			e.printStackTrace();
-		}finally {
+		
+		} finally {
+			
 			try {
-				if(rs!=null) {rs.close();}
-				if(stmt!=null) {stmt.close();}
-				DbConnector.getInstancia().releaseConn();
+				
+				if (rs != null) rs.close();
+				if (stmt != null) stmt.close();
+				DbConnector.getInstance().releaseConn();
+			
 			} catch (SQLException e) {
+			
 				e.printStackTrace();
+			
 			}
 		}
 		
-		return p;
+		return person;
+	
 	}
 	
-	
-	public LinkedList<Person> getByFullname(String apellido_nombre){
-		PreparedStatement stmt=null;
-		ResultSet rs=null;
-		LinkedList<Person> pers= new LinkedList<>();
+	public LinkedList<Person> getByFullname(String fullname){
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		LinkedList<Person> people = new LinkedList<>();
 		
 		try {
-			stmt=DbConnector.getInstancia().getConn().prepareStatement(
-					"select id,fullname,birthdate,adress from person where fullname=?"
-					);
-			stmt.setString(1, apellido_nombre);
-			rs=stmt.executeQuery();
-			if(rs!=null) {
-				while(rs.next()) {
-					Person p=new Person();
-					p.setId(rs.getInt("id"));
-					p.setFullname(rs.getString("fullname"));
-					p.setBirthdate(rs.getObject("birthdate", LocalDate.class)); // Para que no de error si birthdate es null
-					p.setAdress(rs.getString("adress"));
+			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"SELECT id, fullname, birthdate, address FROM person WHERE fullname = ?"
+			);
+			stmt.setString(1, fullname);
+			rs = stmt.executeQuery();
+			
+			if (rs != null) {
+				
+				while (rs.next()) {
+				
+					Person person = new Person();
+					person.setId(rs.getInt("id"));
+					person.setFullname(rs.getString("fullname"));
+					person.setBirthdate(rs.getObject("birthdate", LocalDate.class));
+					person.setAddress(rs.getString("address"));
 					
-					pers.add(p);
+					people.add(person);
+					
 				}
+				
 			}
+			
 		} catch (SQLException e) {
+		
 			e.printStackTrace();
-		}finally {
+		
+		} finally {
+			
 			try {
-				if(rs!=null) {rs.close();}
-				if(stmt!=null) {stmt.close();}
-				DbConnector.getInstancia().releaseConn();
+				
+				if (rs != null) rs.close();
+				if (stmt != null) stmt.close();
+				DbConnector.getInstance().releaseConn();
+				
 			} catch (SQLException e) {
+				
 				e.printStackTrace();
+			
 			}
+		
 		}
 		
-		
-		return pers;
+		return people;
 		
 	}
 	
 	public void add(Person p) {
-		PreparedStatement stmt= null;
-		ResultSet keyResultSet=null;
+		
+		PreparedStatement stmt = null;
+		ResultSet keyResultSet = null;
+		
 		try {
-			stmt=DbConnector.getInstancia().getConn().
-					prepareStatement(
-							"insert into person(id,fullname,birthdate,adress) values(?,?,?,?)",
-							PreparedStatement.RETURN_GENERATED_KEYS
-							);
+			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"INSERT INTO person (id, fullname, birthdate, address) VALUES (?, ?, ?, ?)",
+				PreparedStatement.RETURN_GENERATED_KEYS
+			);
 			stmt.setInt(1, p.getId());
 			stmt.setString(2, p.getFullname());
 			stmt.setObject(3, p.getBirthdate());
-			stmt.setString(4, p.getAdress());
+			stmt.setString(4, p.getAddress());
 			stmt.executeUpdate();
 			
-			keyResultSet=stmt.getGeneratedKeys();
-            if(keyResultSet!=null && keyResultSet.next()){
-                p.setId(keyResultSet.getInt(1));
+			keyResultSet = stmt.getGeneratedKeys();
+            if (keyResultSet != null && keyResultSet.next()) {
+                
+            	p.setId(keyResultSet.getInt(1));
+            
             }
 
-			
 		}  catch (SQLException e) {
-            e.printStackTrace();
+            
+			e.printStackTrace();
+		
 		} finally {
-            try {
-                if(keyResultSet!=null)keyResultSet.close();
-                if(stmt!=null)stmt.close();
-                DbConnector.getInstancia().releaseConn();
+            
+			try {
+                
+				if(keyResultSet != null) keyResultSet.close();
+                if (stmt != null) stmt.close();
+                DbConnector.getInstance().releaseConn();
+                
             } catch (SQLException e) {
+            
             	e.printStackTrace();
+            
             }
+		
 		}
-    }
+    
+	}
 	
-	public void updatePersona(Person p) {
-		PreparedStatement stmt= null;
+	public void update(Person p) {
+		
+		System.out.println(p);		
+		PreparedStatement stmt = null;
+		
 		try {
-			stmt=DbConnector.getInstancia().getConn().
-					prepareStatement(
-							"UPDATE person SET fullname=?, birthdate=?, adress=? WHERE id=?"
-							);
+			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"UPDATE person SET fullname = ?, birthdate = ?, address = ? WHERE id = ?"
+			);
 			stmt.setString(1, p.getFullname());
 			stmt.setObject(2, p.getBirthdate());
-			stmt.setString(3, p.getAdress());
+			stmt.setString(3, p.getAddress());
 			stmt.setInt(4, p.getId());
 			stmt.executeUpdate();
 
-			
 		}  catch (SQLException e) {
-            e.printStackTrace();
+          
+			e.printStackTrace();
+		
 		} finally {
-            try {
-                if(stmt!=null)stmt.close();
-                DbConnector.getInstancia().releaseConn();
+            
+			try {
+                
+				if (stmt != null) stmt.close();
+                DbConnector.getInstance().releaseConn();
+                
             } catch (SQLException e) {
+            
             	e.printStackTrace();
+            
             }
+		
 		}
+	
 	}
 	
-	
-	public void deletePersona(Person p) {
-		PreparedStatement stmt= null;
+	public void delete(Person p) {
+		
+		PreparedStatement stmt = null;
+		
 		try {
-			stmt=DbConnector.getInstancia().getConn().
-					prepareStatement(
-							"DELETE FROM person WHERE id=?"
-							);
 			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"DELETE FROM person WHERE id = ?"
+			);
 			stmt.setInt(1, p.getId());
 			stmt.executeUpdate();
 	
-			
-		}  catch (SQLException e) {
-	        e.printStackTrace();
+		} catch (SQLException e) {
+	        
+			e.printStackTrace();
+		
 		} finally {
-	        try {
-	            if(stmt!=null)stmt.close();
-	            DbConnector.getInstancia().releaseConn();
-	        } catch (SQLException e) {
-	        	e.printStackTrace();
-	        }
+	    
+			try {
+	        
+				if (stmt != null) stmt.close();
+	            DbConnector.getInstance().releaseConn();
+	        
+			} catch (SQLException e) {
+	        
+				e.printStackTrace();
+	        
+			}
+		
 		}
+	
 	}
 	
 }

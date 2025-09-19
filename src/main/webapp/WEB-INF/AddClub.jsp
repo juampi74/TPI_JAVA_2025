@@ -20,13 +20,13 @@
         </div>
 
         <div class="form-group">
-            <label for="foundation_date">Fecha de Fundacion:</label>
-            <input type="date" class="form-control" id="foundation_date" name="foundation_date" required />
+            <label for="foundationDate">Fecha de Fundacion:</label>
+            <input type="date" class="form-control" id="foundationDate" name="foundationDate" required />
         </div>
 
         <div class="form-group">
-            <label for="phone_number">Numero de telefono:</label>
-            <input type="text" class="form-control" id="phone_number" name="phone_number" required />
+            <label for="phoneNumber">Numero de telefono:</label>
+            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required />
         </div>
         
         <div class="form-group">
@@ -35,8 +35,8 @@
         </div>
         
         <div class="form-group">
-            <label for="badge_image">Escudo:</label>
-            <input type="text" class="form-control" id="badge_image" name="badge_image" required />
+            <label for="badgeImage">Escudo:</label>
+            <input type="text" class="form-control" id="badgeImage" name="badgeImage" required />
         </div>
         
         <div class="form-group">
