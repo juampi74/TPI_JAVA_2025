@@ -1,4 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Person"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -53,7 +54,7 @@
                     			<tr>
                     				<td><%=p.getId()%></td>
                     				<td><%=p.getFullname()%></td>
-                    				<td><%=p.getBirthdate()%></td>
+                    				<td><%=p.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td><%=p.getAddress()%></td>
                     				<td>
                     					<form method="get" action="actionperson" style="display:inline;">

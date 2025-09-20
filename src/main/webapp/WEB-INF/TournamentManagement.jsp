@@ -1,4 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Tournament"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -54,8 +55,8 @@
                     		%>
                     			<tr>
                     				<td><%=t.getName()%></td>
-                    				<td><%=t.getStartDate()%></td>
-                    				<td><%=t.getEndDate()%></td>
+                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td><%=t.getFormat()%></td>
                     				<td><%=t.getSeason()%></td>
                     				<td><%=t.getAssociation().getName()%></td>

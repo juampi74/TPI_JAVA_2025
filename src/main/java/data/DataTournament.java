@@ -1,12 +1,10 @@
 package data;
 
-import java.sql.*;
-import java.time.LocalDate;
-import java.util.LinkedList;
+import entities.*;
 
-import entities.Tournament;
-import entities.Association;
-import entities.Club;
+import java.sql.*;
+import java.util.LinkedList;
+import java.time.*;
 
 public class DataTournament {
 
@@ -32,25 +30,50 @@ public class DataTournament {
             		tournament.setFormat(rs.getString("format"));
             		tournament.setSeason(rs.getString("season"));
 
-            		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            			"SELECT id, name, creation_date FROM association WHERE id = ?"
-                	);
-                    stmt2.setInt(1, rs.getInt("id_association"));
-                    ResultSet rs2 = stmt2.executeQuery();
-                    
-                    if (rs2 != null && rs2.next()) {
-                    	
-                    	Association association = new Association();
-                    	association.setId(rs2.getInt("id"));
-                    	association.setName(rs2.getString("name"));
-                    	association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
-                    	
-                    	tournament.setAssociation(association);
-                    	
-                    }
+            		PreparedStatement stmt2 = null;
+            	    ResultSet rs2 = null;
             		
-                    tournaments.add(tournament);
-                }
+            	    try {
+            	    
+	            		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	            			"SELECT id, name, creation_date FROM association WHERE id = ?"
+	                	);
+	                    stmt2.setInt(1, rs.getInt("id_association"));
+	                    rs2 = stmt2.executeQuery();
+	                    
+	                    if (rs2 != null && rs2.next()) {
+	                    	
+	                    	Association association = new Association();
+	                    	association.setId(rs2.getInt("id"));
+	                    	association.setName(rs2.getString("name"));
+	                    	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
+	                    	
+	                    	tournament.setAssociation(association);
+	                    	
+	                    }
+	            		
+	                    tournaments.add(tournament);
+                
+            	    } catch (SQLException e) {
+                        
+                    	e.printStackTrace();
+
+                    } finally {
+                        
+                    	try {
+                            
+                    		if (rs2 != null) rs2.close();
+                            if (stmt2 != null) stmt2.close();
+                            
+                        } catch (SQLException e) {
+                            
+                        	e.printStackTrace();
+                        
+                        }
+                    
+                    }
+            	
+            	}
             
             }
 
@@ -101,22 +124,46 @@ public class DataTournament {
         		tournament.setFormat(rs.getString("format"));
         		tournament.setSeason(rs.getString("season"));
 
-        		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-        			"SELECT id, name, creation_date FROM association WHERE id = ?"
-            	);
-                stmt2.setInt(1, rs.getInt("id_association"));
-                ResultSet rs2 = stmt2.executeQuery();
+        		PreparedStatement stmt2 = null;
+        	    ResultSet rs2 = null;
+        	    
+        	    try {
+        		
+	        		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	        			"SELECT id, name, creation_date FROM association WHERE id = ?"
+	            	);
+	                stmt2.setInt(1, rs.getInt("id_association"));
+	                rs2 = stmt2.executeQuery();
+	                
+	                if (rs2 != null && rs2.next()) {
+	                	
+	                	Association association = new Association();
+	                	association.setId(rs2.getInt("id"));
+	                	association.setName(rs2.getString("name"));
+	                	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
+	                	
+	                	tournament.setAssociation(association);
+	                	
+	                }
+        	    
+        	    } catch (SQLException e) {
+                        
+        	    	e.printStackTrace();
+
+                } finally {
+                    
+                	try {
+                        
+                		if (rs2 != null) rs2.close();
+                        if (stmt2 != null) stmt2.close();
+                        
+                    } catch (SQLException e) {
+                        
+                    	e.printStackTrace();
+                    
+                    }
                 
-                if (rs2 != null && rs2.next()) {
-                	
-                	Association association = new Association();
-                	association.setId(rs2.getInt("id"));
-                	association.setName(rs2.getString("name"));
-                	association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
-                	
-                	tournament.setAssociation(association);
-                	
-                }
+                }    
             
             }
         
@@ -169,25 +216,49 @@ public class DataTournament {
             		tournament.setFormat(rs.getString("format"));
             		tournament.setSeason(rs.getString("season"));
 
-            		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            			"SELECT id, name, creation_date FROM association WHERE id = ?"
-                	);
-                    stmt2.setInt(1, rs.getInt("id_association"));
-                    ResultSet rs2 = stmt2.executeQuery();
-                    
-                    if (rs2 != null && rs2.next()) {
-                    	
-                    	Association association = new Association();
-                    	association.setId(rs2.getInt("id"));
-                    	association.setName(rs2.getString("name"));
-                    	association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
-                    	
-                    	tournament.setAssociation(association);
-                    	
-                    }
+            		PreparedStatement stmt2 = null;
+            	    ResultSet rs2 = null;
             		
-                    tournaments.add(tournament);
+            	    try {
+            	    
+	            		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	            			"SELECT id, name, creation_date FROM association WHERE id = ?"
+	                	);
+	                    stmt2.setInt(1, rs.getInt("id_association"));
+	                    rs2 = stmt2.executeQuery();
+	                    
+	                    if (rs2 != null && rs2.next()) {
+	                    	
+	                    	Association association = new Association();
+	                    	association.setId(rs2.getInt("id"));
+	                    	association.setName(rs2.getString("name"));
+	                    	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
+	                    	
+	                    	tournament.setAssociation(association);
+	                    	
+	                    }
+	            		
+	                    tournaments.add(tournament);
+	                    
+	                } catch (SQLException e) {
+                        
+	                	e.printStackTrace();
+
+	                } finally {
                     
+	                	try {
+	                        
+	                		if (rs2 != null) rs2.close();
+	                        if (stmt2 != null) stmt2.close();
+	                        
+	                    } catch (SQLException e) {
+	                        
+	                    	e.printStackTrace();
+	                    
+	                    }
+                
+	                }
+                
                 }
             
             }
@@ -270,7 +341,7 @@ public class DataTournament {
         
     	try {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"UPDATE club SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? WHERE id = ?"
+            	"UPDATE tournament SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? WHERE id = ?"
             );
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());

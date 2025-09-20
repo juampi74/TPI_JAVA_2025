@@ -25,6 +25,9 @@
 	                    <li class="nav-item">
 	                        <a class="nav-link" href="actionassociation">Asociaciones</a>
 	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" href="actiontournament">Torneos</a>
+	                    </li>
 	                </ul>
 	            </div>
 	        </div>

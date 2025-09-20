@@ -10,10 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import entities.Tournament;
-import entities.Association;
-import entities.Club;
-import entities.Stadium;
+import entities.*;
 import logic.Logic;
 
 @WebServlet("/actiontournament")
@@ -65,7 +62,7 @@ public class ActionTournament extends HttpServlet {
             
         	Tournament t = new Tournament();
             t.setName(request.getParameter("name"));
-            t.setStartDate(LocalDate.parse(request.getParameter("startnDate")));
+            t.setStartDate(LocalDate.parse(request.getParameter("startDate")));
             t.setEndDate(LocalDate.parse(request.getParameter("endDate")));
             t.setFormat(request.getParameter("format"));
             t.setSeason(request.getParameter("season"));
@@ -79,8 +76,9 @@ public class ActionTournament extends HttpServlet {
         } else if ("edit".equals(action)) {
             
         	Tournament t = new Tournament();
+        	t.setId(Integer.parseInt(request.getParameter("id")));
             t.setName(request.getParameter("name"));
-            t.setStartDate(LocalDate.parse(request.getParameter("startnDate")));
+            t.setStartDate(LocalDate.parse(request.getParameter("startDate")));
             t.setEndDate(LocalDate.parse(request.getParameter("endDate")));
             t.setFormat(request.getParameter("format"));
             t.setSeason(request.getParameter("season"));

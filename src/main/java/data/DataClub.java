@@ -31,25 +31,51 @@ public class DataClub {
             		club.setBadgeImage(rs.getString("badge_image"));
             		club.setBudget(rs.getDouble("budget"));
 
-            		PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            			"SELECT id, name, capacity FROM stadium WHERE id = ?"
-                	);
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
-                    ResultSet rs2 = stmt2.executeQuery();
-                    
-                    if (rs2 != null && rs2.next()) {
-                    	
-                    	Stadium stadium = new Stadium();
-                    	stadium.setId(rs2.getInt("id"));
-                    	stadium.setName(rs2.getString("name"));
-                    	stadium.setCapacity(rs2.getInt("capacity"));
-                    	
-                    	club.setStadium(stadium);
-                    	
-                    }
+            		PreparedStatement stmt2 = null;
+            	    ResultSet rs2 = null;
             		
-                    clubs.add(club);
-                }
+            	    try {
+            	    
+	            	    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	            			"SELECT id, name, capacity FROM stadium WHERE id = ?"
+	                	);
+	                    stmt2.setInt(1, rs.getInt("id_stadium"));
+	                    rs2 = stmt2.executeQuery();
+	                    
+	                    if (rs2 != null && rs2.next()) {
+	                    	
+	                    	Stadium stadium = new Stadium();
+	                    	stadium.setId(rs2.getInt("id"));
+	                    	stadium.setName(rs2.getString("name"));
+	                    	stadium.setCapacity(rs2.getInt("capacity"));
+	                    	
+	                    	club.setStadium(stadium);
+	                    	
+	                    }
+	                    
+	            		
+	                    clubs.add(club);
+            	    
+            	    } catch (SQLException e) {
+                        
+                    	e.printStackTrace();
+
+                    } finally {
+                        
+                    	try {
+                            
+                    		if (rs2 != null) rs2.close();
+                            if (stmt2 != null) stmt2.close();
+                            
+                        } catch (SQLException e) {
+                            
+                        	e.printStackTrace();
+                        
+                        }
+                    
+                    }
+            	    
+            	}
             
             }
 
@@ -101,23 +127,46 @@ public class DataClub {
             	club.setBadgeImage(rs.getString("badge_image"));
             	club.setBudget(rs.getDouble("budget"));
             	
-            	PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            		"SELECT id, name, capacity FROM stadium WHERE id = ?"
-            	);
-                stmt2.setInt(1, rs.getInt("id_stadium"));
-                ResultSet rs2 = stmt2.executeQuery();
-                
-                if (rs2 != null && rs2.next()) {
-                	
-                	Stadium stadium = new Stadium();
-                	stadium.setId(rs2.getInt("id"));
-                	stadium.setName(rs2.getString("name"));
-                	stadium.setCapacity(rs2.getInt("capacity"));
-                	
-                	club.setStadium(stadium);
-                	
-                }
+            	PreparedStatement stmt2 = null;
+        	    ResultSet rs2 = null;
+            	
+        	    try {
+        	    
+	        	    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	            		"SELECT id, name, capacity FROM stadium WHERE id = ?"
+	            	);
+	                stmt2.setInt(1, rs.getInt("id_stadium"));
+	                rs2 = stmt2.executeQuery();
+	                
+	                if (rs2 != null && rs2.next()) {
+	                	
+	                	Stadium stadium = new Stadium();
+	                	stadium.setId(rs2.getInt("id"));
+	                	stadium.setName(rs2.getString("name"));
+	                	stadium.setCapacity(rs2.getInt("capacity"));
+	                	
+	                	club.setStadium(stadium);
+	                	
+	                }
             
+        	    } catch (SQLException e) {
+                    
+        	    	e.printStackTrace();
+
+                } finally {
+                    
+                	try {
+                        
+                		if (rs2 != null) rs2.close();
+                        if (stmt2 != null) stmt2.close();
+                        
+                    } catch (SQLException e) {
+                        
+                    	e.printStackTrace();
+                    
+                    }
+                
+                }
             }
         
         } catch (SQLException e) {
@@ -152,7 +201,7 @@ public class DataClub {
         try {
             
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
-        		"SELECT id, name, foundation_date, phone_number, email, badge_image, budget FROM club WHERE name = ?"
+        		"SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -170,25 +219,48 @@ public class DataClub {
                     club.setBadgeImage(rs.getString("badge_image"));
                     club.setBudget(rs.getDouble("budget"));
                     
-                    PreparedStatement stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                    	"SELECT id, name, capacity FROM stadium WHERE id = ?"
-                    );
+                    PreparedStatement stmt2 = null;
+            	    ResultSet rs2 = null;
+                    
+            	    try {
+            	    
+	            	    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	                    	"SELECT id, name, capacity FROM stadium WHERE id = ?"
+	                    );   
+	                    stmt2.setInt(1, rs.getInt("id_stadium"));
+	                    rs2 = stmt2.executeQuery();
+	                    
+	                    if (rs2 != null && rs2.next()) {
+	                    	
+	                    	Stadium stadium = new Stadium();
+	                    	stadium.setId(rs2.getInt("id"));
+	                    	stadium.setName(rs2.getString("name"));
+	                    	stadium.setCapacity(rs2.getInt("capacity"));
+	                    	
+	                    	club.setStadium(stadium);
+	                    	
+	                    }
+	                    
+	                    clubs.add(club);
+	                    
+            	    } catch (SQLException e) {
                         
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
-                    ResultSet rs2 = stmt2.executeQuery();
+	                	e.printStackTrace();
+
+	                } finally {
                     
-                    if (rs2 != null && rs2.next()) {
-                    	
-                    	Stadium stadium = new Stadium();
-                    	stadium.setId(rs2.getInt("id"));
-                    	stadium.setName(rs2.getString("name"));
-                    	stadium.setCapacity(rs2.getInt("capacity"));
-                    	
-                    	club.setStadium(stadium);
-                    	
-                    }
-                    
-                    clubs.add(club);
+	                	try {
+	                        
+	                		if (rs2 != null) rs2.close();
+	                        if (stmt2 != null) stmt2.close();
+	                        
+	                    } catch (SQLException e) {
+	                        
+	                    	e.printStackTrace();
+	                    
+	                    }
+                
+	                }
                 
                 }
             

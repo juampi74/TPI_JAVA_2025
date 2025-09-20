@@ -25,7 +25,7 @@
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container">
 		    <h2 class="mt-4">Editar Torneo</h2>
-		    <form action="actionclub" method="post" class="mt-4">
+		    <form action="actiontournament" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
 		        <input type="hidden" name="id" value="<%=tournament.getId()%>" />
 		        
