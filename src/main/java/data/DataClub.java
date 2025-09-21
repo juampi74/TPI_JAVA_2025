@@ -102,7 +102,7 @@ public class DataClub {
         return clubs;
     }
 
-    public Club getById(Club c) {
+    public Club getById(int id) {
         
     	Club club = null;
         PreparedStatement stmt = null;
@@ -113,7 +113,7 @@ public class DataClub {
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
             	"SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE id = ?"
             );
-            stmt.setInt(1, c.getId());
+            stmt.setInt(1, id);
             rs = stmt.executeQuery();
             
             if (rs != null && rs.next()) {
@@ -378,7 +378,7 @@ public class DataClub {
     
     }
 
-    public void delete(Club c) {
+    public void delete(int id) {
         
     	PreparedStatement stmt = null;
         
@@ -387,7 +387,7 @@ public class DataClub {
     		stmt = DbConnector.getInstance().getConn().prepareStatement(
     			"DELETE FROM club WHERE id = ?"
             );
-            stmt.setInt(1, c.getId());
+            stmt.setInt(1, id);
             stmt.executeUpdate();
             
         } catch (SQLException e) {

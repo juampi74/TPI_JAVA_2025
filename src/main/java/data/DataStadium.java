@@ -60,7 +60,7 @@ public class DataStadium {
 
 	}
 
-	public Stadium getById(Stadium s) {
+	public Stadium getById(int id) {
 		
 		Stadium stadium = null;
 		PreparedStatement stmt = null;
@@ -71,7 +71,7 @@ public class DataStadium {
 			stmt = DbConnector.getInstance().getConn().prepareStatement(
 				"SELECT id, name, capacity FROM stadium WHERE id = ?"
 			);
-			stmt.setInt(1, s.getId());
+			stmt.setInt(1, id);
 			rs = stmt.executeQuery();
 			
 			if (rs != null && rs.next()) {
@@ -239,7 +239,7 @@ public class DataStadium {
 	
 	}
 	
-	public void delete(Stadium s) {
+	public void delete(int id) {
 		
 		PreparedStatement stmt = null;
 		
@@ -248,7 +248,7 @@ public class DataStadium {
 			stmt = DbConnector.getInstance().getConn().prepareStatement(
 				"DELETE FROM stadium WHERE id = ?"
 			);
-			stmt.setInt(1, s.getId());
+			stmt.setInt(1, id);
 			stmt.executeUpdate();
 	
 		} catch (SQLException e) {

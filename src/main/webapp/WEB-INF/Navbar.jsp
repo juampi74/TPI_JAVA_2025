@@ -9,12 +9,18 @@
 	<body>
 	    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	        <div class="container-fluid">
-	            <a class="navbar-brand" href="actionperson">MiApp</a>
+	            <a class="navbar-brand" href="actionplayer">MiApp</a>
 	            
 	            <div class="collapse navbar-collapse">
 	                <ul class="navbar-nav">
 	                    <li class="nav-item">
-	                        <a class="nav-link" href="actionperson">Personas</a>
+	                        <a class="nav-link" href="actionplayer">Jugadores</a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" href="actiontechnicaldirector">Directores Técnicos</a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" href="actionpresident">Presidentes</a>
 	                    </li>
 	                    <li class="nav-item">
 	                        <a class="nav-link" href="actionstadium">Estadios</a>

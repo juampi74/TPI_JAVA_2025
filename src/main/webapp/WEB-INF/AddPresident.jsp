@@ -3,7 +3,7 @@
 <html>
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Agregar Persona</title>
+	    <title>Agregar Presidente</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <style>
 	        .button-container {
@@ -17,8 +17,8 @@
 	<body>
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container">
-		    <h2 class="mt-4">Agregar Persona</h2>
-		    <form action="actionperson" method="post" class="mt-4">
+		    <h2 class="mt-4">Agregar Presidente</h2>
+		    <form action="actionpresident" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />
 		        
 		        <div class="form-group">
@@ -39,6 +39,11 @@
 		        <div class="form-group">
 		            <label for="address">Dirección:</label>
 		            <input type="text" class="form-control" id="address" name="address" required />
+		        </div>
+		        
+		        <div class="form-group">
+		            <label for="managementPolicy">Política de Gestión:</label>
+		            <input type="text" class="form-control" id="managementPolicy" name="managementPolicy" required />
 		        </div>
 		
 		        <div class="button-container mb-3">

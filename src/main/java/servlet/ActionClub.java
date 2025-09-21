@@ -17,6 +17,22 @@ import logic.Logic;
 public class ActionClub extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    private Club buildClubFromRequest(HttpServletRequest request, Logic ctrl) {
+        
+    	Club club = new Club();
+    	club.setId(Integer.parseInt(request.getParameter("id")));
+    	club.setName(request.getParameter("name"));
+    	club.setFoundationDate(LocalDate.parse(request.getParameter("foundation_date")));
+    	club.setPhoneNumber(request.getParameter("phone_number"));
+    	club.setEmail(request.getParameter("email"));
+    	club.setBadgeImage(request.getParameter("badge_image"));
+    	club.setBudget(Double.parseDouble(request.getParameter("budget")));
+    	club.setStadium(ctrl.getStadiumById(Integer.parseInt(request.getParameter("id_stadium"))));
+		
+        return club;
+    
+	}
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -26,27 +42,30 @@ public class ActionClub extends HttpServlet {
 
         if ("edit".equals(action)) {
             
-            Club c = new Club();
-            c.setId(Integer.parseInt(request.getParameter("id")));
-            Club club = ctrl.getClubById(c);
-            request.setAttribute("club", club);
+        	Club club = ctrl.getClubById(Integer.parseInt(request.getParameter("id")));
+			request.setAttribute("club", club);
+            
             LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
         	request.setAttribute("stadiumsList", stadiums);
-            request.getRequestDispatcher("WEB-INF/EditClub.jsp").forward(request, response);
+            
+        	request.getRequestDispatcher("WEB-INF/EditClub.jsp").forward(request, response);
         
         } else if ("add".equals(action)) {
         
         	LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
         	request.setAttribute("stadiumsList", stadiums);
+        	
         	request.getRequestDispatcher("WEB-INF/AddClub.jsp").forward(request, response);
         
         } else {
         
         	LinkedList<Club> clubs = ctrl.getAllClubs();
             request.setAttribute("clubsList", clubs);
+            
             LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
         	request.setAttribute("stadiumsList", stadiums);
-            request.getRequestDispatcher("/WEB-INF/ClubManagement.jsp").forward(request, response);
+        	
+        	request.getRequestDispatcher("/WEB-INF/ClubManagement.jsp").forward(request, response);
         
         }
     
@@ -60,42 +79,15 @@ public class ActionClub extends HttpServlet {
 
         if ("add".equals(action)) {
             
-        	Club c = new Club();
-            c.setName(request.getParameter("name"));
-            c.setFoundationDate(LocalDate.parse(request.getParameter("foundationDate")));
-            c.setPhoneNumber(request.getParameter("phoneNumber"));
-            c.setEmail(request.getParameter("email"));
-            c.setBadgeImage(request.getParameter("badgeImage"));
-            c.setBudget(Double.parseDouble(request.getParameter("budget")));
-            
-            Stadium clubStadium = new Stadium();
-            clubStadium.setId(Integer.parseInt(request.getParameter("id_stadium")));
-            c.setStadium(ctrl.getStadiumById(clubStadium));
-
-            ctrl.addClub(c);
+        	ctrl.addClub(buildClubFromRequest(request, ctrl));
 
         } else if ("edit".equals(action)) {
             
-        	Club c = new Club();
-            c.setId(Integer.parseInt(request.getParameter("id")));
-            c.setName(request.getParameter("name"));
-            c.setFoundationDate(LocalDate.parse(request.getParameter("foundationDate")));
-            c.setPhoneNumber(request.getParameter("phoneNumber"));
-            c.setEmail(request.getParameter("email"));
-            c.setBadgeImage(request.getParameter("badgeImage"));
-            c.setBudget(Double.parseDouble(request.getParameter("budget")));
-            
-            Stadium clubStadium = new Stadium();
-            clubStadium.setId(Integer.parseInt(request.getParameter("id_stadium")));
-            c.setStadium(ctrl.getStadiumById(clubStadium));
-
-            ctrl.updateClub(c);
+        	ctrl.updateClub(buildClubFromRequest(request, ctrl));
 
         } else if ("delete".equals(action)) {
             
-        	Club c = new Club();
-            c.setId(Integer.parseInt(request.getParameter("id")));
-            ctrl.deleteClub(c);
+        	ctrl.deleteClub(Integer.parseInt(request.getParameter("id")));
             
         }
 

@@ -18,6 +18,21 @@ public class ActionTournament extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private Tournament buildTournamentFromRequest(HttpServletRequest request, Logic ctrl) {
+        
+		Tournament tournament = new Tournament();
+		tournament.setId(Integer.parseInt(request.getParameter("id")));
+		tournament.setName(request.getParameter("name"));
+		tournament.setStartDate(LocalDate.parse(request.getParameter("start_date")));
+		tournament.setEndDate(LocalDate.parse(request.getParameter("end_date")));
+		tournament.setFormat(request.getParameter("format"));
+		tournament.setSeason(request.getParameter("season"));
+        tournament.setAssociation(ctrl.getAssociationById(Integer.parseInt(request.getParameter("id_association"))));
+		
+        return tournament;
+    
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -25,28 +40,31 @@ public class ActionTournament extends HttpServlet {
         Logic ctrl = new Logic();
 
         if ("edit".equals(action)) {
+        	
+        	Tournament tournament = ctrl.getTournamentById(Integer.parseInt(request.getParameter("id")));
+			request.setAttribute("tournament", tournament);
             
-        	Tournament t = new Tournament();
-            t.setId(Integer.parseInt(request.getParameter("id")));
-            Tournament tournament = ctrl.getTournamentById(t);
-            request.setAttribute("tournament", tournament);
             LinkedList<Association> associations = ctrl.getAllAssociations();
         	request.setAttribute("associationsList", associations);
-            request.getRequestDispatcher("WEB-INF/EditTournament.jsp").forward(request, response);
+            
+        	request.getRequestDispatcher("WEB-INF/EditTournament.jsp").forward(request, response);
         
         } else if ("add".equals(action)) {
         
         	LinkedList<Association> associations = ctrl.getAllAssociations();
         	request.setAttribute("associationsList", associations);
+        	
         	request.getRequestDispatcher("WEB-INF/AddTournament.jsp").forward(request, response);
         
         } else {
         
         	LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
             request.setAttribute("tournamentsList", tournaments);
+            
             LinkedList<Association> associations = ctrl.getAllAssociations();
         	request.setAttribute("associationsList", associations);
-            request.getRequestDispatcher("/WEB-INF/TournamentManagement.jsp").forward(request, response);
+            
+        	request.getRequestDispatcher("/WEB-INF/TournamentManagement.jsp").forward(request, response);
         
         }
 	}
@@ -60,40 +78,15 @@ public class ActionTournament extends HttpServlet {
 
         if ("add".equals(action)) {
             
-        	Tournament t = new Tournament();
-            t.setName(request.getParameter("name"));
-            t.setStartDate(LocalDate.parse(request.getParameter("startDate")));
-            t.setEndDate(LocalDate.parse(request.getParameter("endDate")));
-            t.setFormat(request.getParameter("format"));
-            t.setSeason(request.getParameter("season"));
-            
-            Association tournamentAssociation = new Association();
-            tournamentAssociation.setId(Integer.parseInt(request.getParameter("id_association")));
-            t.setAssociation(ctrl.getAssociationById(tournamentAssociation));
-
-            ctrl.addTournament(t);
+        	ctrl.addTournament(buildTournamentFromRequest(request, ctrl));
 
         } else if ("edit".equals(action)) {
             
-        	Tournament t = new Tournament();
-        	t.setId(Integer.parseInt(request.getParameter("id")));
-            t.setName(request.getParameter("name"));
-            t.setStartDate(LocalDate.parse(request.getParameter("startDate")));
-            t.setEndDate(LocalDate.parse(request.getParameter("endDate")));
-            t.setFormat(request.getParameter("format"));
-            t.setSeason(request.getParameter("season"));
-            
-            Association tournamentAssociation = new Association();
-            tournamentAssociation.setId(Integer.parseInt(request.getParameter("id_association")));
-            t.setAssociation(ctrl.getAssociationById(tournamentAssociation));
-
-            ctrl.updateTournament(t);
+        	ctrl.updateTournament(buildTournamentFromRequest(request, ctrl));
 
         } else if ("delete".equals(action)) {
             
-        	Tournament t = new Tournament();
-            t.setId(Integer.parseInt(request.getParameter("id")));
-            ctrl.deleteTournament(t);
+        	ctrl.deleteTournament(Integer.parseInt(request.getParameter("id")));
             
         }
 

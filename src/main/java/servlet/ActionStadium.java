@@ -16,6 +16,17 @@ import logic.Logic;
 public class ActionStadium extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	private Stadium buildStadiumFromRequest(HttpServletRequest request) {
+        
+    	Stadium stadium = new Stadium();
+    	stadium.setId(Integer.parseInt(request.getParameter("id")));
+    	stadium.setName(request.getParameter("name"));
+    	stadium.setCapacity(Integer.parseInt(request.getParameter("capacity")));
+    	
+        return stadium;
+    
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -23,11 +34,9 @@ public class ActionStadium extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)){
+		if ("edit".equals(action)) {
 			
-			Stadium s = new Stadium();
-			s.setId(Integer.parseInt(request.getParameter("id")));
-			Stadium stadium = ctrl.getStadiumById(s);
+			Stadium stadium = ctrl.getStadiumById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("stadium", stadium);
 			request.getRequestDispatcher("WEB-INF/EditStadium.jsp").forward(request, response);
 		
@@ -53,27 +62,15 @@ public class ActionStadium extends HttpServlet {
         
         if ("add".equals(action)) {
     		
-        	Stadium s = new Stadium();   
-    	    s.setName(request.getParameter("name"));
-    	    s.setCapacity(Integer.parseInt(request.getParameter("capacity")));
-    	    
-    	    ctrl.addStadium(s);
+        	ctrl.addStadium(buildStadiumFromRequest(request));
         	
         } else if ("edit".equals(action)) {
         	
-    		Stadium s = new Stadium();
-    	    s.setId(Integer.parseInt(request.getParameter("id")));
-    	    s.setName(request.getParameter("name"));
-    	    s.setCapacity(Integer.parseInt(request.getParameter("capacity")));
-    	    
-    	    ctrl.updateStadium(s);
+        	ctrl.updateStadium(buildStadiumFromRequest(request));
     	    
         } else if ("delete".equals(action)){
         	
-    	    Stadium s = new Stadium();
-    	    s.setId(Integer.parseInt(request.getParameter("id")));
-    	    
-    	    ctrl.deleteStadium(s);
+        	ctrl.deleteStadium(Integer.parseInt(request.getParameter("id")));
     	    
         }
 	    

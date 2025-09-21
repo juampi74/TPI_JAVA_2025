@@ -1,13 +1,15 @@
 package entities;
 
 import java.time.LocalDate;
+import enums.PersonRole;
 
-public class Person {
+public abstract class Person {
 	
 	private int id;
 	private String fullname;
 	private LocalDate birthdate;
 	private String address;
+	private PersonRole role;
 	
 	public int getId() {
 		
@@ -56,13 +58,25 @@ public class Person {
 		this.address = address;
 	
 	}
+	
+	public PersonRole getRole() {
+	
+		return role;
+	
+	}
+
+	public void setRole(PersonRole role) {
+	
+		this.role = role;
+	
+	}
 
 	@Override
 	public String toString() {
-		return "Person [id=" + id + ", fullname=" + fullname + ", birthdate=" + birthdate + ", address=" + address
-				+ "]";
-	}
 
+		return "Person [id=" + id + ", fullname=" + fullname + ", birthdate=" + birthdate + ", address=" + address
+				+ ", role=" + role + "]";
 	
+	}
 
 }

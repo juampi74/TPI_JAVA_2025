@@ -1,13 +1,13 @@
-<%@ page import="entities.Person"%>
+<%@ page import="entities.President"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-	Person person = (Person) request.getAttribute("person");
+	President president = (President) request.getAttribute("president");
 %>
 <!DOCTYPE html>
 <html>
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Editar Persona</title>
+	    <title>Editar Presidente</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <style>
 	        .button-container {
@@ -21,24 +21,29 @@
 	<body>
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container">
-		    <h2 class="mt-4">Editar Persona</h2>
-		    <form action="actionperson" method="post" class="mt-4">
+		    <h2 class="mt-4">Editar Presidente</h2>
+		    <form action="actionpresident" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
-		        <input type="hidden" name="id" value="<%=person.getId()%>" />
+		        <input type="hidden" name="id" value="<%=president.getId()%>" />
 		        
 		        <div class="form-group">
 		            <label for="fullname">Apellido y Nombre:</label>
-		            <input type="text" class="form-control" id="fullname" name="fullname" value="<%=person.getFullname()%>" required />
+		            <input type="text" class="form-control" id="fullname" name="fullname" value="<%=president.getFullname()%>" required />
 		        </div>
 		        
 		        <div class="form-group">
 		            <label for="birthdate">Fecha de Nacimiento:</label>
-		            <input type="date" class="form-control" id="birthdate" name="birthdate" value="<%=person.getBirthdate()%>" required />
+		            <input type="date" class="form-control" id="birthdate" name="birthdate" value="<%=president.getBirthdate()%>" required />
 		        </div>
 		        
 		        <div class="form-group">
 		            <label for="address">Dirección:</label>
-		            <input type="text" class="form-control" id="address" name="address" value="<%=person.getAddress()%>" required />
+		            <input type="text" class="form-control" id="address" name="address" value="<%=president.getAddress()%>" required />
+		        </div>
+		        
+		        <div class="form-group">
+		            <label for="managementPolicy">Política de Gestión:</label>
+		            <input type="text" class="form-control" id="managementPolicy" name="managementPolicy" value="<%=president.getManagementPolicy()%>" required />
 		        </div>
 		        
 		        <div class="button-container mb-3">

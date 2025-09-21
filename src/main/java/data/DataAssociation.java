@@ -61,7 +61,7 @@ public class DataAssociation {
 
 	}
 
-	public Association getById(Association a) {
+	public Association getById(int id) {
 		
 		Association association = null;
 		PreparedStatement stmt = null;
@@ -72,7 +72,7 @@ public class DataAssociation {
 			stmt = DbConnector.getInstance().getConn().prepareStatement(
 				"SELECT id, name, creation_date FROM association WHERE id = ?"
 			);
-			stmt.setInt(1, a.getId());
+			stmt.setInt(1, id);
 			rs = stmt.executeQuery();
 			
 			if (rs != null && rs.next()) {
@@ -241,7 +241,7 @@ public class DataAssociation {
 	
 	}
 	
-	public void delete(Association a) {
+	public void delete(int id) {
 		
 		PreparedStatement stmt = null;
 		
@@ -250,7 +250,7 @@ public class DataAssociation {
 			stmt = DbConnector.getInstance().getConn().prepareStatement(
 				"DELETE FROM association WHERE id = ?"
 			);
-			stmt.setInt(1, a.getId());
+			stmt.setInt(1, id);
 			stmt.executeUpdate();
 	
 		} catch (SQLException e) {

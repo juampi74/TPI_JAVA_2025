@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import entities.Person;
+import entities.Player;
 import logic.Logic;
 
 @WebServlet({ "/signin", "/SIGNIN", "/Signin", "/SignIn", "/signIn" })
@@ -21,11 +21,11 @@ public class Signin extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-	    LinkedList<Person> people = ctrl.getAllPeople();
+	    LinkedList<Player> players = ctrl.getAllPlayers();
 	    
-	    request.setAttribute("peopleList", people);
+	    request.setAttribute("playersList", players);
 	    
-	    request.getRequestDispatcher("/WEB-INF/PersonManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("/WEB-INF/PlayerManagement.jsp").forward(request, response);
 	
 	}
 

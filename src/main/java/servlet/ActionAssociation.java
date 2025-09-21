@@ -17,6 +17,17 @@ import logic.Logic;
 public class ActionAssociation extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	private Association buildAssociationFromRequest(HttpServletRequest request) {
+        
+		Association association = new Association();
+		association.setId(Integer.parseInt(request.getParameter("id")));
+		association.setName(request.getParameter("name"));
+		association.setCreationDate(LocalDate.parse(request.getParameter("creation_date")));
+
+        return association;
+    
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -24,11 +35,9 @@ public class ActionAssociation extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)){
+		if ("edit".equals(action)) {
 			
-			Association a = new Association();
-			a.setId(Integer.parseInt(request.getParameter("id")));
-			Association association = ctrl.getAssociationById(a);
+			Association association = ctrl.getAssociationById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("association", association);
 			request.getRequestDispatcher("WEB-INF/EditAssociation.jsp").forward(request, response);
 		
@@ -54,27 +63,15 @@ public class ActionAssociation extends HttpServlet {
         
         if ("add".equals(action)) {
     		
-        	Association a = new Association();   
-    	    a.setName(request.getParameter("name"));
-    	    a.setCreationDate(LocalDate.parse(request.getParameter("creationDate")));
-    	    
-    	    ctrl.addAssociation(a);
+        	ctrl.addAssociation(buildAssociationFromRequest(request));
         	
         } else if ("edit".equals(action)) {
         	
-        	Association a = new Association();
-    	    a.setId(Integer.parseInt(request.getParameter("id")));
-    	    a.setName(request.getParameter("name"));
-    	    a.setCreationDate(LocalDate.parse(request.getParameter("creationDate")));    	    
-    	    
-    	    ctrl.updateAssociation(a);
+        	ctrl.updateAssociation(buildAssociationFromRequest(request));
     	    
         } else if ("delete".equals(action)){
         	
-        	Association a = new Association();
-    	    a.setId(Integer.parseInt(request.getParameter("id")));
-    	    
-    	    ctrl.deleteAssociation(a);
+        	ctrl.deleteAssociation(Integer.parseInt(request.getParameter("id")));
     	    
         }
 	    

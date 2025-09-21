@@ -6,199 +6,275 @@ import java.util.LinkedList;
 
 public class Logic {
 
-    private DataPerson dp;
-    private DataStadium ds;
-    private DataClub dc;
-    private DataAssociation da;
-    private DataTournament dt;
+    private DataPlayer dpl;
+    private DataTechnicalDirector dtd;
+    private DataPresident dpr;
+    private DataStadium dst;
+    private DataClub dcl;
+    private DataAssociation das;
+    private DataTournament dto;
 
     public Logic() {
         
-    	dp = new DataPerson();
-        ds = new DataStadium();
-        dc = new DataClub();
-        da = new DataAssociation();
-        dt = new DataTournament();
+    	dpl = new DataPlayer();
+        dtd = new DataTechnicalDirector();
+        dpr = new DataPresident();
+    	dst = new DataStadium();
+        dcl = new DataClub();
+        das = new DataAssociation();
+        dto = new DataTournament();
     
     }
 
-    public LinkedList<Person> getAllPeople() {
+    public LinkedList<Player> getAllPlayers() {
 
-        return dp.getAll();
-
-    }
-
-    public Person getPersonById(Person p) {
-
-        return dp.getById(p);
+        return dpl.getAll();
 
     }
 
-    public LinkedList<Person> getPersonByFullname(String fullname) {
+    public Player getPlayerById(int id) {
 
-        return dp.getByFullname(fullname);
-
-    }
-
-    public void addPerson(Person p) {
-
-        dp.add(p);
+        return dpl.getById(id);
 
     }
 
-    public void updatePerson(Person p) {
+    public LinkedList<Player> getPlayerByFullname(String fullname) {
 
-        dp.update(p);
+        return dpl.getByFullname(fullname);
 
     }
 
-    public void deletePerson(Person p) {
+    public void addPlayer(Player p) {
 
-        dp.delete(p);
+        dpl.add(p);
+
+    }
+
+    public void updatePlayer(Player p) {
+
+        dpl.update(p);
+
+    }
+
+    public void deletePlayer(int id) {
+
+        dpl.delete(id);
+
+    }
+    
+    public LinkedList<TechnicalDirector> getAllTechnicalDirectors() {
+
+        return dtd.getAll();
+
+    }
+
+    public TechnicalDirector getTechnicalDirectorById(int id) {
+
+        return dtd.getById(id);
+
+    }
+
+    public LinkedList<TechnicalDirector> getTechnicalDirectorByFullname(String fullname) {
+
+        return dtd.getByFullname(fullname);
+
+    }
+
+    public void addTechnicalDirector(TechnicalDirector td) {
+
+        dtd.add(td);
+
+    }
+
+    public void updateTechnicalDirector(TechnicalDirector td) {
+
+        dtd.update(td);
+
+    }
+
+    public void deleteTechnicalDirector(int id) {
+
+        dtd.delete(id);
+
+    }
+    
+    public LinkedList<President> getAllPresidents() {
+
+        return dpr.getAll();
+
+    }
+
+    public President getPresidentById(int id) {
+
+        return dpr.getById(id);
+
+    }
+
+    public LinkedList<President> getPresidentByFullname(String fullname) {
+
+        return dpr.getByFullname(fullname);
+
+    }
+
+    public void addPresident(President p) {
+
+        dpr.add(p);
+
+    }
+
+    public void updatePresident(President p) {
+
+        dpr.update(p);
+
+    }
+
+    public void deletePresident(int id) {
+
+        dpr.delete(id);
 
     }
 
     public LinkedList<Stadium> getAllStadiums() {
 
-        return ds.getAll();
+        return dst.getAll();
 
     }
 
-    public Stadium getStadiumById(Stadium s) {
+    public Stadium getStadiumById(int id) {
 
-        return ds.getById(s);
+        return dst.getById(id);
 
     }
 
     public LinkedList<Stadium> getStadiumByName(String name) {
 
-        return ds.getByName(name);
+        return dst.getByName(name);
 
     }
 
     public void addStadium(Stadium s) {
 
-        ds.add(s);
+        dst.add(s);
 
     }
 
     public void updateStadium(Stadium s) {
 
-        ds.update(s);
+        dst.update(s);
 
     }
 
-    public void deleteStadium(Stadium s) {
+    public void deleteStadium(int id) {
 
-        ds.delete(s);
+        dst.delete(id);
 
     }
 
     public LinkedList<Club> getAllClubs() {
         
-    	return dc.getAll();
+    	return dcl.getAll();
     
     }
 
-    public Club getClubById(Club c) {
+    public Club getClubById(int id) {
         
-    	return dc.getById(c);
+    	return dcl.getById(id);
     
     }
 
     public LinkedList<Club> getClubByName(String name) {
         
-    	return dc.getByName(name);
+    	return dcl.getByName(name);
     
     }
 
     public void addClub(Club c) {
         
-    	dc.add(c);
+    	dcl.add(c);
     
     }
 
     public void updateClub(Club c) {
         
-    	dc.update(c);
+    	dcl.update(c);
     
     }
 
-    public void deleteClub(Club c) {
+    public void deleteClub(int id) {
     
-    	dc.delete(c);
+    	dcl.delete(id);
     
     }
     
     public LinkedList<Association> getAllAssociations() {
         
-    	return da.getAll();
+    	return das.getAll();
     
     }
 
-    public Association getAssociationById(Association a) {
+    public Association getAssociationById(int id) {
         
-    	return da.getById(a);
+    	return das.getById(id);
     
     }
 
     public LinkedList<Association> getAssociationByName(String name) {
         
-    	return da.getByName(name);
+    	return das.getByName(name);
     
     }
 
     public void addAssociation(Association a) {
         
-    	da.add(a);
+    	das.add(a);
     
     }
 
     public void updateAssociation(Association a) {
         
-    	da.update(a);
+    	das.update(a);
     
     }
 
-    public void deleteAssociation(Association a) {
+    public void deleteAssociation(int id) {
     
-    	da.delete(a);
+    	das.delete(id);
     
     }
     
     public LinkedList<Tournament> getAllTournaments() {
         
-    	return dt.getAll();
+    	return dto.getAll();
     
     }
 
-    public Tournament getTournamentById(Tournament t) {
+    public Tournament getTournamentById(int id) {
         
-    	return dt.getById(t);
+    	return dto.getById(id);
     
     }
 
     public LinkedList<Tournament> getTournamentByName(String name) {
         
-    	return dt.getByName(name);
+    	return dto.getByName(name);
     
     }
 
     public void addTournament(Tournament t) {
         
-    	dt.add(t);
+    	dto.add(t);
     
     }
 
     public void updateTournament(Tournament t) {
         
-    	dt.update(t);
+    	dto.update(t);
     
     }
 
-    public void deleteTournament(Tournament t) {
+    public void deleteTournament(int id) {
     
-    	dt.delete(t);
+    	dto.delete(id);
     
     }
 

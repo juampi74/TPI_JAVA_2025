@@ -100,7 +100,7 @@ public class DataTournament {
         return tournaments;
     }
 
-    public Tournament getById(Tournament t) {
+    public Tournament getById(int id) {
         
     	Tournament tournament = null;
         PreparedStatement stmt = null;
@@ -111,7 +111,7 @@ public class DataTournament {
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
             	"SELECT id, name, start_date, end_date, format, season, id_association FROM tournament WHERE id = ?"
             );
-            stmt.setInt(1, t.getId());
+            stmt.setInt(1, id);
             rs = stmt.executeQuery();
             
             if (rs != null && rs.next()) {
@@ -373,7 +373,7 @@ public class DataTournament {
     
     }
 
-    public void delete(Tournament t) {
+    public void delete(int id) {
         
     	PreparedStatement stmt = null;
         
@@ -382,7 +382,7 @@ public class DataTournament {
     		stmt = DbConnector.getInstance().getConn().prepareStatement(
     			"DELETE FROM tournament WHERE id = ?"
             );
-            stmt.setInt(1, t.getId());
+            stmt.setInt(1, id);
             stmt.executeUpdate();
             
         } catch (SQLException e) {
