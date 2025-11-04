@@ -1,14 +1,14 @@
 # Trabajo Práctico - JAVA
 
+## 🏷️ Nombre del Proyecto
+
+**TeamUp**
+
 ## 👨‍💻 Integrantes del Grupo
 
 - 50310 - Berli, Nahuel
 - 50311 - Jaca, Juan Pablo
 - 50671 - Giampietro, Gustavo
-
-## 🏷️ Nombre del Proyecto
-
-**TeamUp**
 
 ## 📜 Descripción
 
