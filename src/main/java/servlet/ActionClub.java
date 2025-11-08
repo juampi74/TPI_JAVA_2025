@@ -18,15 +18,15 @@ public class ActionClub extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     
-    private Club buildClubFromRequest(HttpServletRequest request, Logic ctrl) {
+    private Club buildClubFromRequest(HttpServletRequest request, String action,Logic ctrl) {
         
     	Club club = new Club();
-    	club.setId(Integer.parseInt(request.getParameter("id")));
+    	if ("edit".equals(action)) club.setId(Integer.parseInt(request.getParameter("id")));
     	club.setName(request.getParameter("name"));
-    	club.setFoundationDate(LocalDate.parse(request.getParameter("foundation_date")));
-    	club.setPhoneNumber(request.getParameter("phone_number"));
+    	club.setFoundationDate(LocalDate.parse(request.getParameter("foundationDate")));
+    	club.setPhoneNumber(request.getParameter("phoneNumber"));
     	club.setEmail(request.getParameter("email"));
-    	club.setBadgeImage(request.getParameter("badge_image"));
+    	club.setBadgeImage(request.getParameter("badgeImage"));
     	club.setBudget(Double.parseDouble(request.getParameter("budget")));
     	club.setStadium(ctrl.getStadiumById(Integer.parseInt(request.getParameter("id_stadium"))));
 		
@@ -79,11 +79,11 @@ public class ActionClub extends HttpServlet {
 
         if ("add".equals(action)) {
             
-        	ctrl.addClub(buildClubFromRequest(request, ctrl));
+        	ctrl.addClub(buildClubFromRequest(request, action, ctrl));
 
         } else if ("edit".equals(action)) {
             
-        	ctrl.updateClub(buildClubFromRequest(request, ctrl));
+        	ctrl.updateClub(buildClubFromRequest(request, action, ctrl));
 
         } else if ("delete".equals(action)) {
             

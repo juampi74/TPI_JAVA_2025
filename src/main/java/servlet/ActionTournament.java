@@ -18,13 +18,13 @@ public class ActionTournament extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Tournament buildTournamentFromRequest(HttpServletRequest request, Logic ctrl) {
+	private Tournament buildTournamentFromRequest(HttpServletRequest request, String action, Logic ctrl) {
         
 		Tournament tournament = new Tournament();
-		tournament.setId(Integer.parseInt(request.getParameter("id")));
+		if ("edit".equals(action)) tournament.setId(Integer.parseInt(request.getParameter("id")));
 		tournament.setName(request.getParameter("name"));
-		tournament.setStartDate(LocalDate.parse(request.getParameter("start_date")));
-		tournament.setEndDate(LocalDate.parse(request.getParameter("end_date")));
+		tournament.setStartDate(LocalDate.parse(request.getParameter("startDate")));
+		tournament.setEndDate(LocalDate.parse(request.getParameter("endDate")));
 		tournament.setFormat(request.getParameter("format"));
 		tournament.setSeason(request.getParameter("season"));
         tournament.setAssociation(ctrl.getAssociationById(Integer.parseInt(request.getParameter("id_association"))));
@@ -78,11 +78,11 @@ public class ActionTournament extends HttpServlet {
 
         if ("add".equals(action)) {
             
-        	ctrl.addTournament(buildTournamentFromRequest(request, ctrl));
+        	ctrl.addTournament(buildTournamentFromRequest(request, action, ctrl));
 
         } else if ("edit".equals(action)) {
             
-        	ctrl.updateTournament(buildTournamentFromRequest(request, ctrl));
+        	ctrl.updateTournament(buildTournamentFromRequest(request, action, ctrl));
 
         } else if ("delete".equals(action)) {
             

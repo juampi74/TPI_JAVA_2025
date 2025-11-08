@@ -18,12 +18,12 @@ public class ActionAssociation extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Association buildAssociationFromRequest(HttpServletRequest request) {
+	private Association buildAssociationFromRequest(HttpServletRequest request, String action) {
         
 		Association association = new Association();
-		association.setId(Integer.parseInt(request.getParameter("id")));
+		if("edit".equals(action)) association.setId(Integer.parseInt(request.getParameter("id")));
 		association.setName(request.getParameter("name"));
-		association.setCreationDate(LocalDate.parse(request.getParameter("creation_date")));
+		association.setCreationDate(LocalDate.parse(request.getParameter("creationDate")));
 
         return association;
     
@@ -63,11 +63,11 @@ public class ActionAssociation extends HttpServlet {
         
         if ("add".equals(action)) {
     		
-        	ctrl.addAssociation(buildAssociationFromRequest(request));
+        	ctrl.addAssociation(buildAssociationFromRequest(request, action));
         	
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updateAssociation(buildAssociationFromRequest(request));
+        	ctrl.updateAssociation(buildAssociationFromRequest(request, action));
     	    
         } else if ("delete".equals(action)){
         	

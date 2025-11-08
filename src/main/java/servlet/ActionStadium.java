@@ -17,10 +17,10 @@ public class ActionStadium extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Stadium buildStadiumFromRequest(HttpServletRequest request) {
+	private Stadium buildStadiumFromRequest(HttpServletRequest request, String action) {
         
     	Stadium stadium = new Stadium();
-    	stadium.setId(Integer.parseInt(request.getParameter("id")));
+    	if ("edit".equals(action)) stadium.setId(Integer.parseInt(request.getParameter("id")));
     	stadium.setName(request.getParameter("name"));
     	stadium.setCapacity(Integer.parseInt(request.getParameter("capacity")));
     	
@@ -62,11 +62,11 @@ public class ActionStadium extends HttpServlet {
         
         if ("add".equals(action)) {
     		
-        	ctrl.addStadium(buildStadiumFromRequest(request));
+        	ctrl.addStadium(buildStadiumFromRequest(request, action));
         	
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updateStadium(buildStadiumFromRequest(request));
+        	ctrl.updateStadium(buildStadiumFromRequest(request, action));
     	    
         } else if ("delete".equals(action)){
         	
