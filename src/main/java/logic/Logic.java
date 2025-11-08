@@ -13,6 +13,7 @@ public class Logic {
     private DataClub dcl;
     private DataAssociation das;
     private DataTournament dto;
+    private DataContract dco;
 
     public Logic() {
         
@@ -23,6 +24,7 @@ public class Logic {
         dcl = new DataClub();
         das = new DataAssociation();
         dto = new DataTournament();
+        dco = new DataContract();
     
     }
 
@@ -275,6 +277,36 @@ public class Logic {
     public void deleteTournament(int id) {
     
     	dto.delete(id);
+    
+    }
+    
+    public LinkedList<Contract> getAllContracts() {
+        
+    	return dco.getAll();
+    
+    }
+
+    public Contract getContractById(int id) {
+        
+    	return dco.getById(id);
+    
+    }
+
+    public void addContract(Contract c) {
+        
+    	dco.add(c);
+    
+    }
+
+    public void updateContract(Contract c) {
+        
+    	dco.update(c);
+    
+    }
+
+    public void deleteContract(int id) {
+    
+    	dco.delete(id);
     
     }
 
