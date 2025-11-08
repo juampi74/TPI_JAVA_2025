@@ -303,6 +303,12 @@ public class Logic {
     	dco.update(c);
     
     }
+    
+    public void releaseContract(int id) {
+        
+    	dco.release(id);
+    
+    }
 
     public void deleteContract(int id) {
     

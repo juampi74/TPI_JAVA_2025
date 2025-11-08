@@ -1,4 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Contract"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -46,6 +47,7 @@
 						            <th>Salario</th>
 						            <th>Cláusula de Rescisión</th>
 						            <th>Editar</th>
+						            <th>Rescindir</th>
                        				<th>Eliminar</th>
                       			</tr>
                       		</thead>
@@ -61,19 +63,50 @@
                     				<td><%=c.getSalary()%></td>
                     				<td><%=c.getReleaseClause()%></td>
                     				<td>
-                    					<form method="get" action="actioncontract" style="display:inline;">
-                    						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=c.getId()%>" />
-		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
-		    							</form>
-                    				</td>
+									    <form method="get" action="actioncontract" style="display:inline;">
+									        <input type="hidden" name="action" value="edit" />
+									        <input type="hidden" name="id" value="<%=c.getId()%>" />
+									        
+									        <button type="submit" class="btn btn-primary btn-sm">
+									            <img src="assets/edit.png" alt="edit" height="25">
+									        </button>
+									        
+									    </form>
+									</td>
                     				<td>
-                    					<form method="post" action="actioncontract" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este contrato?');">
-											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=c.getId()%>" />
-											<button type="submit" class="btn btn-dark btn-sm">❌</button>
-										</form>
-                    				</td>
+                    					<%
+	                    					String disabledAttribute = "";
+	                    				    java.time.LocalDate today = java.time.LocalDate.now();
+	                    				    java.time.LocalDate contractEndDate = c.getEndDate();
+	                    				    
+	                    				    if (today.isAfter(contractEndDate) || c.getReleaseDate() != null) {
+	                    				        disabledAttribute = "disabled";
+	                    				    }
+									    %>
+                    				
+									    <form method="post" action="actioncontract" style="display:inline;" 
+									          onsubmit="return confirm('¿Estás seguro que querés rescindir este contrato?');">
+									        
+									        <input type="hidden" name="action" value="release" />
+									        <input type="hidden" name="id" value="<%=c.getId()%>" />
+									        
+									        <button type="submit" class="btn btn-dark btn-sm" <%= disabledAttribute %>>
+									            <img src="assets/release_contract.png" alt="release" height="25">
+									        </button>
+									        
+									    </form>
+									</td>
+									<td>
+									    <form method="get" action="actioncontract" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este contrato?');">
+									        <input type="hidden" name="action" value="delete" />
+									        <input type="hidden" name="id" value="<%=c.getId()%>" />
+									        
+									        <button type="submit" class="btn btn-danger btn-sm">
+									            <img src="assets/delete.png" alt="delete" height="25">
+									        </button>
+									        
+									    </form>
+									</td>
                     			</tr>
                     		<% 
                     			}

@@ -26,6 +26,7 @@ public class ActionContract extends HttpServlet {
 	    contract.setEndDate(LocalDate.parse(request.getParameter("endDate")));
 	    contract.setSalary(Double.parseDouble(request.getParameter("salary")));
 	    contract.setReleaseClause(Double.parseDouble(request.getParameter("releaseClause")));
+	    if (action.equals("release")) contract.setReleaseDate(LocalDate.parse(request.getParameter("releaseDate")));
 	    contract.setPerson(ctrl.getPlayerById(Integer.parseInt(request.getParameter("id_person"))));
 	    contract.setClub(ctrl.getClubById(Integer.parseInt(request.getParameter("id_club"))));
 
@@ -110,6 +111,12 @@ public class ActionContract extends HttpServlet {
         } else if ("edit".equals(action)) {
         	
         	ctrl.updateContract(buildContractFromRequest(request, action, ctrl));
+        	
+        } else if ("release".equals(action)) {
+        
+        	System.out.println("RELEASE");
+        	
+        	ctrl.releaseContract(Integer.parseInt(request.getParameter("id")));
         	
         } else if ("delete".equals(action)){
         	
