@@ -11,7 +11,7 @@
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <meta name="description" content="">
 	    <meta name="author" content="">
-	    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 		<title>Directores Técnicos</title>
 		
 		<link href="style/bootstrap.css" rel="stylesheet">

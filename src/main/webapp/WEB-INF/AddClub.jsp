@@ -18,6 +18,7 @@
 	            margin-top: 20px;
 	        }
 	    </style>
+	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 	</head>
 	<body>
 		<jsp:include page="Navbar.jsp"></jsp:include>

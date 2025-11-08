@@ -12,7 +12,7 @@
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <meta name="description" content="">
 	    <meta name="author" content="">
-	    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 		<title>Jugadores</title>
 		
 		<link href="style/bootstrap.css" rel="stylesheet">
@@ -24,21 +24,25 @@
 		%>
 		
 	</head>
-	<body>
+	<body style="background-color: #10442E;">
 		<jsp:include page="Navbar.jsp"></jsp:include>
-		<div class="container">
+		<div class="container" style="color: white;">
 			<div class="row">
 				<div class="d-flex justify-content-between my-4">
-	        		<h4>Jugadores</h4>
+	        		<h4 >Jugadores</h4>
 		        	<form action="actionplayer" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
-		        		<button type="submit" class="btn btn-success">Nuevo Jugador</button>
+		        		<button type="submit" class="btn btn-dark">
+		        			<h4>+</h4>
+		        		</button>
 		    		</form>				
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
                 	<div class="table-responsive">
                 		<form method="get" action="playerManagement.jsp">
-						    <label for="clubFilter">Filtrar por club:</label>
+						    <label for="clubFilter">
+								<h4>Filtrar por club:</h4>
+							</label>
 						    <select name="clubId" id="clubFilter" onchange="this.form.submit()">
 						        <option value="">-- Todos los clubes --</option>
 						        <%
