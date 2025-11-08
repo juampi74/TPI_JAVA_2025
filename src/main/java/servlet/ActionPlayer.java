@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import entities.Club;
 import entities.Player;
 import enums.PersonRole;
 import logic.Logic;
@@ -57,6 +58,9 @@ public class ActionPlayer extends HttpServlet {
 			LinkedList<Player> players = ctrl.getAllPlayers();
 		    request.setAttribute("playersList", players);
 		    
+		    LinkedList<Club> clubs = ctrl.getAllClubs();
+		    request.setAttribute("clubsList", clubs);
+		    
 		    request.getRequestDispatcher("/WEB-INF/PlayerManagement.jsp").forward(request, response);
 		
 		}
@@ -85,6 +89,10 @@ public class ActionPlayer extends HttpServlet {
 	    
 	    LinkedList<Player> players = ctrl.getAllPlayers();
 		request.setAttribute("playersList", players);
+		
+		LinkedList<Club> clubs = ctrl.getAllClubs();
+		request.setAttribute("clubsList", clubs);
+		
 	    request.getRequestDispatcher("WEB-INF/PlayerManagement.jsp").forward(request, response);
 	    
 	}

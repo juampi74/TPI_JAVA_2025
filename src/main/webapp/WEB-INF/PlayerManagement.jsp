@@ -1,6 +1,7 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Player"%>
+<%@ page import="entities.Club"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -36,6 +37,31 @@
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
                 	<div class="table-responsive">
+                		<form method="get" action="playerManagement.jsp">
+						    <label for="clubFilter">Filtrar por club:</label>
+						    <select name="clubId" id="clubFilter" onchange="this.form.submit()">
+						        <option value="">-- Todos los clubes --</option>
+						        <%
+						            LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
+						            String selectedClub = request.getParameter("clubId");
+						            
+						            int selectedId = -1;
+						            if (selectedClub != null && !selectedClub.isEmpty()) {
+						            	selectedId = Integer.parseInt(selectedClub);
+						            }
+						            
+						            if (clubs != null) {
+						                for (Club c : clubs) {
+						         %>   	
+						         			<option value="<%= c.getId() %>" <%= (c.getId() == selectedId) ? "selected" : "" %>>
+						                        <%= c.getName() %>
+						                    </option>
+			                   	 <%
+						                }
+						            }
+						         %>           	
+						    </select>
+						</form>
                     	<table class="table">
                     		<thead>
                     			<tr>

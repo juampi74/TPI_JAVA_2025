@@ -146,6 +146,7 @@ public class DataPlayer {
 		
 	}
 	
+	
 	public void add(Player p) {
 		
 		PreparedStatement stmt = null;
