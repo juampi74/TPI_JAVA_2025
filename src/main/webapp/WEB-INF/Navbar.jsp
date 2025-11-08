@@ -9,7 +9,9 @@
 	<body>
 	    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	        <div class="container-fluid">
-	            <a class="navbar-brand" href="actionplayer">MiApp</a>
+	            <a class="navbar-brand" href="actionplayer">
+	            	<img src="assets/TeamUp_LogoNavbar.png" alt="TeamUp Logo" width="80" height="50">
+	            </a>
 	            
 	            <div class="collapse navbar-collapse">
 	                <ul class="navbar-nav">
