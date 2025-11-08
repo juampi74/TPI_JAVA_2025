@@ -11,7 +11,7 @@ public class DataContract {
 	
 	private static final String SELECT_ALL_CONTRACTS_JOINED= 
 		"SELECT " +
-	    "    c.id AS contract_id, c.start_date, c.end_date, c.salary, c.release_clause, " +
+	    "    c.id AS contract_id, c.start_date, c.end_date, c.salary, c.release_clause, c.release_date, " +
 	    "    p.id AS person_id, p.fullname, p.birthdate, p.address, p.role, " +
 	    "    p.dominant_foot, p.jersey_number, p.height, p.weight, " +
 	    "    p.preferred_formation, p.coaching_license, p.license_obtained_date, " +
@@ -103,7 +103,7 @@ public class DataContract {
     public void add(Contract c) {
         
         Connection conn = null;
-        String query = "INSERT INTO contract (start_date, end_date, salary, release_clause, id_person, id_club) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO contract (start_date, end_date, salary, release_clause, release_date, id_person, id_club) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try {
             
@@ -115,9 +115,10 @@ public class DataContract {
                 stmt.setObject(2, c.getEndDate());
                 stmt.setDouble(3, c.getSalary());
                 stmt.setDouble(4, c.getReleaseClause());
+                stmt.setObject(5, c.getReleaseDate());
                 
-                stmt.setInt(5, c.getPerson().getId());
-                stmt.setInt(6, c.getClub().getId());
+                stmt.setInt(6, c.getPerson().getId());
+                stmt.setInt(7, c.getClub().getId());
                 
                 stmt.executeUpdate();
                 
@@ -137,7 +138,7 @@ public class DataContract {
     public void update(Contract c) {
         
         Connection conn = null;
-        String query = "UPDATE contract SET start_date = ?, end_date = ?, salary = ?, release_clause = ?, id_person = ?, id_club = ? WHERE id = ?";
+        String query = "UPDATE contract SET start_date = ?, end_date = ?, salary = ?, release_clause = ?, release_date = ?, id_person = ?, id_club = ? WHERE id = ?";
         
         try {
             
@@ -149,10 +150,11 @@ public class DataContract {
                 stmt.setObject(2, c.getEndDate());
                 stmt.setDouble(3, c.getSalary());
                 stmt.setDouble(4, c.getReleaseClause());
-                stmt.setInt(5, c.getPerson().getId());
-                stmt.setInt(6, c.getClub().getId());
+                stmt.setObject(5, c.getReleaseDate());
+                stmt.setInt(6, c.getPerson().getId());
+                stmt.setInt(7, c.getClub().getId());
                 
-                stmt.setInt(7, c.getId());
+                stmt.setInt(8, c.getId());
                 
                 stmt.executeUpdate();
                 
@@ -168,6 +170,34 @@ public class DataContract {
         
         }
         
+    }
+    
+    public void release(int id) {
+    	
+    	Connection conn = null;
+        String query = "UPDATE contract SET release_date = curdate() WHERE id = ?";
+        
+        try {
+            
+            conn = DbConnector.getInstance().getConn();
+            
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                
+                stmt.setInt(1, id);
+                stmt.executeUpdate();
+                
+            }
+    
+        } catch (SQLException e) {
+            
+            e.printStackTrace();
+        
+        } finally {
+            
+            if (conn != null) DbConnector.getInstance().releaseConn();
+        
+        }
+    	
     }
 
     public void delete(int id) {
@@ -259,6 +289,7 @@ public class DataContract {
         contract.setEndDate(rs.getObject("end_date", LocalDate.class));
         contract.setSalary(rs.getDouble("salary"));
         contract.setReleaseClause(rs.getDouble("release_clause"));
+        contract.setReleaseDate(rs.getObject("release_date", LocalDate.class));
 
         contract.setPerson(person);
         contract.setClub(club);

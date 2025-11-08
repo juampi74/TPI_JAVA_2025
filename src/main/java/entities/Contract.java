@@ -9,6 +9,7 @@ public class Contract {
 	private LocalDate endDate;
 	private double salary;
 	private double releaseClause;
+	private LocalDate releaseDate;
 	private Person person;
 	private Club club;
 	
@@ -72,6 +73,14 @@ public class Contract {
 	
 	}
 	
+	public LocalDate getReleaseDate() {
+		return releaseDate;
+	}
+
+	public void setReleaseDate(LocalDate releaseDate) {
+		this.releaseDate = releaseDate;
+	}
+	
 	public Person getPerson() {
 		
 		return person;
@@ -100,8 +109,9 @@ public class Contract {
 	public String toString() {
 		
 		return "Contract [id=" + id + ", startDate=" + startDate + ", endDate=" + endDate + ", salary=" + salary
-				+ ", releaseClause=" + releaseClause + ", person=" + person + ", club=" + club + "]";
+				+ ", releaseClause=" + releaseClause + ", releaseDate=" + releaseDate + ", person=" + person + ", club="
+				+ club + "]";
 	
 	}
-	
+
 }

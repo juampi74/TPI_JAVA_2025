@@ -68,6 +68,13 @@
 					        }
 					    %>
 					</select>
+					
+					<%
+				        if (contract != null && contract.getPerson() != null) {
+				            int personId = contract.getPerson().getId();
+				            out.print("<input type='hidden' name='id_person' value='" + personId + "'>");
+				        }
+				    %>
 				</div>
 				
 				<div class="form-group">
