@@ -54,8 +54,15 @@ public class ActionPlayer extends HttpServlet {
 			request.getRequestDispatcher("WEB-INF/AddPlayer.jsp").forward(request, response);
 		
 		} else {
-			
-			LinkedList<Player> players = ctrl.getAllPlayers();
+			String clubIdParam = request.getParameter("clubId");
+			LinkedList<Player> players;
+			if (clubIdParam != null && !clubIdParam.isEmpty()) {
+		        int clubId = Integer.parseInt(clubIdParam);
+		        players = ctrl.getPlayersByClub(clubId);
+		    } else {
+		        players = ctrl.getAllPlayers();
+		    }
+
 		    request.setAttribute("playersList", players);
 		    
 		    LinkedList<Club> clubs = ctrl.getAllClubs();

@@ -12,7 +12,6 @@
 	    <meta name="description" content="">
 	    <meta name="author" content="">
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
-		<title>Asociaciones</title>
 		
 		<link href="style/bootstrap.css" rel="stylesheet">
 	
@@ -23,12 +22,12 @@
 		%>
 		
 	</head>
-	<body>
+	<body style="background-color: #10442E;">
 		<jsp:include page="Navbar.jsp"></jsp:include>
-		<div class="container">
+		<div class="container" style="color: white;">
 			<div class="row">
 				<div class="d-flex justify-content-between my-4">
-	        		<h4>Asociaciones</h4>
+	        		<h1>Asociaciones</h1>
 		        	<form action="actionassociation" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
 		        		<button type="submit" class="btn btn-success">Nueva Asociación</button>

@@ -15,9 +15,9 @@
 	    </style>
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 	</head>
-	<body>
+	<body style="background-color: #10442E;">
 		<jsp:include page="Navbar.jsp"></jsp:include>
-		<div class="container">
+		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Agregar Estadio</h2>
 		    <form action="actionstadium" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />

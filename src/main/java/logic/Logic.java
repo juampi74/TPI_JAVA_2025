@@ -45,6 +45,10 @@ public class Logic {
         return dpl.getByFullname(fullname);
 
     }
+    
+    public LinkedList<Player> getPlayersByClub(int id_club) {
+    	return dpl.getByClub(id_club);
+    }
 
     public void addPlayer(Player p) {
 

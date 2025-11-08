@@ -23,12 +23,12 @@
 		%>
 		
 	</head>
-	<body>
+	<body style="background-color: #10442E;">
 		<jsp:include page="Navbar.jsp"></jsp:include>
-		<div class="container">
+		<div class="container" style="color: white;">
 			<div class="row">
 				<div class="d-flex justify-content-between my-4">
-	        		<h4>Presidentes</h4>
+	        		<h1>Presidentes</h1>
 		        	<form action="actionpresident" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
 		        		<button type="submit" class="btn btn-success">Nuevo Presidente</button>

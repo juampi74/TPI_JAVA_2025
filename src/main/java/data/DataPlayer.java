@@ -146,6 +146,50 @@ public class DataPlayer {
 		
 	}
 	
+	public LinkedList<Player> getByClub(int id_club){
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		LinkedList<Player> players = new LinkedList<>();
+		
+		try {
+			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"select p.* from person p inner join contract c on p.id = c.id_person where c.id_club = ? and c.release_date is null and c.end_date >= curdate() and p.role = 'PLAYER'"
+			);
+			stmt.setInt(1, id_club);
+			rs = stmt.executeQuery();
+			
+			if (rs != null) {
+				
+				while (rs.next()) {
+				
+					Player player = createPlayerFromResultSet(rs);
+                    
+					if (player != null) {
+                    
+						players.add(player);
+                    
+					}
+					
+				}
+				
+			}
+			
+		} catch (SQLException e) {
+		
+			e.printStackTrace();
+		
+		} finally {
+			
+			closeResources(rs, stmt);
+		
+		}
+		
+		return players;
+		
+	}
+	
 	
 	public void add(Player p) {
 		

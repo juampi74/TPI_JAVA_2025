@@ -29,17 +29,17 @@
 		<div class="container" style="color: white;">
 			<div class="row">
 				<div class="d-flex justify-content-between my-4">
-	        		<h4 >Jugadores</h4>
+	        		<h1 >Jugadores</h1>
 		        	<form action="actionplayer" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
-		        		<button type="submit" class="btn btn-dark">
+		        		<button type="submit" class="btn btn-dark btn-circular">
 		        			<h4>+</h4>
 		        		</button>
 		    		</form>				
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
                 	<div class="table-responsive">
-                		<form method="get" action="playerManagement.jsp">
+                		<form method="get" action="actionplayer">
 						    <label for="clubFilter">
 								<h4>Filtrar por club:</h4>
 							</label>
