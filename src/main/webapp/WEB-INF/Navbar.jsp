@@ -36,6 +36,9 @@
 	                    <li class="nav-item">
 	                        <a class="nav-link" href="actiontournament">Torneos</a>
 	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" href="actioncontract">Contratos</a>
+	                    </li>
 	                </ul>
 	            </div>
 	        </div>
