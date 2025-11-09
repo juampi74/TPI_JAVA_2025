@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import entities.*;
+import enums.PersonRole;
 import logic.Logic;
 
 @WebServlet("/actioncontract")
@@ -27,7 +28,19 @@ public class ActionContract extends HttpServlet {
 	    contract.setSalary(Double.parseDouble(request.getParameter("salary")));
 	    contract.setReleaseClause(Double.parseDouble(request.getParameter("releaseClause")));
 	    if (action.equals("release")) contract.setReleaseDate(LocalDate.parse(request.getParameter("releaseDate")));
-	    contract.setPerson(ctrl.getPlayerById(Integer.parseInt(request.getParameter("id_person"))));
+	    
+	    PersonRole personRole = ctrl.getRoleByPersonId(Integer.parseInt(request.getParameter("id_person")));
+	    
+	    if (personRole.equals(PersonRole.PLAYER)) {
+	    	
+	    	contract.setPerson(ctrl.getPlayerById(Integer.parseInt(request.getParameter("id_person"))));
+	    	
+	    } else if (personRole.equals(PersonRole.TECHNICAL_DIRECTOR)) {
+	    	
+	    	contract.setPerson(ctrl.getTechnicalDirectorById(Integer.parseInt(request.getParameter("id_person"))));
+	    	
+	    }
+	    
 	    contract.setClub(ctrl.getClubById(Integer.parseInt(request.getParameter("id_club"))));
 
 	    return contract;
