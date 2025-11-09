@@ -47,11 +47,11 @@ public class ActionPlayer extends HttpServlet {
 			
 			Player player = ctrl.getPlayerById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("player", player);
-			request.getRequestDispatcher("WEB-INF/EditPlayer.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
 		
 		} else if ("add".equals(action)) {
 			
-			request.getRequestDispatcher("WEB-INF/AddPlayer.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
 		
 		} else {
 			String clubIdParam = request.getParameter("clubId");
@@ -68,7 +68,7 @@ public class ActionPlayer extends HttpServlet {
 		    LinkedList<Club> clubs = ctrl.getAllClubs();
 		    request.setAttribute("clubsList", clubs);
 		    
-		    request.getRequestDispatcher("/WEB-INF/PlayerManagement.jsp").forward(request, response);
+		    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
 		
 		}
 		
@@ -100,7 +100,7 @@ public class ActionPlayer extends HttpServlet {
 		LinkedList<Club> clubs = ctrl.getAllClubs();
 		request.setAttribute("clubsList", clubs);
 		
-	    request.getRequestDispatcher("WEB-INF/PlayerManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
 	    
 	}
 

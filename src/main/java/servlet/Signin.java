@@ -25,7 +25,7 @@ public class Signin extends HttpServlet {
 	    
 	    request.setAttribute("playersList", players);
 	    
-	    request.getRequestDispatcher("/WEB-INF/PlayerManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
 	
 	}
 

@@ -70,7 +70,7 @@ public class ActionContract extends HttpServlet {
 			LinkedList<Club> clubs = ctrl.getAllClubs();
 			request.setAttribute("clubsList", clubs);
 			
-			request.getRequestDispatcher("WEB-INF/EditContract.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Edit/EditContract.jsp").forward(request, response);
 		
 		} else if ("add".equals(action)) {
 			
@@ -87,7 +87,7 @@ public class ActionContract extends HttpServlet {
 			LinkedList<Club> clubs = ctrl.getAllClubs();
 			request.setAttribute("clubsList", clubs);
 			
-			request.getRequestDispatcher("WEB-INF/AddContract.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Add/AddContract.jsp").forward(request, response);
 		
 		} else {
 			
@@ -107,7 +107,7 @@ public class ActionContract extends HttpServlet {
 			LinkedList<Club> clubs = ctrl.getAllClubs();
 			request.setAttribute("clubsList", clubs);
 		    
-		    request.getRequestDispatcher("/WEB-INF/ContractManagement.jsp").forward(request, response);
+		    request.getRequestDispatcher("/WEB-INF/Management/ContractManagement.jsp").forward(request, response);
 		
 		}
 	}
@@ -139,7 +139,7 @@ public class ActionContract extends HttpServlet {
 
     	LinkedList<Contract> contracts = ctrl.getAllContracts();
 		request.setAttribute("contractsList", contracts);
-	    request.getRequestDispatcher("WEB-INF/ContractManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("WEB-INF/Management/ContractManagement.jsp").forward(request, response);
 	    
 	}
 }

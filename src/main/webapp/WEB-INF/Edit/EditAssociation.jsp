@@ -1,13 +1,13 @@
-<%@ page import="entities.Stadium"%>
+<%@ page import="entities.Association"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-	Stadium stadium = (Stadium) request.getAttribute("stadium");
+	Association association = (Association) request.getAttribute("association");
 %>
 <!DOCTYPE html>
 <html>
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Editar Estadio</title>
+	    <title>Editar Asociación</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <style>
 	        .button-container {
@@ -20,21 +20,21 @@
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 	</head>
 	<body style="background-color: #10442E;">
-		<jsp:include page="Navbar.jsp"></jsp:include>
+		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
-		    <h2 class="mt-4">Editar Estadio</h2>
-		    <form action="actionstadium" method="post" class="mt-4">
+		    <h2 class="mt-4">Editar Asociación</h2>
+		    <form action="actionassociation" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
-		        <input type="hidden" name="id" value="<%=stadium.getId()%>" />
+		        <input type="hidden" name="id" value="<%=association.getId()%>" />
 		        
 		        <div class="form-group">
 		            <label for="name">Nombre:</label>
-		            <input type="text" class="form-control" id="name" name="name" value="<%=stadium.getName()%>" required />
+		            <input type="text" class="form-control" id="name" name="name" value="<%=association.getName()%>" required />
 		        </div>
-		        
+		
 		        <div class="form-group">
-		            <label for="capacity">Capacidad:</label>
-		            <input type="text" class="form-control" id="capacity" name="capacity" value="<%=stadium.getCapacity()%>" required />
+		            <label for="creationDate">Fecha de Creación:</label>
+		            <input type="date" class="form-control" id="creationDate" name="creationDate" value="<%=association.getCreationDate()%>" required />
 		        </div>
 		        
 		        <div class="button-container mb-3">

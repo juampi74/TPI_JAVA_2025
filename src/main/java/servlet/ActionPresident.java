@@ -43,17 +43,17 @@ public class ActionPresident extends HttpServlet {
 			
 			President president = ctrl.getPresidentById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("president", president);
-			request.getRequestDispatcher("WEB-INF/EditPresident.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Edit/EditPresident.jsp").forward(request, response);
 		
 		} else if ("add".equals(action)) {
 			
-			request.getRequestDispatcher("WEB-INF/AddPresident.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Add/AddPresident.jsp").forward(request, response);
 		
 		} else {
 			
 			LinkedList<President> presidents = ctrl.getAllPresidents();
 		    request.setAttribute("presidentsList", presidents);
-		    request.getRequestDispatcher("/WEB-INF/PresidentManagement.jsp").forward(request, response);
+		    request.getRequestDispatcher("/WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
 		
 		}
 		
@@ -81,7 +81,7 @@ public class ActionPresident extends HttpServlet {
 	    
 	    LinkedList<President> presidents = ctrl.getAllPresidents();
 		request.setAttribute("presidentsList", presidents);
-	    request.getRequestDispatcher("WEB-INF/PresidentManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
 	    
 	}
 

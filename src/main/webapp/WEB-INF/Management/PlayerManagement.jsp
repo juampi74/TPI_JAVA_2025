@@ -25,7 +25,7 @@
 		
 	</head>
 	<body style="background-color: #10442E;">
-		<jsp:include page="Navbar.jsp"></jsp:include>
+		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 			<div class="row">
 				<div class="d-flex justify-content-between my-4 align-items-center">
@@ -44,7 +44,7 @@
 								<h4>Filtrar por club:</h4>
 							</label>
 						    <select name="clubId" id="clubFilter" onchange="this.form.submit()">
-						        <option value="">-- Todos los clubes --</option>
+						        <option value="">Todos los clubes</option>
 						        <%
 						            LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
 						            String selectedClub = request.getParameter("clubId");

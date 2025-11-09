@@ -45,17 +45,17 @@ public class ActionTechnicalDirector extends HttpServlet {
 			
 			TechnicalDirector technicalDirector = ctrl.getTechnicalDirectorById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("technicalDirector", technicalDirector);
-			request.getRequestDispatcher("WEB-INF/EditTechnicalDirector.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Edit/EditTechnicalDirector.jsp").forward(request, response);
 		
 		} else if ("add".equals(action)) {
 			
-			request.getRequestDispatcher("WEB-INF/AddTechnicalDirector.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Add/AddTechnicalDirector.jsp").forward(request, response);
 		
 		} else {
 			
 			LinkedList<TechnicalDirector> technicalDirectors = ctrl.getAllTechnicalDirectors();
 		    request.setAttribute("technicalDirectorsList", technicalDirectors);
-		    request.getRequestDispatcher("/WEB-INF/TechnicalDirectorManagement.jsp").forward(request, response);
+		    request.getRequestDispatcher("/WEB-INF/Management/TechnicalDirectorManagement.jsp").forward(request, response);
 		
 		}
 		
@@ -83,7 +83,7 @@ public class ActionTechnicalDirector extends HttpServlet {
 	    
 	    LinkedList<TechnicalDirector> technicalDirectors = ctrl.getAllTechnicalDirectors();
 		request.setAttribute("technicalDirectorsList", technicalDirectors);
-	    request.getRequestDispatcher("WEB-INF/TechnicalDirectorManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("WEB-INF/Management/TechnicalDirectorManagement.jsp").forward(request, response);
 	    
 	}
 

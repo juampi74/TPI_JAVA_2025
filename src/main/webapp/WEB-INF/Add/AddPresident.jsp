@@ -3,7 +3,7 @@
 <html>
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Agregar Jugador</title>
+	    <title>Agregar Presidente</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <style>
 	        .button-container {
@@ -16,10 +16,10 @@
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 	</head>
 	<body style="background-color: #10442E;">
-		<jsp:include page="Navbar.jsp"></jsp:include>
+		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
-		    <h2 class="mt-4">Agregar Jugador</h2>
-		    <form action="actionplayer" method="post" class="mt-4">
+		    <h2 class="mt-4">Agregar Presidente</h2>
+		    <form action="actionpresident" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />
 		        
 		        <div class="form-group">
@@ -43,23 +43,8 @@
 		        </div>
 		        
 		        <div class="form-group">
-		            <label for="dominantFoot">Pie Dominante:</label>
-		            <input type="text" class="form-control" id="dominantFoot" name="dominantFoot" required />
-		        </div>
-		        
-		        <div class="form-group">
-		            <label for="jerseyNumber">Número de Camiseta:</label>
-		            <input type="text" class="form-control" id="jerseyNumber" name="jerseyNumber" required />
-		        </div>
-		        
-		        <div class="form-group">
-		            <label for="height">Altura:</label>
-		            <input type="text" class="form-control" id="height" name="height" required />
-		        </div>
-		        
-		        <div class="form-group">
-		            <label for="weight">Peso:</label>
-		            <input type="text" class="form-control" id="weight" name="weight" required />
+		            <label for="managementPolicy">Política de Gestión:</label>
+		            <input type="text" class="form-control" id="managementPolicy" name="managementPolicy" required />
 		        </div>
 		
 		        <div class="button-container mb-3">

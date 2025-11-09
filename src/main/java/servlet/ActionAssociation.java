@@ -39,17 +39,17 @@ public class ActionAssociation extends HttpServlet {
 			
 			Association association = ctrl.getAssociationById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("association", association);
-			request.getRequestDispatcher("WEB-INF/EditAssociation.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Edit/EditAssociation.jsp").forward(request, response);
 		
 		} else if ("add".equals(action)) {
 			
-			request.getRequestDispatcher("WEB-INF/AddAssociation.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Add/AddAssociation.jsp").forward(request, response);
 		
 		} else {
 			
 			LinkedList<Association> associations = ctrl.getAllAssociations();
 		    request.setAttribute("associationsList", associations);
-		    request.getRequestDispatcher("/WEB-INF/AssociationManagement.jsp").forward(request, response);
+		    request.getRequestDispatcher("/WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
 		
 		}
 	
@@ -77,7 +77,7 @@ public class ActionAssociation extends HttpServlet {
 	    
 	    LinkedList<Association> associations = ctrl.getAllAssociations();
 		request.setAttribute("associationsList", associations);
-	    request.getRequestDispatcher("WEB-INF/AssociationManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
 	
 	}
 

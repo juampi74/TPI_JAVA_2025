@@ -38,17 +38,17 @@ public class ActionStadium extends HttpServlet {
 			
 			Stadium stadium = ctrl.getStadiumById(Integer.parseInt(request.getParameter("id")));
 			request.setAttribute("stadium", stadium);
-			request.getRequestDispatcher("WEB-INF/EditStadium.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Edit/EditStadium.jsp").forward(request, response);
 		
 		} else if ("add".equals(action)) {
 			
-			request.getRequestDispatcher("WEB-INF/AddStadium.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/Add/AddStadium.jsp").forward(request, response);
 		
 		} else {
 			
 			LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
 		    request.setAttribute("stadiumsList", stadiums);
-		    request.getRequestDispatcher("/WEB-INF/StadiumManagement.jsp").forward(request, response);
+		    request.getRequestDispatcher("/WEB-INF/Management/StadiumManagement.jsp").forward(request, response);
 		
 		}
 	
@@ -76,7 +76,7 @@ public class ActionStadium extends HttpServlet {
 	    
 	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
 		request.setAttribute("stadiumsList", stadiums);
-	    request.getRequestDispatcher("WEB-INF/StadiumManagement.jsp").forward(request, response);
+	    request.getRequestDispatcher("WEB-INF/Management/StadiumManagement.jsp").forward(request, response);
 	
 	}
 

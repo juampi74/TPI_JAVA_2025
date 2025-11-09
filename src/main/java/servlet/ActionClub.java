@@ -48,14 +48,14 @@ public class ActionClub extends HttpServlet {
             LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
         	request.setAttribute("stadiumsList", stadiums);
             
-        	request.getRequestDispatcher("WEB-INF/EditClub.jsp").forward(request, response);
+        	request.getRequestDispatcher("WEB-INF/Edit/EditClub.jsp").forward(request, response);
         
         } else if ("add".equals(action)) {
         
         	LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
         	request.setAttribute("stadiumsList", stadiums);
         	
-        	request.getRequestDispatcher("WEB-INF/AddClub.jsp").forward(request, response);
+        	request.getRequestDispatcher("WEB-INF/Add/AddClub.jsp").forward(request, response);
         
         } else {
         
@@ -65,7 +65,7 @@ public class ActionClub extends HttpServlet {
             LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
         	request.setAttribute("stadiumsList", stadiums);
         	
-        	request.getRequestDispatcher("/WEB-INF/ClubManagement.jsp").forward(request, response);
+        	request.getRequestDispatcher("/WEB-INF/Management/ClubManagement.jsp").forward(request, response);
         
         }
     
@@ -93,7 +93,7 @@ public class ActionClub extends HttpServlet {
 
         LinkedList<Club> clubs = ctrl.getAllClubs();
         request.setAttribute("clubsList", clubs);
-        request.getRequestDispatcher("WEB-INF/ClubManagement.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/Management/ClubManagement.jsp").forward(request, response);
     
     }
 

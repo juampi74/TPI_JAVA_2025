@@ -47,14 +47,14 @@ public class ActionTournament extends HttpServlet {
             LinkedList<Association> associations = ctrl.getAllAssociations();
         	request.setAttribute("associationsList", associations);
             
-        	request.getRequestDispatcher("WEB-INF/EditTournament.jsp").forward(request, response);
+        	request.getRequestDispatcher("WEB-INF/Edit/EditTournament.jsp").forward(request, response);
         
         } else if ("add".equals(action)) {
         
         	LinkedList<Association> associations = ctrl.getAllAssociations();
         	request.setAttribute("associationsList", associations);
         	
-        	request.getRequestDispatcher("WEB-INF/AddTournament.jsp").forward(request, response);
+        	request.getRequestDispatcher("WEB-INF/Add/AddTournament.jsp").forward(request, response);
         
         } else {
         
@@ -64,7 +64,7 @@ public class ActionTournament extends HttpServlet {
             LinkedList<Association> associations = ctrl.getAllAssociations();
         	request.setAttribute("associationsList", associations);
             
-        	request.getRequestDispatcher("/WEB-INF/TournamentManagement.jsp").forward(request, response);
+        	request.getRequestDispatcher("/WEB-INF/Management/TournamentManagement.jsp").forward(request, response);
         
         }
 	}
@@ -92,7 +92,7 @@ public class ActionTournament extends HttpServlet {
 
         LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
         request.setAttribute("tournamentsList", tournaments);
-        request.getRequestDispatcher("WEB-INF/TournamentManagement.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/Management/TournamentManagement.jsp").forward(request, response);
     
 	}
 

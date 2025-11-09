@@ -1,6 +1,6 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
-<%@ page import="entities.Tournament"%>
+<%@ page import="entities.Club"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -12,26 +12,27 @@
 	    <meta name="description" content="">
 	    <meta name="author" content="">
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
-		<title>Torneos</title>
 		
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	
 	    <link href="style/start.css" rel="stylesheet">
 		
 		<%
-			LinkedList<Tournament> tl = (LinkedList<Tournament>) request.getAttribute("tournamentsList");
+			LinkedList<Club> cl = (LinkedList<Club>) request.getAttribute("clubsList");
 		%>
 		
 	</head>
 	<body style="background-color: #10442E;">
-		<jsp:include page="Navbar.jsp"></jsp:include>
+		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 			<div class="row">
-				<div class="d-flex justify-content-between my-4">
-	        		<h1>Torneos</h1>
-		        	<form action="actiontournament" method="get" style="margin:0;">
+				<div class="d-flex justify-content-between my-4 align-items-center">
+	        		<h1>Clubes</h1>
+		        	<form action="actionclub" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
-		        		<button type="submit" class="btn btn-success">Nuevo Torneo</button>
+					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
+					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
+					    </button>
 		    		</form>				
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
@@ -39,38 +40,42 @@
                     	<table class="table">
                     		<thead>
                     			<tr>
+                    				<th>Escudo</th>
 						            <th>Nombre</th>
-						            <th>Fecha de Inicio</th>
-						            <th>Fecha de Fin</th>
-						            <th>Formato</th>
-						            <th>Edición</th>
-						            <th>Asociación</th>
+						            <th>Fecha de Fundación</th>
+						            <th>Teléfono</th>
+						            <th>Email</th>
+						            <th>Presupuesto</th>
+						            <th>Estadio</th>
 						            <th>Editar</th>
                        				<th>Eliminar</th>
                       			</tr>
                       		</thead>
                     		<tbody>
                     		<%
-                    	    	for (Tournament t : tl) {
+                    	    	for (Club c : cl) {
                     		%>
                     			<tr>
-                    				<td><%=t.getName()%></td>
-                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td><%=t.getFormat()%></td>
-                    				<td><%=t.getSeason()%></td>
-                    				<td><%=t.getAssociation().getName()%></td>
                     				<td>
-                    					<form method="get" action="actiontournament" style="display:inline;">
+                    					<img alt="" src="<%=c.getBadgeImage()%>" width="35" height="45">
+                    				</td>
+                    				<td><%=c.getName()%></td>
+                    				<td><%=c.getFoundationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+                    				<td><%=c.getPhoneNumber()%></td>
+                    				<td><%=c.getEmail()%></td>
+                    				<td><%=c.getBudget()%></td>
+                    				<td><%=c.getStadium().getName()%></td>
+                    				<td>
+                    					<form method="get" action="actionclub" style="display:inline;">
                     						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=t.getId()%>" />
+		        							<input type="hidden" name="id" value="<%=c.getId()%>" />
 		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="actiontournament" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">
+                    					<form method="post" action="actionclub" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
 											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=t.getId()%>" />
+											<input type="hidden" name="id" value="<%=c.getId()%>" />
 											<button type="submit" class="btn btn-dark btn-sm">❌</button>
 										</form>
                     				</td>
