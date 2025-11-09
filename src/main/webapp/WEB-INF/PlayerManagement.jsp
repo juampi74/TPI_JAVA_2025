@@ -28,14 +28,14 @@
 		<jsp:include page="Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 			<div class="row">
-				<div class="d-flex justify-content-between my-4">
+				<div class="d-flex justify-content-between my-4 align-items-center">
 	        		<h1 >Jugadores</h1>
 		        	<form action="actionplayer" method="get" style="margin:0;">
-		        		<input type="hidden" name="action" value="add" />
-		        		<button type="submit" class="btn btn-dark btn-circular">
-		        			<h4>+</h4>
-		        		</button>
-		    		</form>				
+					    <input type="hidden" name="action" value="add" />
+					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
+					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
+					    </button>
+					</form>			
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
                 	<div class="table-responsive">
