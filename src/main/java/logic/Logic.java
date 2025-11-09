@@ -2,11 +2,14 @@ package logic;
 
 import data.*;
 import entities.*;
+import enums.PersonRole;
+
 import java.util.LinkedList;
 
 public class Logic {
 
-    private DataPlayer dpl;
+    private DataPerson dpe;
+	private DataPlayer dpl;
     private DataTechnicalDirector dtd;
     private DataPresident dpr;
     private DataStadium dst;
@@ -17,6 +20,7 @@ public class Logic {
 
     public Logic() {
         
+    	dpe = new DataPerson();
     	dpl = new DataPlayer();
         dtd = new DataTechnicalDirector();
         dpr = new DataPresident();
@@ -26,6 +30,12 @@ public class Logic {
         dto = new DataTournament();
         dco = new DataContract();
     
+    }
+    
+    public PersonRole getRoleByPersonId(int id) {
+
+        return dpe.getRoleByPersonId(id);
+
     }
 
     public LinkedList<Player> getAllPlayers() {
