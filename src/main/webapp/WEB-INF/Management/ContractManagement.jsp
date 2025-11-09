@@ -29,16 +29,16 @@
 			<div class="row">
 				<div class="d-flex justify-content-between my-4 align-items-center" >
 	        		<h1>Contratos</h1>
-		        	<form action="actioncontract" method="get" style="margin:0;">
+		        	<form action="actioncontract" method="get" style="margin:0;" class="d-flex justify-content-center align-items-center">
 		        		<input type="hidden" name="action" value="add" />
-					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
+					    <button type="submit" class="btn btn-dark" style="border:none; background:none; padding:0;">
 					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
 					    </button>
 		    		</form>				
 				</div>
             	<div class="col-12 col-sm-12 col-lg-12">
                 	<div class="table-responsive">
-                    	<table class="table">
+                    	<table class="table justify-content-between">
                     		<thead>
                     			<tr>
 						            <th>Persona</th>
@@ -56,21 +56,21 @@
                     		<%
                     	    	for (Contract c : cl) {
                     		%>
-                    			<tr>
+                    			<tr class="justify-content-between">
                     				<td><%=c.getPerson().getFullname()%></td>
                     				<td><%=c.getClub().getName()%></td>
                     				<td><%=c.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td><%=c.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td><%=c.getSalary()%></td>
                     				<td><%=c.getReleaseClause()%></td>
-                    				<td>
-									    <form method="get" action="actioncontract" style="display:inline;">
+                    				<td class="text-center">
+									    <form method="get" action="actioncontract" class="d-block mx-auto">
 									        <input type="hidden" name="action" value="edit" />
 									        <input type="hidden" name="id" value="<%=c.getId()%>" />
 									        
-									        <button type="submit" class="btn btn-primary btn-sm">
-									            <img src="assets/edit.png" alt="edit" height="25">
-									        </button>
+									        <button type="submit" class="btn btn-warning btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 									        
 									    </form>
 									</td>
@@ -85,26 +85,26 @@
 	                    				    }
 									    %>
                     				
-									    <form method="post" action="actioncontract" style="display:inline;" 
+									    <form method="post" action="actioncontract" class="d-flex justify-content-center align-items-center" 
 									          onsubmit="return confirm('¿Estás seguro que querés rescindir este contrato?');">
 									        
 									        <input type="hidden" name="action" value="release" />
 									        <input type="hidden" name="id" value="<%=c.getId()%>" />
 									        
-									        <button type="submit" class="btn btn-dark btn-sm" <%= disabledAttribute %>>
-									            <img src="assets/release_contract.png" alt="release" height="25">
-									        </button>
+									        <button type="submit" class="btn btn-sm" style="background-color: #8f5300; border-color: none;" <%= disabledAttribute %>>
+												<img src="${pageContext.request.contextPath}/assets/judge.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 									        
 									    </form>
 									</td>
 									<td>
-									    <form method="get" action="actioncontract" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este contrato?');">
+									    <form method="get" action="actioncontract" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este contrato?');">
 									        <input type="hidden" name="action" value="delete" />
 									        <input type="hidden" name="id" value="<%=c.getId()%>" />
 									        
 									        <button type="submit" class="btn btn-danger btn-sm">
-									            <img src="assets/delete.png" alt="delete" height="25">
-									        </button>
+												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 									        
 									    </form>
 									</td>

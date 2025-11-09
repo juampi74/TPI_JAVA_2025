@@ -95,17 +95,21 @@
                     				<td><%=pl.getHeight()%></td>
                     				<td><%=pl.getWeight()%></td>
                     				<td>
-                    					<form method="get" action="actionplayer" style="display:inline;">
+                    					<form method="get" action="actionplayer" style="display:inline;" class="d-flex justify-content-center align-items-center">
                     						<input type="hidden" name="action" value="edit" />
 		        							<input type="hidden" name="id" value="<%=pl.getId()%>" />
-		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
+		        							<button type="submit" class="btn btn-warning btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="actionplayer" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este jugador?');">
+                    					<form method="post" action="actionplayer" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este jugador?');">
 											<input type="hidden" name="action" value="delete" />
 											<input type="hidden" name="id" value="<%=pl.getId()%>" />
-											<button type="submit" class="btn btn-dark btn-sm">❌</button>
+											<button type="submit" class="btn btn-danger btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 										</form>
                     				</td>
                     			</tr>

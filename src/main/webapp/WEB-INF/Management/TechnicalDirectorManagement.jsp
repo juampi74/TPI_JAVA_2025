@@ -65,17 +65,21 @@
                     				<td><%=td.getCoachingLicense()%></td>
                     				<td><%=td.getLicenseObtainedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td>
-                    					<form method="get" action="actiontechnicaldirector" style="display:inline;">
+                    					<form method="get" action="actiontechnicaldirector" style="display:inline;" class="d-flex justify-content-center align-items-center">
                     						<input type="hidden" name="action" value="edit" />
 		        							<input type="hidden" name="id" value="<%=td.getId()%>" />
-		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
+		        							<button type="submit" class="btn btn-warning btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="actiontechnicaldirector" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este director técnico?');">
+                    					<form method="post" action="actiontechnicaldirector" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este director técnico?');">
 											<input type="hidden" name="action" value="delete" />
 											<input type="hidden" name="id" value="<%=td.getId()%>" />
-											<button type="submit" class="btn btn-dark btn-sm">❌</button>
+											<button type="submit" class="btn btn-danger btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 										</form>
                     				</td>
                     			</tr>

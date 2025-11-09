@@ -61,17 +61,21 @@
                     				<td><%=pr.getAddress()%></td>
                     				<td><%=pr.getManagementPolicy()%></td>
                     				<td>
-                    					<form method="get" action="actionpresident" style="display:inline;">
+                    					<form method="get" action="actionpresident" style="display:inline;"class="d-flex justify-content-center align-items-center">
                     						<input type="hidden" name="action" value="edit" />
 		        							<input type="hidden" name="id" value="<%=pr.getId()%>" />
-		        							<button type="submit" class="btn btn-primary btn-sm">✏️</button>
+		        							<button type="submit" class="btn btn-warning btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="actionpresident" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este presidente?');">
+                    					<form method="post" action="actionpresident" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este presidente?');">
 											<input type="hidden" name="action" value="delete" />
 											<input type="hidden" name="id" value="<%=pr.getId()%>" />
-											<button type="submit" class="btn btn-dark btn-sm">❌</button>
+											<button type="submit" class="btn btn-danger btn-sm">
+												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+											</button>
 										</form>
                     				</td>
                     			</tr>
