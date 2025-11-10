@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import entities.Club;
 import entities.Player;
+import entities.President;
 import enums.PersonRole;
 import logic.Logic;
 
@@ -35,6 +36,11 @@ public class ActionPlayer extends HttpServlet {
 
         return player;
     
+	}
+	
+	private boolean checkBirthdate(LocalDate birthdate) {
+		
+		return birthdate.isBefore(LocalDate.now().minusYears(15));
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,11 +88,21 @@ public class ActionPlayer extends HttpServlet {
         
         if ("add".equals(action)) {
         	
-        	ctrl.addPlayer(buildPlayerFromRequest(request));
+        	Player player = buildPlayerFromRequest(request);
+        	if (checkBirthdate(player.getBirthdate())) {
+        		ctrl.addPlayer(player);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         	
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updatePlayer(buildPlayerFromRequest(request));
+        	Player player = buildPlayerFromRequest(request);
+        	if (checkBirthdate(player.getBirthdate())) {
+        		ctrl.updatePlayer(player);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
     	    
         } else if ("delete".equals(action)){
         	

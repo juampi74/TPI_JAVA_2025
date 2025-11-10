@@ -33,6 +33,11 @@ public class ActionClub extends HttpServlet {
         return club;
     
 	}
+    
+    private boolean checkFoundationDate(LocalDate foundationDate) {
+		
+		return foundationDate.isBefore(LocalDate.now());
+	}
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -78,12 +83,22 @@ public class ActionClub extends HttpServlet {
         Logic ctrl = new Logic();
 
         if ("add".equals(action)) {
-            
-        	ctrl.addClub(buildClubFromRequest(request, action, ctrl));
+        	
+        	Club club = buildClubFromRequest(request, action, ctrl);
+        	if (checkFoundationDate(club.getFoundationDate())) {
+        		ctrl.addClub(club);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
 
         } else if ("edit".equals(action)) {
-            
-        	ctrl.updateClub(buildClubFromRequest(request, action, ctrl));
+        	
+        	Club club = buildClubFromRequest(request, action, ctrl);
+        	if (checkFoundationDate(club.getFoundationDate())) {
+        		ctrl.updateClub(club);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
 
         } else if ("delete".equals(action)) {
             

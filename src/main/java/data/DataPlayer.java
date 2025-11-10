@@ -68,6 +68,49 @@ public class DataPlayer {
 		return players;
 		
 	}
+	
+	public LinkedList<Player> getAvailable(){
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		LinkedList<Player> players = new LinkedList<>();
+		
+		try {
+			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"SELECT p.* FROM person p WHERE p.role = 'PLAYER' AND NOT EXISTS (SELECT 1 FROM contract c WHERE c.id_person = p.id AND c.release_date IS NULL AND c.end_date >= CURDATE())"
+			);
+			rs = stmt.executeQuery();
+			
+			if (rs != null) {
+				
+				while (rs.next()) {
+				
+					Player player = createPlayerFromResultSet(rs);
+                    
+					if (player != null) {
+                    
+						players.add(player);
+                    
+					}
+					
+				}
+				
+			}
+			
+		} catch (SQLException e) {
+		
+			e.printStackTrace();
+		
+		} finally {
+			
+			closeResources(rs, stmt);
+		
+		}
+		
+		return players;
+		
+	}
 
 	public Player getById(int id) {
 		

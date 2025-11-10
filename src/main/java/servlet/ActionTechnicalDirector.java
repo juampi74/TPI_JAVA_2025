@@ -35,6 +35,11 @@ public class ActionTechnicalDirector extends HttpServlet {
     
 	}
 	
+	private boolean checkDates(LocalDate birthdate, LocalDate licenseObtainedDate) {
+		
+		return (birthdate.isBefore(LocalDate.now().minusYears(18)) && licenseObtainedDate.isBefore(LocalDate.now()) && licenseObtainedDate.isAfter(birthdate.plusYears(18)));
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -69,11 +74,21 @@ public class ActionTechnicalDirector extends HttpServlet {
         
         if ("add".equals(action)) {
         	
-        	ctrl.addTechnicalDirector(buildTechnicalDirectorFromRequest(request));
+        	TechnicalDirector td = buildTechnicalDirectorFromRequest(request);
+        	if (checkDates(td.getBirthdate(), td.getLicenseObtainedDate())) {
+        		ctrl.addTechnicalDirector(td);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         	
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updateTechnicalDirector(buildTechnicalDirectorFromRequest(request));
+        	TechnicalDirector td = buildTechnicalDirectorFromRequest(request);
+        	if (checkDates(td.getBirthdate(), td.getLicenseObtainedDate())) {
+            	ctrl.updateTechnicalDirector(td);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
     	    
         } else if ("delete".equals(action)){
         	

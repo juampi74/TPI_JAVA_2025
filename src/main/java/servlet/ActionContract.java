@@ -47,36 +47,31 @@ public class ActionContract extends HttpServlet {
 	    
 	}
 	
+	private boolean checkDates(LocalDate startDate, LocalDate endDate) {
+		
+		 LocalDate today = LocalDate.now();
+
+		    if (startDate.isBefore(today)) {
+		        return false;
+		    }
+
+		    if (endDate.isBefore(startDate.plusMonths(6))) {
+		        return false;
+		    }
+
+		    return true;
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)) {
-			
-			Contract contract = ctrl.getContractById(Integer.parseInt(request.getParameter("id")));
-			request.setAttribute("contract", contract);
+		if ("add".equals(action)) {
 			
 			LinkedList<Person> people = new LinkedList<>();
 			
-			LinkedList<Player> players = ctrl.getAllPlayers();
-			LinkedList<TechnicalDirector> technicalDirectors = ctrl.getAllTechnicalDirectors();
-			
-			people.addAll(players);
-			people.addAll(technicalDirectors);
-			
-			request.setAttribute("peopleList", people);
-			
-			LinkedList<Club> clubs = ctrl.getAllClubs();
-			request.setAttribute("clubsList", clubs);
-			
-			request.getRequestDispatcher("WEB-INF/Edit/EditContract.jsp").forward(request, response);
-		
-		} else if ("add".equals(action)) {
-			
-			LinkedList<Person> people = new LinkedList<>();
-			
-			LinkedList<Player> players = ctrl.getAllPlayers();
+			LinkedList<Player> players = ctrl.getAvailablePlayers();
 			LinkedList<TechnicalDirector> technicalDirectors = ctrl.getAllTechnicalDirectors();
 			
 			people.addAll(players);
@@ -119,15 +114,14 @@ public class ActionContract extends HttpServlet {
         
     	if ("add".equals(action)) {
         	
-        	ctrl.addContract(buildContractFromRequest(request, action, ctrl));
-        	
-        } else if ("edit".equals(action)) {
-        	
-        	ctrl.updateContract(buildContractFromRequest(request, action, ctrl));
+    		Contract contract = buildContractFromRequest(request, action, ctrl);
+        	if (checkDates(contract.getStartDate(), contract.getEndDate())) {
+        		ctrl.addContract(contract);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         	
         } else if ("release".equals(action)) {
-        
-        	System.out.println("RELEASE");
         	
         	ctrl.releaseContract(Integer.parseInt(request.getParameter("id")));
         	

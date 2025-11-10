@@ -19,8 +19,6 @@ public class Signin extends HttpServlet {
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		System.out.println(">>> ENTRO AL SERVLET SIGNIN <<<");
-		
 		Logic ctrl = new Logic();
 		
 	    LinkedList<Player> players = ctrl.getAllPlayers();

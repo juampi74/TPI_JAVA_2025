@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import entities.Association;
+import entities.Club;
 import logic.Logic;
 
 @WebServlet("/actionassociation")
@@ -27,6 +28,11 @@ public class ActionAssociation extends HttpServlet {
 
         return association;
     
+	}
+	
+	private boolean checkCreationDate(LocalDate creationDate) {
+		
+		return creationDate.isBefore(LocalDate.now());
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,12 +68,22 @@ public class ActionAssociation extends HttpServlet {
         Logic ctrl = new Logic();
         
         if ("add".equals(action)) {
-    		
-        	ctrl.addAssociation(buildAssociationFromRequest(request, action));
+        	
+        	Association association = buildAssociationFromRequest(request, action);
+        	if (checkCreationDate(association.getCreationDate())) {
+        		ctrl.addAssociation(association);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         	
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updateAssociation(buildAssociationFromRequest(request, action));
+        	Association association = buildAssociationFromRequest(request, action);
+        	if (checkCreationDate(association.getCreationDate())) {
+        		ctrl.updateAssociation(association);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
     	    
         } else if ("delete".equals(action)){
         	
