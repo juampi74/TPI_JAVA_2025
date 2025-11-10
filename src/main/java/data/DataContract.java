@@ -134,43 +134,6 @@ public class DataContract {
         
         }
     }
-
-    public void update(Contract c) {
-        
-        Connection conn = null;
-        String query = "UPDATE contract SET start_date = ?, end_date = ?, salary = ?, release_clause = ?, release_date = ?, id_person = ?, id_club = ? WHERE id = ?";
-        
-        try {
-            
-            conn = DbConnector.getInstance().getConn();
-            
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                
-                stmt.setObject(1, c.getStartDate());
-                stmt.setObject(2, c.getEndDate());
-                stmt.setDouble(3, c.getSalary());
-                stmt.setDouble(4, c.getReleaseClause());
-                stmt.setObject(5, c.getReleaseDate());
-                stmt.setInt(6, c.getPerson().getId());
-                stmt.setInt(7, c.getClub().getId());
-                
-                stmt.setInt(8, c.getId());
-                
-                stmt.executeUpdate();
-                
-            }
-
-        } catch (SQLException e) {
-            
-            e.printStackTrace();
-        
-        } finally {
-            
-            if (conn != null) DbConnector.getInstance().releaseConn();
-        
-        }
-        
-    }
     
     public void release(int id) {
     	

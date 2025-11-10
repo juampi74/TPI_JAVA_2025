@@ -33,6 +33,21 @@ public class ActionTournament extends HttpServlet {
     
 	}
 	
+	private boolean checkDates(LocalDate startDate, LocalDate endDate) {
+		
+		 LocalDate today = LocalDate.now();
+
+		    if (startDate.isBefore(today)) {
+		        return false;
+		    }
+
+		    if (endDate.isBefore(startDate.plusMonths(4))) {
+		        return false;
+		    }
+
+		    return true;
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -78,11 +93,21 @@ public class ActionTournament extends HttpServlet {
 
         if ("add".equals(action)) {
             
-        	ctrl.addTournament(buildTournamentFromRequest(request, action, ctrl));
+        	Tournament tournament = buildTournamentFromRequest(request, action, ctrl);
+        	if (checkDates(tournament.getStartDate(), tournament.getEndDate())) {
+        		ctrl.addTournament(tournament);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
 
         } else if ("edit".equals(action)) {
             
-        	ctrl.updateTournament(buildTournamentFromRequest(request, action, ctrl));
+        	Tournament tournament = buildTournamentFromRequest(request, action, ctrl);
+        	if (checkDates(tournament.getStartDate(), tournament.getEndDate())) {
+        		ctrl.updateTournament(tournament);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
 
         } else if ("delete".equals(action)) {
             

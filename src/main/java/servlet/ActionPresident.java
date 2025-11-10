@@ -33,6 +33,11 @@ public class ActionPresident extends HttpServlet {
     
 	}
 	
+	private boolean checkBirthdate(LocalDate birthdate) {
+		
+		return birthdate.isBefore(LocalDate.now().minusYears(18));
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -67,11 +72,21 @@ public class ActionPresident extends HttpServlet {
         
         if ("add".equals(action)) {
         	
-        	ctrl.addPresident(buildPresidentFromRequest(request));
+        	President president =buildPresidentFromRequest(request);
+        	if (checkBirthdate(president.getBirthdate())) {
+        		ctrl.addPresident(president);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         	
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updatePresident(buildPresidentFromRequest(request));
+        	President president =buildPresidentFromRequest(request);
+        	if (checkBirthdate(president.getBirthdate())) {
+        		ctrl.updatePresident(president);
+        	} else {
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
     	    
         } else if ("delete".equals(action)){
         	

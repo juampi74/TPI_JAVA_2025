@@ -43,6 +43,12 @@ public class Logic {
         return dpl.getAll();
 
     }
+    
+    public LinkedList<Player> getAvailablePlayers() {
+
+        return dpl.getAvailable();
+
+    }
 
     public Player getPlayerById(int id) {
 
@@ -309,12 +315,6 @@ public class Logic {
     public void addContract(Contract c) {
         
     	dco.add(c);
-    
-    }
-
-    public void updateContract(Contract c) {
-        
-    	dco.update(c);
     
     }
     

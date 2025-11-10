@@ -47,7 +47,7 @@
 						            <th>Fecha de Fin</th>
 						            <th>Salario</th>
 						            <th>Cláusula de Rescisión</th>
-						            <th>Editar</th>
+						            <th>Fecha de Rescisión</th>
 						            <th>Rescindir</th>
                        				<th>Eliminar</th>
                       			</tr>
@@ -63,24 +63,15 @@
                     				<td><%=c.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td><%=c.getSalary()%></td>
                     				<td><%=c.getReleaseClause()%></td>
-                    				<td class="text-center">
-									    <form method="get" action="actioncontract" class="d-block mx-auto">
-									        <input type="hidden" name="action" value="edit" />
-									        <input type="hidden" name="id" value="<%=c.getId()%>" />
-									        
-									        <button type="submit" class="btn btn-warning btn-sm">
-												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-									        
-									    </form>
-									</td>
+                    				<td><%= c.getReleaseDate() != null ? c.getReleaseDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-" %></td>
                     				<td>
                     					<%
 	                    					String disabledAttribute = "";
 	                    				    java.time.LocalDate today = java.time.LocalDate.now();
 	                    				    java.time.LocalDate contractEndDate = c.getEndDate();
+	                    				    java.time.LocalDate contractStartDate = c.getStartDate();
 	                    				    
-	                    				    if (today.isAfter(contractEndDate) || c.getReleaseDate() != null) {
+	                    				    if (today.isAfter(contractEndDate) || c.getReleaseDate() != null || today.isBefore(contractStartDate)) {
 	                    				        disabledAttribute = "disabled";
 	                    				    }
 									    %>
@@ -98,7 +89,7 @@
 									    </form>
 									</td>
 									<td>
-									    <form method="get" action="actioncontract" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este contrato?');">
+									    <form method="post" action="actioncontract" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este contrato?');">
 									        <input type="hidden" name="action" value="delete" />
 									        <input type="hidden" name="id" value="<%=c.getId()%>" />
 									        
