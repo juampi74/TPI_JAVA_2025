@@ -89,6 +89,12 @@ public class Logic {
         return dc.getAll();
 
     }
+    
+    public LinkedList<Coach> getAvailableCoaches() {
+
+        return dc.getAvailable();
+
+    }
 
     public Coach getCoachById(int id) {
 

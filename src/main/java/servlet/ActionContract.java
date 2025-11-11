@@ -62,6 +62,17 @@ public class ActionContract extends HttpServlet {
 		    return true;
 	}
 	
+	// No debería ser necesario porque si la persona tiene un contrato activo no se muestra en el droplist
+	private boolean checkContracts(int id, Logic ctrl) {
+		
+		LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
+		boolean hasActiveContract = false;
+		for (Contract c : contracts) {
+			if (c.getEndDate().isAfter(LocalDate.now()) && c.getReleaseDate() == null) hasActiveContract = true;
+		}
+		return hasActiveContract;
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -72,7 +83,7 @@ public class ActionContract extends HttpServlet {
 			LinkedList<Person> people = new LinkedList<>();
 			
 			LinkedList<Player> players = ctrl.getAvailablePlayers();
-			LinkedList<Coach> coaches = ctrl.getAllCoaches();
+			LinkedList<Coach> coaches = ctrl.getAvailableCoaches();
 			
 			people.addAll(players);
 			people.addAll(coaches);
@@ -115,11 +126,14 @@ public class ActionContract extends HttpServlet {
     	if ("add".equals(action)) {
         	
     		Contract contract = buildContractFromRequest(request, action, ctrl);
-        	if (checkDates(contract.getStartDate(), contract.getEndDate())) {
-        		ctrl.addContract(contract);
-        	} else {
+        	if (!checkDates(contract.getStartDate(), contract.getEndDate())) {
         		request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	} else if (checkContracts(contract.getPerson().getId(), ctrl)){
+        		request.setAttribute("errorMessage", "La persona ya tiene un contrato activo");
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	} else {
+        		ctrl.addContract(contract);
         	}
         	
         } else if ("release".equals(action)) {
