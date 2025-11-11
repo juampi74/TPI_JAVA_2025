@@ -76,6 +76,7 @@ public class ActionPresident extends HttpServlet {
         	if (checkBirthdate(president.getBirthdate())) {
         		ctrl.addPresident(president);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
         	
@@ -85,6 +86,7 @@ public class ActionPresident extends HttpServlet {
         	if (checkBirthdate(president.getBirthdate())) {
         		ctrl.updatePresident(president);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
     	    

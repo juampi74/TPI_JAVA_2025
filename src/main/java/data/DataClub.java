@@ -191,6 +191,96 @@ public class DataClub {
         
         return club;
     }
+    
+public Club getByStadiumId(int id) {
+        
+    	Club club = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	"SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE id_stadium = ?"
+            );
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+            
+            if (rs != null && rs.next()) {
+                
+            	club = new Club();
+            	club.setId(rs.getInt("id"));
+            	club.setName(rs.getString("name"));
+            	club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
+            	club.setPhoneNumber(rs.getString("phone_number"));
+            	club.setEmail(rs.getString("email"));
+            	club.setBadgeImage(rs.getString("badge_image"));
+            	club.setBudget(rs.getDouble("budget"));
+            	
+            	PreparedStatement stmt2 = null;
+        	    ResultSet rs2 = null;
+            	
+        	    try {
+        	    
+	        	    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
+	            		"SELECT id, name, capacity FROM stadium WHERE id = ?"
+	            	);
+	                stmt2.setInt(1, rs.getInt("id_stadium"));
+	                rs2 = stmt2.executeQuery();
+	                
+	                if (rs2 != null && rs2.next()) {
+	                	
+	                	Stadium stadium = new Stadium();
+	                	stadium.setId(rs2.getInt("id"));
+	                	stadium.setName(rs2.getString("name"));
+	                	stadium.setCapacity(rs2.getInt("capacity"));
+	                	
+	                	club.setStadium(stadium);
+	                	
+	                }
+            
+        	    } catch (SQLException e) {
+                    
+        	    	e.printStackTrace();
+
+                } finally {
+                    
+                	try {
+                        
+                		if (rs2 != null) rs2.close();
+                        if (stmt2 != null) stmt2.close();
+                        
+                    } catch (SQLException e) {
+                        
+                    	e.printStackTrace();
+                    
+                    }
+                
+                }
+            }
+        
+        } catch (SQLException e) {
+        
+        	e.printStackTrace();
+        
+        } finally {
+        
+        	try {
+            
+        		if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                DbConnector.getInstance().releaseConn();
+                
+            } catch (SQLException e) {
+            
+            	e.printStackTrace();
+            
+            }
+        
+        }
+        
+        return club;
+    }
 
     public LinkedList<Club> getByName(String name) {
         

@@ -78,7 +78,7 @@
                     					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
 											<input type="hidden" name="action" value="delete" />
 											<input type="hidden" name="id" value="<%=c.getId()%>" />
-											<button type="submit" class="btn btn-danger btn-sm">
+											<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-id="<%= c.getId() %>">
 												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
 											</button>
 										</form>
@@ -93,5 +93,54 @@
 				</div>
 			</div>          	
 		</div>
+		<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content text-dark">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="confirmModalLabel">Confirmar acción</h5>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+		      </div>
+		      <div class="modal-body" id="confirmModalBody">
+		        ¿Estás seguro que querés continuar?
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+		        <button type="button" class="btn btn-danger" id="confirmModalYes">Aceptar</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+		document.addEventListener("DOMContentLoaded", function() {
+		    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+		    const modalBody = document.getElementById('confirmModalBody');
+		    const confirmBtn = document.getElementById('confirmModalYes');
+		
+		    let currentForm = null;
+		    let actionType = "";
+		
+		    document.querySelectorAll('.btn-open-modal').forEach(button => {
+		        button.addEventListener('click', function() {
+		            actionType = this.getAttribute('data-action');
+		            const id = this.getAttribute('data-id');
+	
+		            currentForm = this.closest('form');
+		
+		            modalBody.textContent = "¿Estás seguro que querés eliminar este club?";
+		           
+		
+		            modal.show();
+		        });
+		    });
+			
+		    confirmBtn.addEventListener('click', function() {
+		        if (currentForm) {
+		            currentForm.submit();
+		        }
+		        modal.hide();
+		    });
+		});
+		</script>
 	</body>
 </html>

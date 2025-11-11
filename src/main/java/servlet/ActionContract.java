@@ -51,7 +51,7 @@ public class ActionContract extends HttpServlet {
 		
 		 LocalDate today = LocalDate.now();
 
-		    if (startDate.isBefore(today)) {
+		    if (startDate.isBefore(today.minusDays(1))) {
 		        return false;
 		    }
 
@@ -118,6 +118,7 @@ public class ActionContract extends HttpServlet {
         	if (checkDates(contract.getStartDate(), contract.getEndDate())) {
         		ctrl.addContract(contract);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
         	

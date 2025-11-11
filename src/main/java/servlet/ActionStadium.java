@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import entities.Club;
 import entities.Stadium;
 import logic.Logic;
 
@@ -27,6 +29,18 @@ public class ActionStadium extends HttpServlet {
         return stadium;
     
 	}
+	
+	private boolean checkCapacity(Integer capacity) {
+		
+		return capacity > 0;
+	}
+	
+	private boolean checkClub(Integer id) {
+		Logic ctrl = new Logic();
+		Club club = ctrl.getClubByStadiumId(id);
+		return club == null;
+	}
+	
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -61,17 +75,33 @@ public class ActionStadium extends HttpServlet {
         Logic ctrl = new Logic();
         
         if ("add".equals(action)) {
-    		
-        	ctrl.addStadium(buildStadiumFromRequest(request, action));
         	
+        	Stadium stadium = buildStadiumFromRequest(request, action);
+    		if (checkCapacity(stadium.getCapacity())) {
+    			ctrl.addStadium(stadium);
+    		} else {
+    			request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
+    			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+    		}
         } else if ("edit".equals(action)) {
         	
-        	ctrl.updateStadium(buildStadiumFromRequest(request, action));
+        	Stadium stadium = buildStadiumFromRequest(request, action);
+    		if (checkCapacity(stadium.getCapacity())) {
+    			ctrl.updateStadium(stadium);
+    		} else {
+    			request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
+    			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+    		}
     	    
         } else if ("delete".equals(action)){
         	
-        	ctrl.deleteStadium(Integer.parseInt(request.getParameter("id")));
-    	    
+        	Integer id = Integer.parseInt(request.getParameter("id"));
+        	if (checkClub(id)) {
+        		ctrl.deleteStadium(id);
+        	} else {
+        		request.setAttribute("errorMessage", "No se puede eliminar un estadio que pertenece a un club");
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         }
 	    
 	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();

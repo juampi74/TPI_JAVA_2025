@@ -38,6 +38,12 @@ public class ActionClub extends HttpServlet {
 		
 		return foundationDate.isBefore(LocalDate.now());
 	}
+    
+    private boolean checkContracts(Integer id) {
+    	Logic ctrl = new Logic();
+    	LinkedList<Contract> contracts = ctrl.getContractsByClubId(id);
+    	return 0 == contracts.size();	
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -88,6 +94,7 @@ public class ActionClub extends HttpServlet {
         	if (checkFoundationDate(club.getFoundationDate())) {
         		ctrl.addClub(club);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fechas introducidas (la fecha de fundación debe ser mayor a hoy)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
 
@@ -97,13 +104,19 @@ public class ActionClub extends HttpServlet {
         	if (checkFoundationDate(club.getFoundationDate())) {
         		ctrl.updateClub(club);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fechas introducidas (la fecha de fundación debe ser mayor a hoy)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
 
         } else if ("delete".equals(action)) {
             
-        	ctrl.deleteClub(Integer.parseInt(request.getParameter("id")));
-            
+        	Integer club_id = Integer.parseInt(request.getParameter("id"));
+        	if (checkContracts(club_id)) {
+        		ctrl.deleteClub(club_id);
+        	} else {
+        		request.setAttribute("errorMessage", "No se puede eliminar un club con contratos activos");
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	}
         }
 
         LinkedList<Club> clubs = ctrl.getAllClubs();

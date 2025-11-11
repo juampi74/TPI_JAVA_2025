@@ -97,6 +97,7 @@ public class ActionTournament extends HttpServlet {
         	if (checkDates(tournament.getStartDate(), tournament.getEndDate())) {
         		ctrl.addTournament(tournament);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fechas introducidas (el torneo debe empezar a partir de hoy y durar, al menos, 4 meses)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
 
@@ -106,6 +107,7 @@ public class ActionTournament extends HttpServlet {
         	if (checkDates(tournament.getStartDate(), tournament.getEndDate())) {
         		ctrl.updateTournament(tournament);
         	} else {
+        		request.setAttribute("errorMessage", "Error en las fechas introducidas (el torneo debe empezar a partir de hoy y durar, al menos, 4 meses)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
 

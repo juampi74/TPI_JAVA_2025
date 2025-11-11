@@ -99,6 +99,99 @@ public class DataContract {
         
         return contract;
     }
+	
+	
+
+	public LinkedList<Contract> getByPersonId(int id) {
+	    
+	    LinkedList<Contract> contracts = new LinkedList<Contract>();
+	    Connection conn = null;
+	    String query = SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_person = ?";
+	
+	    try {
+	        
+	        conn = DbConnector.getInstance().getConn();
+	        
+	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+	            
+	            stmt.setInt(1, id);
+	            
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                
+	            	while (rs.next()) {
+		                
+		                try {
+		                    
+		                    Contract contract = mapFullContract(rs);
+		                    
+		                    contracts.add(contract);
+		                    
+		                } catch (SQLException e) {
+		                    
+		                    System.err.println(e.getMessage() + ". Omitiendo contrato.");
+		                    	                
+		                }
+		            }
+	            }
+	        }
+	        
+	    } catch (SQLException e) {
+	        
+	        e.printStackTrace();
+	    
+	    } finally {
+	        
+	        if (conn != null) DbConnector.getInstance().releaseConn();
+	    
+	    }
+	    
+	    return contracts;
+	}
+	
+	public LinkedList<Contract> getByClubId(int id) {
+	    
+	    LinkedList<Contract> contracts = new LinkedList<Contract>();
+	    Connection conn = null;
+	    String query = SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_club = ?";
+	
+	    try {
+	        
+	        conn = DbConnector.getInstance().getConn();
+	        
+	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+	            
+	            stmt.setInt(1, id);
+	            try (ResultSet rs = stmt.executeQuery()) {
+	             
+	            	
+	            	while (rs.next()) {
+		                try {
+		                    
+		                    Contract contract = mapFullContract(rs);
+		                    
+		                    contracts.add(contract);
+		                    
+		                } catch (SQLException e) {
+		                    
+		                    System.err.println(e.getMessage() + ". Omitiendo contrato.");
+		                    	                
+		                }
+		            }
+	            }
+	        }
+	        
+	    } catch (SQLException e) {
+	        
+	        e.printStackTrace();
+	    
+	    } finally {
+	        
+	        if (conn != null) DbConnector.getInstance().releaseConn();
+	    
+	    }
+	    
+	    return contracts;
+	}
 
     public void add(Contract c) {
         

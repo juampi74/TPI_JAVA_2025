@@ -203,6 +203,12 @@ public class Logic {
     	return dcl.getById(id);
     
     }
+    
+    public Club getClubByStadiumId(int id) {
+        
+    	return dcl.getByStadiumId(id);
+    
+    }
 
     public LinkedList<Club> getClubByName(String name) {
         
@@ -275,6 +281,12 @@ public class Logic {
     	return dto.getById(id);
     
     }
+    
+    public LinkedList<Tournament> getTournamentsByAssociationId(int id) {
+        
+    	return dto.getByAssociationId(id);
+    
+    }
 
     public LinkedList<Tournament> getTournamentByName(String name) {
         
@@ -309,6 +321,18 @@ public class Logic {
     public Contract getContractById(int id) {
         
     	return dco.getById(id);
+    
+    }
+    
+    public LinkedList<Contract> getContractsByPersonId(int id) {
+        
+    	return dco.getByPersonId(id);
+    
+    }
+    
+    public LinkedList<Contract> getContractsByClubId(int id) {
+        
+    	return dco.getByClubId(id);
     
     }
 
