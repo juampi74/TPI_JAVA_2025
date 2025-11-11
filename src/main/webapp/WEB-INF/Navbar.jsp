@@ -37,7 +37,7 @@
 	                        <a class="nav-link" href="actionplayer">Jugadores</a>
 	                    </li>
 	                    <li class="nav-item">
-	                        <a class="nav-link" href="actiontechnicaldirector">Directores Técnicos</a>
+	                        <a class="nav-link" href="actioncoach">Directores Técnicos</a>
 	                    </li>
 	                    <li class="nav-item">
 	                        <a class="nav-link" href="actionpresident">Presidentes</a>

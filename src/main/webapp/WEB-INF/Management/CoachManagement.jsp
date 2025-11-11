@@ -1,6 +1,6 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
-<%@ page import="entities.TechnicalDirector"%>
+<%@ page import="entities.Coach"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -19,7 +19,7 @@
 	    <link href="style/start.css" rel="stylesheet">
 		
 		<%
-			LinkedList<TechnicalDirector> tdl = (LinkedList<TechnicalDirector>) request.getAttribute("technicalDirectorsList");
+			LinkedList<Coach> cl = (LinkedList<Coach>) request.getAttribute("coachesList");
 		%>
 		
 	</head>
@@ -29,7 +29,7 @@
 			<div class="row">
 				<div class="d-flex justify-content-between my-4 align-items-center">
 	        		<h1>Directores Técnicos</h1>
-		        	<form action="actiontechnicaldirector" method="get" style="margin:0;">
+		        	<form action="actioncoach" method="get" style="margin:0;">
 		        		<input type="hidden" name="action" value="add" />
 					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
 					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
@@ -54,30 +54,30 @@
                       		</thead>
                     		<tbody>
                     		<%
-                    	    	for (TechnicalDirector td : tdl) {
+                    		for (Coach c : cl) {
                     		%>
                     			<tr>
-                    				<td><%=td.getId()%></td>
-                    				<td><%=td.getFullname()%></td>
-                    				<td><%=td.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td><%=td.getAddress()%></td>
-                    				<td><%=td.getPreferredFormation()%></td>
-                    				<td><%=td.getCoachingLicense()%></td>
-                    				<td><%=td.getLicenseObtainedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+                    				<td><%=c.getId()%></td>
+                    				<td><%=c.getFullname()%></td>
+                    				<td><%=c.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+                    				<td><%=c.getAddress()%></td>
+                    				<td><%=c.getPreferredFormation()%></td>
+                    				<td><%=c.getCoachingLicense()%></td>
+                    				<td><%=c.getLicenseObtainedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
                     				<td>
-                    					<form method="get" action="actiontechnicaldirector" style="display:inline;" class="d-flex justify-content-center align-items-center">
+                    					<form method="get" action="actioncoach" style="display:inline;" class="d-flex justify-content-center align-items-center">
                     						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=td.getId()%>" />
+		        							<input type="hidden" name="id" value="<%=c.getId()%>" />
 		        							<button type="submit" class="btn btn-warning btn-sm">
 												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
 											</button>
 		    							</form>
                     				</td>
                     				<td>
-                    					<form method="post" action="actiontechnicaldirector" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este director técnico?');">
+                    					<form method="post" action="actioncoach" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este director técnico?');">
 											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=td.getId()%>" />
-											<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-action="delete" data-id="<%= td.getId() %>">
+											<input type="hidden" name="id" value="<%=c.getId()%>" />
+											<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>">
 												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
 											</button>
 										</form>

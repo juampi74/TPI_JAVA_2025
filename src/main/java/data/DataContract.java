@@ -308,13 +308,13 @@ public class DataContract {
             player.setWeight(rs.getDouble("weight"));
             person = player;
             
-        } else if (role.equals(PersonRole.TECHNICAL_DIRECTOR)) {
+        } else if (role.equals(PersonRole.COACH)) {
             
-        	TechnicalDirector td = new TechnicalDirector();
-            td.setPreferredFormation(rs.getString("preferred_formation"));
-            td.setCoachingLicense(rs.getString("coaching_license"));
-            td.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
-            person = td;
+        	Coach c = new Coach();
+            c.setPreferredFormation(rs.getString("preferred_formation"));
+            c.setCoachingLicense(rs.getString("coaching_license"));
+            c.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
+            person = c;
         
         }
         

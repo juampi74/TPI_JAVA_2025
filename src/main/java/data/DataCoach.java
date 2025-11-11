@@ -7,47 +7,47 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.time.*;
 
-public class DataTechnicalDirector {
+public class DataCoach {
 	
-	private TechnicalDirector createTechnicalDirectorFromResultSet(ResultSet rs) throws SQLException {
+	private Coach createCoachFromResultSet(ResultSet rs) throws SQLException {
         
-		TechnicalDirector technicalDirector = new TechnicalDirector();
-		technicalDirector.setId(rs.getInt("id"));
-		technicalDirector.setFullname(rs.getString("fullname"));
-		technicalDirector.setBirthdate(rs.getObject("birthdate", LocalDate.class));
-		technicalDirector.setAddress(rs.getString("address"));
-		technicalDirector.setRole(PersonRole.valueOf(rs.getString("role")));
-		technicalDirector.setPreferredFormation(rs.getString("preferred_formation"));
-		technicalDirector.setCoachingLicense(rs.getString("coaching_license"));
-		technicalDirector.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
+		Coach coach = new Coach();
+		coach.setId(rs.getInt("id"));
+		coach.setFullname(rs.getString("fullname"));
+		coach.setBirthdate(rs.getObject("birthdate", LocalDate.class));
+		coach.setAddress(rs.getString("address"));
+		coach.setRole(PersonRole.valueOf(rs.getString("role")));
+		coach.setPreferredFormation(rs.getString("preferred_formation"));
+		coach.setCoachingLicense(rs.getString("coaching_license"));
+		coach.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
 	    
-        return technicalDirector;
+        return coach;
     
 	}
 	
-	private static final String SELECT_TECHNICAL_DIRECTOR_FIELDS = 
+	private static final String SELECT_COACH_FIELDS = 
 		"SELECT id, fullname, birthdate, address, role, preferred_formation, coaching_license, license_obtained_date FROM person";
 	
-	public LinkedList<TechnicalDirector> getAll(){
+	public LinkedList<Coach> getAll(){
 		
 		Statement stmt = null;
 		ResultSet rs = null;
-		LinkedList<TechnicalDirector> technicalDirectors = new LinkedList<>();
+		LinkedList<Coach> coaches = new LinkedList<>();
 		
 		try {
 			
 			stmt = DbConnector.getInstance().getConn().createStatement();
-			rs = stmt.executeQuery(SELECT_TECHNICAL_DIRECTOR_FIELDS + " WHERE role = 'TECHNICAL_DIRECTOR'");
+			rs = stmt.executeQuery(SELECT_COACH_FIELDS + " WHERE role = 'COACH'");
 			
 			if (rs != null) {
 				
 				while (rs.next()) {
 					
-					TechnicalDirector technicalDirector = createTechnicalDirectorFromResultSet(rs);
+					Coach coach = createCoachFromResultSet(rs);
 
-	                if (technicalDirector != null) {
+	                if (coach != null) {
 	                    
-	                	technicalDirectors.add(technicalDirector);
+	                	coaches.add(coach);
 	                    
 	                }
 					
@@ -64,27 +64,27 @@ public class DataTechnicalDirector {
 		
 		}
 		
-		return technicalDirectors;
+		return coaches;
 		
 	}
 
-	public TechnicalDirector getById(int id) {
+	public Coach getById(int id) {
 		
-		TechnicalDirector technicalDirector = null;
+		Coach coach = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
 		try {
 		
 			stmt = DbConnector.getInstance().getConn().prepareStatement(
-				SELECT_TECHNICAL_DIRECTOR_FIELDS + " WHERE role = 'TECHNICAL_DIRECTOR' AND id = ?"
+				SELECT_COACH_FIELDS + " WHERE role = 'COACH' AND id = ?"
 			);
 			stmt.setInt(1, id);
 			rs = stmt.executeQuery();
 			
 			if (rs != null && rs.next()) {
 			
-				technicalDirector = createTechnicalDirectorFromResultSet(rs);
+				coach = createCoachFromResultSet(rs);
 				
 			}
 			
@@ -97,20 +97,20 @@ public class DataTechnicalDirector {
 			closeResources(rs, stmt);
 		}
 		
-		return technicalDirector;
+		return coach;
 	
 	}
 	
-	public LinkedList<TechnicalDirector> getByFullname(String fullname){
+	public LinkedList<Coach> getByFullname(String fullname){
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		LinkedList<TechnicalDirector> technicalDirectors = new LinkedList<>();
+		LinkedList<Coach> coaches = new LinkedList<>();
 		
 		try {
 			
 			stmt = DbConnector.getInstance().getConn().prepareStatement(
-				SELECT_TECHNICAL_DIRECTOR_FIELDS + " WHERE role = 'TECHNICAL_DIRECTOR' AND fullname = ?"
+				SELECT_COACH_FIELDS + " WHERE role = 'COACH' AND fullname = ?"
 			);
 			stmt.setString(1, fullname);
 			rs = stmt.executeQuery();
@@ -119,11 +119,11 @@ public class DataTechnicalDirector {
 				
 				while (rs.next()) {
 				
-					TechnicalDirector technicalDirector = createTechnicalDirectorFromResultSet(rs);
+					Coach coach = createCoachFromResultSet(rs);
                     
-					if (technicalDirector != null) {
+					if (coach != null) {
                     
-						technicalDirectors.add(technicalDirector);
+						coaches.add(coach);
                     
 					}
 					
@@ -141,11 +141,11 @@ public class DataTechnicalDirector {
 		
 		}
 		
-		return technicalDirectors;
+		return coaches;
 		
 	}
 	
-	public void add(TechnicalDirector td) {
+	public void add(Coach td) {
 		
 		PreparedStatement stmt = null;
 		
@@ -177,7 +177,7 @@ public class DataTechnicalDirector {
     
 	}
 	
-	public void update(TechnicalDirector td) {
+	public void update(Coach td) {
 		
 		PreparedStatement stmt = null;
 		

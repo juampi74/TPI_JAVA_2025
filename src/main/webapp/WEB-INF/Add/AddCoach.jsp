@@ -19,7 +19,7 @@
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Agregar Director Técnico</h2>
-		    <form action="actiontechnicaldirector" method="post" class="mt-4">
+		    <form action="actioncoach" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />
 		        
 		        <div class="form-group">

@@ -35,9 +35,9 @@ public class ActionContract extends HttpServlet {
 	    	
 	    	contract.setPerson(ctrl.getPlayerById(Integer.parseInt(request.getParameter("id_person"))));
 	    	
-	    } else if (personRole.equals(PersonRole.TECHNICAL_DIRECTOR)) {
+	    } else if (personRole.equals(PersonRole.COACH)) {
 	    	
-	    	contract.setPerson(ctrl.getTechnicalDirectorById(Integer.parseInt(request.getParameter("id_person"))));
+	    	contract.setPerson(ctrl.getCoachById(Integer.parseInt(request.getParameter("id_person"))));
 	    	
 	    }
 	    
@@ -72,10 +72,10 @@ public class ActionContract extends HttpServlet {
 			LinkedList<Person> people = new LinkedList<>();
 			
 			LinkedList<Player> players = ctrl.getAvailablePlayers();
-			LinkedList<TechnicalDirector> technicalDirectors = ctrl.getAllTechnicalDirectors();
+			LinkedList<Coach> coaches = ctrl.getAllCoaches();
 			
 			people.addAll(players);
-			people.addAll(technicalDirectors);
+			people.addAll(coaches);
 			
 			request.setAttribute("peopleList", people);
 			
@@ -92,10 +92,10 @@ public class ActionContract extends HttpServlet {
 			LinkedList<Person> people = new LinkedList<>();
 			
 			LinkedList<Player> players = ctrl.getAllPlayers();
-			LinkedList<TechnicalDirector> technicalDirectors = ctrl.getAllTechnicalDirectors();
+			LinkedList<Coach> coaches = ctrl.getAllCoaches();
 			
 			people.addAll(players);
-			people.addAll(technicalDirectors);
+			people.addAll(coaches);
 			
 			request.setAttribute("peopleList", people);
 			

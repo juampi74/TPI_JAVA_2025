@@ -2,7 +2,7 @@ package entities;
 
 import java.time.LocalDate;
 
-public class TechnicalDirector extends Person {
+public class Coach extends Person {
 
 	private String preferredFormation;
 	private String coachingLicense;

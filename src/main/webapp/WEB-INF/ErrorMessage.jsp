@@ -8,7 +8,7 @@
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <link href="style/signin.css" rel="stylesheet">
 	</head>
-	<body>
+	<body style="background-color: #10442E;">
 		
 		<%
     		String referer = request.getHeader("referer");

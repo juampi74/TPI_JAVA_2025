@@ -10,7 +10,7 @@ public class Logic {
 
     private DataPerson dpe;
 	private DataPlayer dpl;
-    private DataTechnicalDirector dtd;
+    private DataCoach dc;
     private DataPresident dpr;
     private DataStadium dst;
     private DataClub dcl;
@@ -22,7 +22,7 @@ public class Logic {
         
     	dpe = new DataPerson();
     	dpl = new DataPlayer();
-        dtd = new DataTechnicalDirector();
+        dc = new DataCoach();
         dpr = new DataPresident();
     	dst = new DataStadium();
         dcl = new DataClub();
@@ -84,39 +84,39 @@ public class Logic {
 
     }
     
-    public LinkedList<TechnicalDirector> getAllTechnicalDirectors() {
+    public LinkedList<Coach> getAllCoaches() {
 
-        return dtd.getAll();
-
-    }
-
-    public TechnicalDirector getTechnicalDirectorById(int id) {
-
-        return dtd.getById(id);
+        return dc.getAll();
 
     }
 
-    public LinkedList<TechnicalDirector> getTechnicalDirectorByFullname(String fullname) {
+    public Coach getCoachById(int id) {
 
-        return dtd.getByFullname(fullname);
-
-    }
-
-    public void addTechnicalDirector(TechnicalDirector td) {
-
-        dtd.add(td);
+        return dc.getById(id);
 
     }
 
-    public void updateTechnicalDirector(TechnicalDirector td) {
+    public LinkedList<Coach> getCoachByFullname(String fullname) {
 
-        dtd.update(td);
+        return dc.getByFullname(fullname);
 
     }
 
-    public void deleteTechnicalDirector(int id) {
+    public void addCoach(Coach c) {
 
-        dtd.delete(id);
+        dc.add(c);
+
+    }
+
+    public void updateCoach(Coach c) {
+
+        dc.update(c);
+
+    }
+
+    public void deleteCoach(int id) {
+
+        dc.delete(id);
 
     }
     
