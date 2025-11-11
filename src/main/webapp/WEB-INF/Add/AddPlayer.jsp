@@ -24,7 +24,7 @@
 		        
 		        <div class="form-group">
 		            <label for="id">DNI:</label>
-		            <input type="text" class="form-control" id="id" name="id" required />
+		            <input type="number" class="form-control" id="id" name="id" required />
 		        </div>
 		
 		        <div class="form-group">
@@ -49,17 +49,17 @@
 		        
 		        <div class="form-group">
 		            <label for="jerseyNumber">Número de Camiseta:</label>
-		            <input type="text" class="form-control" id="jerseyNumber" name="jerseyNumber" required />
+		            <input type="number" class="form-control" id="jerseyNumber" name="jerseyNumber" required />
 		        </div>
 		        
 		        <div class="form-group">
-		            <label for="height">Altura:</label>
-		            <input type="text" class="form-control" id="height" name="height" required />
+		            <label for="height">Altura (cm):</label>
+		            <input type="number" class="form-control" id="height" name="height" required />
 		        </div>
 		        
 		        <div class="form-group">
-		            <label for="weight">Peso:</label>
-		            <input type="text" class="form-control" id="weight" name="weight" required />
+		            <label for="weight">Peso (kg):</label>
+		            <input type="number" class="form-control" id="weight" name="weight" required />
 		        </div>
 		
 		        <div class="button-container mb-3">

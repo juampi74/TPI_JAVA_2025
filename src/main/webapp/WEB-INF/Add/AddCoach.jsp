@@ -24,7 +24,7 @@
 		        
 		        <div class="form-group">
 		            <label for="id">DNI:</label>
-		            <input type="text" class="form-control" id="id" name="id" required />
+		            <input type="number" class="form-control" id="id" name="id" required />
 		        </div>
 		
 		        <div class="form-group">

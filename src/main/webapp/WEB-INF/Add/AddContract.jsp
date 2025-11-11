@@ -41,12 +41,12 @@
 		
 		        <div class="form-group">
 		            <label for="salary">Salario:</label>
-		            <input type="text" class="form-control" id="salary" name="salary" required />
+		            <input type="number" class="form-control" id="salary" name="salary" required />
 		        </div>
 		
 		        <div class="form-group">
 		            <label for="releaseClause">Cláusula de Rescisión:</label>
-		            <input type="text" class="form-control" id="releaseClause" name="releaseClause" required />
+		            <input type="number" class="form-control" id="releaseClause" name="releaseClause" required />
 		        </div>
 		        
 		        <div class="form-group">

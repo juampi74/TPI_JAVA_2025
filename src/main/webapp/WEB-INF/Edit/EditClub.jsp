@@ -57,7 +57,7 @@
 		        
 		        <div class="form-group">
 		            <label for="budget">Presupuesto:</label>
-		            <input type="text" class="form-control" id="budget" name="budget" value="<%=club.getBudget()%>" required />
+		            <input type="number" class="form-control" id="budget" name="budget" value="<%=club.getBudget()%>" required />
 		        </div>
 		        
 		        <div class="form-group">

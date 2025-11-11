@@ -54,7 +54,7 @@
 		        
 		        <div class="form-group">
 		            <label for="budget">Presupuesto:</label>
-		            <input type="text" class="form-control" id="budget" name="budget" required />
+		            <input type="number" class="form-control" id="budget" name="budget" required />
 		        </div>
 		        
 		        <div class="form-group">

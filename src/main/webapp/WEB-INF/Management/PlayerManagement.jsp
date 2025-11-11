@@ -75,8 +75,8 @@
                         			<th>Dirección</th>
                         			<th>Pie Dominante</th>
                         			<th>Número de Camiseta</th>
-                        			<th>Altura</th>
-                        			<th>Peso</th>
+                        			<th>Altura (cm)</th>
+                        			<th>Peso (kg)</th>
                         			<th>Editar</th>
                         			<th>Eliminar</th>
                       			</tr>

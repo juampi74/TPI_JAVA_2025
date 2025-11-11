@@ -34,7 +34,7 @@
 		        
 		        <div class="form-group">
 		            <label for="capacity">Capacidad:</label>
-		            <input type="text" class="form-control" id="capacity" name="capacity" value="<%=stadium.getCapacity()%>" required />
+		            <input type="number" class="form-control" id="capacity" name="capacity" value="<%=stadium.getCapacity()%>" required />
 		        </div>
 		        
 		        <div class="button-container mb-3">
