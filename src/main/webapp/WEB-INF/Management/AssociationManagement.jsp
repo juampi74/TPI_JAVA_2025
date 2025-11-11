@@ -17,6 +17,13 @@
 	
 	    <link href="style/start.css" rel="stylesheet">
 		
+		<style>
+	    	table {
+	    		text-align: center;
+	    		
+	    	}
+	    </style>
+		
 		<%
 			LinkedList<Association> al = (LinkedList<Association>) request.getAttribute("associationsList");
 		%>

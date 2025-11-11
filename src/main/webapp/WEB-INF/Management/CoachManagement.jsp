@@ -18,6 +18,13 @@
 	
 	    <link href="style/start.css" rel="stylesheet">
 		
+		<style>
+	    	table {
+	    		text-align: center;
+	    		
+	    	}
+	    </style>
+		
 		<%
 			LinkedList<Coach> cl = (LinkedList<Coach>) request.getAttribute("coachesList");
 		%>

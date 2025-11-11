@@ -18,7 +18,13 @@
 		<link href="style/bootstrap.css" rel="stylesheet">
 	
 	    <link href="style/start.css" rel="stylesheet">
-		
+	    <style>
+	    	table {
+	    		text-align: center;
+	    		
+	    	}
+	    </style>
+	    
 		<%
 			LinkedList<Player> pll = (LinkedList<Player>) request.getAttribute("playersList");
 		%>
