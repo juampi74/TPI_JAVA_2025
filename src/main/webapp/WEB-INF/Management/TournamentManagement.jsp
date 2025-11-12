@@ -19,14 +19,16 @@
 	    <link href="style/start.css" rel="stylesheet">
 		
 		<style>
-	    	table {
-	    		text-align: center;
-	    		
+	    
+	    	.table {
+	    		text-align: center;	
 	    	}
+	    
 	    </style>
 		
 		<%
 			LinkedList<Tournament> tl = (LinkedList<Tournament>) request.getAttribute("tournamentsList");
+			boolean emptyList = (tl == null || tl.isEmpty());
 		%>
 		
 	</head>
@@ -43,58 +45,77 @@
 					    </button>
 		    		</form>				
 				</div>
-            	<div class="col-12 col-sm-12 col-lg-12">
-                	<div class="table-responsive">
-                    	<table class="table">
-                    		<thead>
-                    			<tr>
-						            <th>Nombre</th>
-						            <th>Fecha de Inicio</th>
-						            <th>Fecha de Fin</th>
-						            <th>Formato</th>
-						            <th>Edición</th>
-						            <th>Asociación</th>
-						            <th>Editar</th>
-                       				<th>Eliminar</th>
-                      			</tr>
-                      		</thead>
-                    		<tbody>
-                    		<%
-                    	    	for (Tournament t : tl) {
-                    		%>
-                    			<tr>
-                    				<td><%=t.getName()%></td>
-                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td><%=t.getFormat()%></td>
-                    				<td><%=t.getSeason()%></td>
-                    				<td><%=t.getAssociation().getName()%></td>
-                    				<td>
-                    					<form method="get" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center">
-                    						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=t.getId()%>" />
-		        							<button type="submit" class="btn btn-warning btn-sm">
-												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-		    							</form>
-                    				</td>
-                    				<td>
-                    					<form method="post" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">
-											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=t.getId()%>" />
-											<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-action="delete" data-id="<%= t.getId() %>" >
-												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-										</form>
-                    				</td>
-                    			</tr>
-                    		<% 
-                    			}
-                    		%>
-                    		</tbody>
-						</table>        		
+				<% if (emptyList) { %>
+					<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+						<div class="col-12">
+					  		<div class="empty-state text-center py-5 px-4 my-2 text-white">
+					      		<div class="mx-auto mb-2 pulse" style="width:72px;height:72px;">
+						        <svg viewBox="0 0 24 24" width="72" height="72" fill="none" aria-hidden="true">
+						          <path d="M3 7.5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7.5Z" stroke="white" stroke-opacity=".9" stroke-width="1.5"/>
+						          <path d="M12 12h6M15 9v6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+						        </svg>
+					      	</div>
+						    <h3 class="fw-bold mb-2">Todavía no agregaste torneos</h3>
+						    	<p class="mb-0" style="opacity:.85;">
+						        	No hay torneos registrados. Usá el botón de <strong>(+)</strong> cuando quieras agregar el primero.
+						      	</p>
+					    	</div>
+					  	</div>
 					</div>
-				</div>
+				<% } else { %>
+	            	<div class="col-12 col-sm-12 col-lg-12">
+	                	<div class="table-responsive">
+	                    	<table class="table">
+	                    		<thead>
+	                    			<tr>
+							            <th>Nombre</th>
+							            <th>Fecha de Inicio</th>
+							            <th>Fecha de Fin</th>
+							            <th>Formato</th>
+							            <th>Edición</th>
+							            <th>Asociación</th>
+							            <th>Editar</th>
+	                       				<th>Eliminar</th>
+	                      			</tr>
+	                      		</thead>
+	                    		<tbody>
+	                    		<%
+	                    	    	for (Tournament t : tl) {
+	                    		%>
+	                    			<tr>
+	                    				<td><%=t.getName()%></td>
+	                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+	                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+	                    				<td><%=t.getFormat()%></td>
+	                    				<td><%=t.getSeason()%></td>
+	                    				<td><%=t.getAssociation().getName()%></td>
+	                    				<td>
+	                    					<form method="get" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center">
+	                    						<input type="hidden" name="action" value="edit" />
+			        							<input type="hidden" name="id" value="<%=t.getId()%>" />
+			        							<button type="submit" class="btn btn-warning btn-sm">
+													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+												</button>
+			    							</form>
+	                    				</td>
+	                    				<td>
+	                    					<form method="post" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">
+												<input type="hidden" name="action" value="delete" />
+												<input type="hidden" name="id" value="<%=t.getId()%>" />
+												<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-action="delete" data-id="<%= t.getId() %>" >
+													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+												</button>
+											</form>
+	                    				</td>
+	                    			</tr>
+	                    		<% 
+	                    			}
+	                    		%>
+	                    		</tbody>
+							</table>        		
+						</div>
+					</div>
+				<% } %>
 			</div>          	
 		</div>
 		<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">

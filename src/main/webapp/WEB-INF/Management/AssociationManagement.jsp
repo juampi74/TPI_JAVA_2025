@@ -16,18 +16,19 @@
 		<link href="style/bootstrap.css" rel="stylesheet">
 	
 	    <link href="style/start.css" rel="stylesheet">
-		
-		<style>
-	    	table {
-	    		text-align: center;
-	    		
+	    
+	    <style>
+	    
+	    	.table {
+	    		text-align: center;	
 	    	}
+	    
 	    </style>
 		
 		<%
 			LinkedList<Association> al = (LinkedList<Association>) request.getAttribute("associationsList");
+			boolean emptyList = (al == null || al.isEmpty());
 		%>
-		
 	</head>
 	<body style="background-color: #10442E;">
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
@@ -42,50 +43,69 @@
 					    </button>
 		    		</form>				
 				</div>
-            	<div class="col-12 col-sm-12 col-lg-12">
-                	<div class="table-responsive">
-                    	<table class="table">
-                    		<thead>
-                    			<tr>
-                    				<th>Nombre</th>
-                    		    	<th>Fecha de Creación</th>
-                    		    	<th>Editar</th>
-                        			<th>Eliminar</th>
-                      			</tr>
-                      		</thead>
-                    		<tbody>
-                    		<%
-                    	    	for (Association a : al) {
-                    		%>
-                    			<tr>
-                    				<td><%=a.getName()%></td>
-                    				<td><%=a.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td>
-                    					<form method="get" action="actionassociation" style="display:inline;" class="d-flex justify-content-center align-items-center">
-                    						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=a.getId()%>" />
-		        							<button type="submit" class="btn btn-warning btn-sm">
-												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-		    							</form>
-                    				</td>
-                    				<td>
-                    					<form method="post" action="actionassociation" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta asociación?');">
-											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=a.getId()%>" />
-											<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-id="<%= a.getId() %>>">
-												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-										</form>
-                    				</td>
-                    			</tr>
-                    		<% 
-                    			}
-                    		%>
-                    		</tbody>
-						</table>        		
+				<% if (emptyList) { %>
+					<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+						<div class="col-12">
+					  		<div class="empty-state text-center py-5 px-4 my-2 text-white">
+					      		<div class="mx-auto mb-2 pulse" style="width:72px;height:72px;">
+						        <svg viewBox="0 0 24 24" width="72" height="72" fill="none" aria-hidden="true">
+						          <path d="M3 7.5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7.5Z" stroke="white" stroke-opacity=".9" stroke-width="1.5"/>
+						          <path d="M12 12h6M15 9v6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+						        </svg>
+					      	</div>
+						    <h3 class="fw-bold mb-2">Todavía no agregaste asociaciones</h3>
+						    	<p class="mb-0" style="opacity:.85;">
+						        	No hay asociaciones registradas. Usá el botón de <strong>(+)</strong> cuando quieras agregar la primera.
+						      	</p>
+					    	</div>
+					  	</div>
 					</div>
-				</div>
+				<% } else { %>
+	            	<div class="col-12 col-sm-12 col-lg-12">
+	                	<div class="table-responsive">
+	                    	<table class="table">
+	                    		<thead>
+	                    			<tr>
+	                    				<th>Nombre</th>
+	                    		    	<th>Fecha de Creación</th>
+	                    		    	<th>Editar</th>
+	                        			<th>Eliminar</th>
+	                      			</tr>
+	                      		</thead>
+	                    		<tbody>
+	                    		<%
+	                    	    	for (Association a : al) {
+	                    		%>
+	                    			<tr>
+	                    				<td><%=a.getName()%></td>
+	                    				<td><%=a.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+	                    				<td>
+	                    					<form method="get" action="actionassociation" style="display:inline;" class="d-flex justify-content-center align-items-center">
+	                    						<input type="hidden" name="action" value="edit" />
+			        							<input type="hidden" name="id" value="<%=a.getId()%>" />
+			        							<button type="submit" class="btn btn-warning btn-sm">
+													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+												</button>
+			    							</form>
+	                    				</td>
+	                    				<td>
+	                    					<form method="post" action="actionassociation" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta asociación?');">
+												<input type="hidden" name="action" value="delete" />
+												<input type="hidden" name="id" value="<%=a.getId()%>" />
+												<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-id="<%= a.getId() %>>">
+													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+												</button>
+											</form>
+	                    				</td>
+	                    			</tr>
+	                    		<% 
+	                    			}
+	                    		%>
+	                    		</tbody>
+							</table>        		
+						</div>
+					</div>
+				<% } %>
 			</div>          	
 		</div>
 		<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
@@ -107,35 +127,35 @@
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
-		document.addEventListener("DOMContentLoaded", function() {
-		    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-		    const modalBody = document.getElementById('confirmModalBody');
-		    const confirmBtn = document.getElementById('confirmModalYes');
-		
-		    let currentForm = null;
-		    let actionType = "";
-		
-		    document.querySelectorAll('.btn-open-modal').forEach(button => {
-		        button.addEventListener('click', function() {
-		            actionType = this.getAttribute('data-action');
-		            const id = this.getAttribute('data-id');
-	
-		            currentForm = this.closest('form');
-		
-		            modalBody.textContent = "¿Estás seguro que querés eliminar esta asociación?";
-		           
-		
-		            modal.show();
-		        });
-		    });
+			document.addEventListener("DOMContentLoaded", function() {
+			    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+			    const modalBody = document.getElementById('confirmModalBody');
+			    const confirmBtn = document.getElementById('confirmModalYes');
 			
-		    confirmBtn.addEventListener('click', function() {
-		        if (currentForm) {
-		            currentForm.submit();
-		        }
-		        modal.hide();
-		    });
-		});
+			    let currentForm = null;
+			    let actionType = "";
+			
+			    document.querySelectorAll('.btn-open-modal').forEach(button => {
+			        button.addEventListener('click', function() {
+			            actionType = this.getAttribute('data-action');
+			            const id = this.getAttribute('data-id');
+		
+			            currentForm = this.closest('form');
+			
+			            modalBody.textContent = "¿Estás seguro que querés eliminar esta asociación?";
+			           
+			
+			            modal.show();
+			        });
+			    });
+				
+			    confirmBtn.addEventListener('click', function() {
+			        if (currentForm) {
+			            currentForm.submit();
+			        }
+			        modal.hide();
+			    });
+			});
 		</script>
 	</body>
 </html>

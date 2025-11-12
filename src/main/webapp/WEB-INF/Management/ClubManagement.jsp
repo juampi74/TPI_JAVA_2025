@@ -16,18 +16,19 @@
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	
 	    <link href="style/start.css" rel="stylesheet">
-		
-		<style>
-	    	table {
-	    		text-align: center;
-	    		
+	    
+	    <style>
+	    
+	    	.table {
+	    		text-align: center;	
 	    	}
+	    
 	    </style>
 		
 		<%
 			LinkedList<Club> cl = (LinkedList<Club>) request.getAttribute("clubsList");
+			boolean emptyList = (cl == null || cl.isEmpty());
 		%>
-		
 	</head>
 	<body style="background-color: #10442E;">
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
@@ -42,62 +43,81 @@
 					    </button>
 		    		</form>				
 				</div>
-            	<div class="col-12 col-sm-12 col-lg-12">
-                	<div class="table-responsive">
-                    	<table class="table">
-                    		<thead>
-                    			<tr>
-                    				<th>Escudo</th>
-						            <th>Nombre</th>
-						            <th>Fecha de Fundación</th>
-						            <th>Teléfono</th>
-						            <th>Email</th>
-						            <th>Presupuesto</th>
-						            <th>Estadio</th>
-						            <th>Editar</th>
-                       				<th>Eliminar</th>
-                      			</tr>
-                      		</thead>
-                    		<tbody>
-                    		<%
-                    	    	for (Club c : cl) {
-                    		%>
-                    			<tr>
-                    				<td>
-                    					<img alt="" src="<%=c.getBadgeImage()%>" width="35" height="45">
-                    				</td>
-                    				<td><%=c.getName()%></td>
-                    				<td><%=c.getFoundationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-                    				<td><%=c.getPhoneNumber()%></td>
-                    				<td><%=c.getEmail()%></td>
-                    				<td><%=c.getBudget()%></td>
-                    				<td><%=c.getStadium().getName()%></td>
-                    				<td>
-                    					<form method="get" action="actionclub" style="display:inline;" class="d-flex justify-content-center align-items-center">
-                    						<input type="hidden" name="action" value="edit" />
-		        							<input type="hidden" name="id" value="<%=c.getId()%>" />
-		        							<button type="submit" class="btn btn-warning btn-sm">
-												<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-		    							</form>
-                    				</td>
-                    				<td>
-                    					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
-											<input type="hidden" name="action" value="delete" />
-											<input type="hidden" name="id" value="<%=c.getId()%>" />
-											<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-id="<%= c.getId() %>">
-												<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
-											</button>
-										</form>
-                    				</td>
-                    			</tr>
-                    		<% 
-                    			}
-                    		%>
-                    		</tbody>
-						</table>        		
+            	<% if (emptyList) { %>
+					<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+						<div class="col-12">
+					  		<div class="empty-state text-center py-5 px-4 my-2 text-white">
+					      		<div class="mx-auto mb-2 pulse" style="width:72px;height:72px;">
+						        <svg viewBox="0 0 24 24" width="72" height="72" fill="none" aria-hidden="true">
+						          <path d="M3 7.5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7.5Z" stroke="white" stroke-opacity=".9" stroke-width="1.5"/>
+						          <path d="M12 12h6M15 9v6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+						        </svg>
+					      	</div>
+						    <h3 class="fw-bold mb-2">Todavía no agregaste clubes</h3>
+						    	<p class="mb-0" style="opacity:.85;">
+						        	No hay clubes registrados. Usá el botón de <strong>(+)</strong> cuando quieras agregar el primero.
+						      	</p>
+					    	</div>
+					  	</div>
 					</div>
-				</div>
+				<% } else { %>
+	            	<div class="col-12 col-sm-12 col-lg-12">
+	                	<div class="table-responsive">
+	                    	<table class="table">
+	                    		<thead>
+	                    			<tr>
+	                    				<th>Escudo</th>
+							            <th>Nombre</th>
+							            <th>Fecha de Fundación</th>
+							            <th>Teléfono</th>
+							            <th>Email</th>
+							            <th>Presupuesto</th>
+							            <th>Estadio</th>
+							            <th>Editar</th>
+	                       				<th>Eliminar</th>
+	                      			</tr>
+	                      		</thead>
+	                    		<tbody>
+	                    		<%
+	                    	    	for (Club c : cl) {
+	                    		%>
+	                    			<tr>
+	                    				<td>
+	                    					<img alt="" src="<%=c.getBadgeImage()%>" width="35" height="45">
+	                    				</td>
+	                    				<td><%=c.getName()%></td>
+	                    				<td><%=c.getFoundationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+	                    				<td><%=c.getPhoneNumber()%></td>
+	                    				<td><%=c.getEmail()%></td>
+	                    				<td><%=c.getBudget()%></td>
+	                    				<td><%=c.getStadium().getName()%></td>
+	                    				<td>
+	                    					<form method="get" action="actionclub" style="display:inline;" class="d-flex justify-content-center align-items-center">
+	                    						<input type="hidden" name="action" value="edit" />
+			        							<input type="hidden" name="id" value="<%=c.getId()%>" />
+			        							<button type="submit" class="btn btn-warning btn-sm">
+													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
+												</button>
+			    							</form>
+	                    				</td>
+	                    				<td>
+	                    					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
+												<input type="hidden" name="action" value="delete" />
+												<input type="hidden" name="id" value="<%=c.getId()%>" />
+												<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-id="<%= c.getId() %>">
+													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
+												</button>
+											</form>
+	                    				</td>
+	                    			</tr>
+	                    		<% 
+	                    			}
+	                    		%>
+	                    		</tbody>
+							</table>        		
+						</div>
+					</div>
+				<% } %>
 			</div>          	
 		</div>
 		<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
