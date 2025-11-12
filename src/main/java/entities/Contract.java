@@ -8,7 +8,7 @@ public class Contract {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private double salary;
-	private double releaseClause;
+	private Double releaseClause;
 	private LocalDate releaseDate;
 	private Person person;
 	private Club club;
@@ -61,13 +61,13 @@ public class Contract {
 	
 	}
 	
-	public double getReleaseClause() {
+	public Double getReleaseClause() {
 	
 		return releaseClause;
 	
 	}
 	
-	public void setReleaseClause(double releaseClause) {
+	public void setReleaseClause(Double releaseClause) {
 	
 		this.releaseClause = releaseClause;
 	

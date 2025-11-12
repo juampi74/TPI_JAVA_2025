@@ -88,7 +88,7 @@
 	                    				<td><%=c.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=c.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=c.getSalary()%></td>
-	                    				<td><%=c.getReleaseClause()%></td>
+	                    				<td><%=c.getReleaseClause() != null ? c.getReleaseClause() : "-"%></td>
 	                    				<td><%= c.getReleaseDate() != null ? c.getReleaseDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-" %></td>
 	                    				<td>
 	                    					<%

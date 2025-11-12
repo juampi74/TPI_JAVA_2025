@@ -193,7 +193,17 @@ public class DataContract {
             stmt.setObject(1, c.getStartDate());
             stmt.setObject(2, c.getEndDate());
             stmt.setDouble(3, c.getSalary());
-            stmt.setDouble(4, c.getReleaseClause());
+            
+            if (c.getReleaseClause() != null) {
+            	
+                stmt.setDouble(4, c.getReleaseClause());
+            
+            } else {
+            
+            	stmt.setNull(4, java.sql.Types.DOUBLE);
+            
+            }
+
             stmt.setObject(5, c.getReleaseDate());
             
             stmt.setInt(6, c.getPerson().getId());
@@ -325,7 +335,18 @@ public class DataContract {
         contract.setStartDate(rs.getObject("start_date", LocalDate.class));
         contract.setEndDate(rs.getObject("end_date", LocalDate.class));
         contract.setSalary(rs.getDouble("salary"));
-        contract.setReleaseClause(rs.getDouble("release_clause"));
+        
+        Double value = rs.getDouble("release_clause");
+        if (rs.wasNull()) {
+        	
+            contract.setReleaseClause(null);
+        
+        } else {
+        
+        	contract.setReleaseClause(value);
+        
+        }
+
         contract.setReleaseDate(rs.getObject("release_date", LocalDate.class));
 
         contract.setPerson(person);

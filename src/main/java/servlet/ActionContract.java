@@ -26,8 +26,18 @@ public class ActionContract extends HttpServlet {
 	    if (action.equals("edit")) contract.setId(Integer.parseInt(request.getParameter("id")));
 	    contract.setStartDate(LocalDate.parse(request.getParameter("startDate")));
 	    contract.setEndDate(LocalDate.parse(request.getParameter("endDate")));
+	    String releaseClause = request.getParameter("releaseClause"); 
+	    if (releaseClause != null && !releaseClause.isEmpty()) {
+	    	
+	    	contract.setReleaseClause(Double.parseDouble(request.getParameter("releaseClause")));
+	    
+	    } else {
+	    	
+	        contract.setReleaseClause(null);
+	        
+	    }
+	    
 	    contract.setSalary(Double.parseDouble(request.getParameter("salary")));
-	    contract.setReleaseClause(Double.parseDouble(request.getParameter("releaseClause")));
 	    if (action.equals("release")) contract.setReleaseDate(LocalDate.parse(request.getParameter("releaseDate")));
 	    
 	    PersonRole personRole = ctrl.getRoleByPersonId(Integer.parseInt(request.getParameter("id_person")));

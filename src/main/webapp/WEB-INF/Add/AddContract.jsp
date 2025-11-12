@@ -46,7 +46,7 @@
 		
 		        <div class="form-group">
 		            <label for="releaseClause">Cláusula de Rescisión:</label>
-		            <input type="number" class="form-control" id="releaseClause" name="releaseClause" required />
+		            <input type="number" class="form-control" id="releaseClause" name="releaseClause" />
 		        </div>
 		        
 		        <div class="form-group">
