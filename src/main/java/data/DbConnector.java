@@ -41,7 +41,7 @@ public class DbConnector {
 		return instance;
 	}
 	
-	public Connection getConn() {
+	public Connection getConn() throws SQLException {
 		
 		try {
 			
@@ -55,6 +55,7 @@ public class DbConnector {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		}
 		
@@ -63,7 +64,7 @@ public class DbConnector {
 		return conn;
 	}
 	
-	public void releaseConn() {
+	public void releaseConn() throws SQLException {
 		
 		connected--;
 		
@@ -71,7 +72,9 @@ public class DbConnector {
 			
 			if (connected <= 0) {
 				
-				conn.close();
+				if (conn != null) {
+					conn.close();
+				}
 			
 			}
 		

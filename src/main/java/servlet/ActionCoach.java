@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -42,7 +43,7 @@ public class ActionCoach extends HttpServlet {
 	
 	}
 	
-	private boolean checkContracts(Integer id, Logic ctrl) {
+	private boolean checkContracts(Integer id, Logic ctrl) throws SQLException {
 
     	LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
     	return contracts.size() == 0;	
@@ -55,23 +56,31 @@ public class ActionCoach extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)) {
+		try {
 			
-			Coach coach = ctrl.getCoachById(Integer.parseInt(request.getParameter("id")));
-			request.setAttribute("coach", coach);
-			request.getRequestDispatcher("WEB-INF/Edit/EditCoach.jsp").forward(request, response);
-		
-		} else if ("add".equals(action)) {
+			if ("edit".equals(action)) {
+				
+				Coach coach = ctrl.getCoachById(Integer.parseInt(request.getParameter("id")));
+				request.setAttribute("coach", coach);
+				request.getRequestDispatcher("WEB-INF/Edit/EditCoach.jsp").forward(request, response);
 			
-			request.getRequestDispatcher("WEB-INF/Add/AddCoach.jsp").forward(request, response);
-		
-		} else {
+			} else if ("add".equals(action)) {
+				
+				request.getRequestDispatcher("WEB-INF/Add/AddCoach.jsp").forward(request, response);
 			
-			LinkedList<Coach> coaches = ctrl.getAllCoaches();
-		    request.setAttribute("coachesList", coaches);
-		    request.getRequestDispatcher("/WEB-INF/Management/CoachManagement.jsp").forward(request, response);
-		
+			} else {
+				
+				LinkedList<Coach> coaches = ctrl.getAllCoaches();
+			    request.setAttribute("coachesList", coaches);
+			    request.getRequestDispatcher("/WEB-INF/Management/CoachManagement.jsp").forward(request, response);
+			
+			}
+			
+		} catch (SQLException e) {
+			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 		}
+		
 		
 	}
 
@@ -81,56 +90,54 @@ public class ActionCoach extends HttpServlet {
 
         Logic ctrl = new Logic();
         
-        if ("add".equals(action)) {
+        try {
         	
-        	Coach c = buildCoachFromRequest(request);
-        	
-        	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
-        	
-        		ctrl.addCoach(c);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
-        	
-        } else if ("edit".equals(action)) {
-        	
-        	Coach c = buildCoachFromRequest(request);
-        	
-        	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
-            
-        		ctrl.updateCoach(c);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
+        	if ("add".equals(action)) {
+            	
+            	Coach c = buildCoachFromRequest(request);
+            	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
+            		ctrl.addCoach(c);
+            	} else {
+            		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            	}
+            	
+            } else if ("edit".equals(action)) {
+            	
+            	Coach c = buildCoachFromRequest(request);
+            	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
+                	ctrl.updateCoach(c);
+            	} else {
+            		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            	}
+        	    
+            } else if ("delete".equals(action)){
+            	
+            	Integer id_c = Integer.parseInt(request.getParameter("id")); 
+        	    if (checkContracts(id_c, ctrl)) {
+
+					ctrl.deleteCoach(id_c);
+
+        	    } else {
+        	    	
+					request.setAttribute("errorMessage", "No se puede eliminar un técnico con contratos activos");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	    
+				}
+        	    
+            }
     	    
-        } else if ("delete".equals(action)){
+    	    LinkedList<Coach> coaches = ctrl.getAllCoaches();
+    		request.setAttribute("coachesList", coaches);
+    	    request.getRequestDispatcher("WEB-INF/Management/CoachManagement.jsp").forward(request, response);
         	
-        	Integer id_c = Integer.parseInt(request.getParameter("id")); 
-    	    
-        	if (checkContracts(id_c, ctrl)) {
-        	
-        		ctrl.deleteCoach(id_c);
-    	    
-        	} else {
-    	    
-        		request.setAttribute("errorMessage", "No se puede eliminar un técnico con contratos activos");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-    	    
-        	}
-    	    
-        }
-	    
-	    LinkedList<Coach> coaches = ctrl.getAllCoaches();
-		request.setAttribute("coachesList", coaches);
-	    request.getRequestDispatcher("WEB-INF/Management/CoachManagement.jsp").forward(request, response);
+        } catch (SQLException e) {
+
+        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			
+        }        
 	    
 	}
 

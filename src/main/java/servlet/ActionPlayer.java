@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -13,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import entities.Club;
 import entities.Contract;
 import entities.Player;
-import entities.President;
 import enums.PersonRole;
 import logic.Logic;
 
@@ -45,7 +45,7 @@ public class ActionPlayer extends HttpServlet {
 	
 	}
 	
-	private boolean checkContracts(Integer id, Logic ctrl) {
+	private boolean checkContracts(Integer id, Logic ctrl) throws SQLException {
 
     	LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
     	return contracts.size() == 0;	
@@ -58,34 +58,41 @@ public class ActionPlayer extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)) {
+		try {
 			
-			Player player = ctrl.getPlayerById(Integer.parseInt(request.getParameter("id")));
-			request.setAttribute("player", player);
-			request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
-		
-		} else if ("add".equals(action)) {
+			if ("edit".equals(action)) {
+				
+				Player player = ctrl.getPlayerById(Integer.parseInt(request.getParameter("id")));
+				request.setAttribute("player", player);
+				request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
 			
-			request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
-		
-		} else {
-			String clubIdParam = request.getParameter("clubId");
-			LinkedList<Player> players;
-			if (clubIdParam != null && !clubIdParam.isEmpty()) {
-		        int clubId = Integer.parseInt(clubIdParam);
-		        players = ctrl.getPlayersByClub(clubId);
-		    } else {
-		        players = ctrl.getAllPlayers();
-		    }
+			} else if ("add".equals(action)) {
+				
+				request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
+			
+			} else {
+				String clubIdParam = request.getParameter("clubId");
+				LinkedList<Player> players;
+				if (clubIdParam != null && !clubIdParam.isEmpty()) {
+			        int clubId = Integer.parseInt(clubIdParam);
+			        players = ctrl.getPlayersByClub(clubId);
+			    } else {
+			        players = ctrl.getAllPlayers();
+			    }
 
-		    request.setAttribute("playersList", players);
-		    
-		    LinkedList<Club> clubs = ctrl.getAllClubs();
-		    request.setAttribute("clubsList", clubs);
-		    
-		    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
-		
+			    request.setAttribute("playersList", players);
+			    
+			    LinkedList<Club> clubs = ctrl.getAllClubs();
+			    request.setAttribute("clubsList", clubs);
+			    
+			    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
+			
+			}
+		} catch (SQLException e) {
+			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 		}
+		
 		
 	}
 
@@ -95,60 +102,68 @@ public class ActionPlayer extends HttpServlet {
 
         Logic ctrl = new Logic();
         
-        if ("add".equals(action)) {
+        try {
         	
-        	Player player = buildPlayerFromRequest(request);
-        	
-        	if (checkBirthdate(player.getBirthdate())) {
-        	
-        		ctrl.addPlayer(player);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
-        	
-        } else if ("edit".equals(action)) {
-        	
-        	Player player = buildPlayerFromRequest(request);
-        	
-        	if (checkBirthdate(player.getBirthdate())) {
-        	
-        		ctrl.updatePlayer(player);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
+        	if ("add".equals(action)) {
+            	
+            	Player player = buildPlayerFromRequest(request);
+
+            	if (checkBirthdate(player.getBirthdate())) {
+
+            		ctrl.addPlayer(player);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
+            	
+            } else if ("edit".equals(action)) {
+            	
+            	Player player = buildPlayerFromRequest(request);
+
+            	if (checkBirthdate(player.getBirthdate())) {
+
+            		ctrl.updatePlayer(player);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
+        	    
+            } else if ("delete".equals(action)){
+
+            	Integer id_player = Integer.parseInt(request.getParameter("id")); 
+
+        	    if (checkContracts(id_player, ctrl)) {
+
+            		ctrl.deletePlayer(id_player);
+
+        	    } else {
+
+        	    	request.setAttribute("errorMessage", "No se puede eliminar un jugador con contratos activos");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+        	    }
+            }
     	    
-        } else if ("delete".equals(action)){
-        
-        	Integer id_player = Integer.parseInt(request.getParameter("id")); 
+    	    LinkedList<Player> players = ctrl.getAllPlayers();
+    		request.setAttribute("playersList", players);
+    		
+    		LinkedList<Club> clubs = ctrl.getAllClubs();
+    		request.setAttribute("clubsList", clubs);
+    		
+    	    request.getRequestDispatcher("WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
     	    
-        	if (checkContracts(id_player, ctrl)) {
-        	
-        		ctrl.deletePlayer(id_player);
-    	    
-        	} else {
-    	    
-        		request.setAttribute("errorMessage", "No se puede eliminar un jugador con contratos activos");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-    	    
-        	}
-        
+        } catch (SQLException e) {
+
+        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			
         }
-	    
-	    LinkedList<Player> players = ctrl.getAllPlayers();
-		request.setAttribute("playersList", players);
-		
-		LinkedList<Club> clubs = ctrl.getAllClubs();
-		request.setAttribute("clubsList", clubs);
-		
-	    request.getRequestDispatcher("WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
 	    
 	}
 

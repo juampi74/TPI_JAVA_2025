@@ -20,42 +20,38 @@ public class DataContract {
 	    "INNER JOIN person p ON c.id_person = p.id " +
 	    "INNER JOIN club cl ON c.id_club = cl.id";
 	
-	public LinkedList<Contract> getAll() {
+	public LinkedList<Contract> getAll() throws SQLException {
 	    
-	    LinkedList<Contract> contracts = new LinkedList<>();
-	    Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		LinkedList<Contract> contracts = new LinkedList<>();
 
 	    try {
 	        
-	        conn = DbConnector.getInstance().getConn(); 
-	        
-	        try (Statement stmt = conn.createStatement();
-	             ResultSet rs = stmt.executeQuery(SELECT_ALL_CONTRACTS_JOINED)) {
-
-	            while (rs.next()) {
-	                
-	                try {
-	                    
-	                    Contract contract = mapFullContract(rs);
-	                    
-	                    contracts.add(contract);
-	                    
-	                } catch (SQLException e) {
-	                    
-	                    System.err.println(e.getMessage() + ". Omitiendo contrato.");
-	                    	                
-	                }
+	    	stmt = DbConnector.getInstance().getConn().createStatement();
+			rs = stmt.executeQuery(SELECT_ALL_CONTRACTS_JOINED);
+	       
+			if (rs != null) {
+				 
+				while (rs.next()) {
+                    
+                    Contract contract = mapFullContract(rs);
+                    
+                    if (contract != null) {
+                    	contracts.add(contract);
+                    }
+                
 	            }
-	            
-	        }
-	        
+			}
+ 
 	    } catch (SQLException e) {
 	        
 	        e.printStackTrace();
+	        throw new SQLException("No se pudo conectar a la base de datos.", e);
 	        
 	    } finally {
 	        
-	        if (conn != null) DbConnector.getInstance().releaseConn();
+	    	closeResources(rs, stmt);
 	        
 	    }
 	    
@@ -63,37 +59,34 @@ public class DataContract {
 	    
 	}
     
-	public Contract getById(int id) {
+	public Contract getById(int id) throws SQLException {
         
         Contract contract = null;
-        Connection conn = null;
-        String query = SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id = ?";
+        PreparedStatement stmt = null;
+		ResultSet rs = null;
 
         try {
             
-            conn = DbConnector.getInstance().getConn();
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        			SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id = ?"
+    			);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+                    
+            if (rs != null && rs.next()) {
+                
+            	contract = mapFullContract(rs);
             
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                
-                stmt.setInt(1, id);
-                
-                try (ResultSet rs = stmt.executeQuery()) {
-                    
-                    if (rs != null && rs.next()) {
-                        
-                    	contract = mapFullContract(rs);
-                    
-                    }
-                }
             }
             
         } catch (SQLException e) {
             
             e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
             
-            if (conn != null) DbConnector.getInstance().releaseConn();
+        	closeResources(rs, stmt);
         
         }
         
@@ -102,185 +95,173 @@ public class DataContract {
 	
 	
 
-	public LinkedList<Contract> getByPersonId(int id) {
+	public LinkedList<Contract> getByPersonId(int id) throws SQLException {
 	    
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 	    LinkedList<Contract> contracts = new LinkedList<Contract>();
-	    Connection conn = null;
-	    String query = SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_person = ?";
-	
+	    
 	    try {
+	    	
+	    	stmt = DbConnector.getInstance().getConn().prepareStatement(
+	    		SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_person = ?"
+			);
 	        
-	        conn = DbConnector.getInstance().getConn();
-	        
-	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-	            
 	            stmt.setInt(1, id);
 	            
-	            try (ResultSet rs = stmt.executeQuery()) {
+	            rs = stmt.executeQuery();
 	                
-	            	while (rs.next()) {
-		                
-		                try {
-		                    
-		                    Contract contract = mapFullContract(rs);
-		                    
-		                    contracts.add(contract);
-		                    
-		                } catch (SQLException e) {
-		                    
-		                    System.err.println(e.getMessage() + ". Omitiendo contrato.");
-		                    	                
-		                }
-		            }
-	            }
-	        }
-	        
-	    } catch (SQLException e) {
-	        
-	        e.printStackTrace();
-	    
-	    } finally {
-	        
-	        if (conn != null) DbConnector.getInstance().releaseConn();
-	    
-	    }
-	    
-	    return contracts;
-	}
-	
-	public LinkedList<Contract> getByClubId(int id) {
-	    
-	    LinkedList<Contract> contracts = new LinkedList<Contract>();
-	    Connection conn = null;
-	    String query = SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_club = ?";
-	
-	    try {
-	        
-	        conn = DbConnector.getInstance().getConn();
-	        
-	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-	            
-	            stmt.setInt(1, id);
-	            try (ResultSet rs = stmt.executeQuery()) {
-	             
+	            if (rs != null) {
 	            	
 	            	while (rs.next()) {
-		                try {
 		                    
-		                    Contract contract = mapFullContract(rs);
+	                    Contract contract = mapFullContract(rs);
+	                    if (contract != null) {
+	                    	contracts.add(contract);
 		                    
-		                    contracts.add(contract);
-		                    
-		                } catch (SQLException e) {
-		                    
-		                    System.err.println(e.getMessage() + ". Omitiendo contrato.");
-		                    	                
-		                }
-		            }
+	                    }
+	            	}
 	            }
-	        }
 	        
 	    } catch (SQLException e) {
 	        
 	        e.printStackTrace();
+	        throw new SQLException("No se pudo conectar a la base de datos.", e);
 	    
 	    } finally {
 	        
-	        if (conn != null) DbConnector.getInstance().releaseConn();
+	    	closeResources(rs, stmt);
+	    
+	    }
+	    
+	    return contracts;
+	}
+	
+	public LinkedList<Contract> getByClubId(int id) throws SQLException {
+	    
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+	    LinkedList<Contract> contracts = new LinkedList<Contract>();
+	
+	    try {
+	        
+	    	stmt = DbConnector.getInstance().getConn().prepareStatement(
+	    		SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_club = ?"
+			);	        
+	       
+	            
+	            stmt.setInt(1, id);
+	            rs = stmt.executeQuery();
+	            
+	            if( rs != null) {
+	            			
+	            	
+	            	while (rs.next()) {
+	            		
+	            		Contract contract = mapFullContract(rs);    
+	            		
+	            		if(contract != null) {
+		                    contracts.add(contract);
+	            		}
+		                    
+		            }
+	            }
+	        
+	    } catch (SQLException e) {
+	        
+	        e.printStackTrace();
+	        throw new SQLException("No se pudo conectar a la base de datos.", e);
+	    
+	    } finally {
+	        
+	    	closeResources(rs, stmt);
 	    
 	    }
 	    
 	    return contracts;
 	}
 
-    public void add(Contract c) {
+    public void add(Contract c) throws SQLException {
         
-        Connection conn = null;
-        String query = "INSERT INTO contract (start_date, end_date, salary, release_clause, release_date, id_person, id_club) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    	PreparedStatement stmt = null;
         
         try {
+                  
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        		"INSERT INTO contract (start_date, end_date, salary, release_clause, release_date, id_person, id_club) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    		);
+            stmt.setObject(1, c.getStartDate());
+            stmt.setObject(2, c.getEndDate());
+            stmt.setDouble(3, c.getSalary());
+            stmt.setDouble(4, c.getReleaseClause());
+            stmt.setObject(5, c.getReleaseDate());
             
-            conn = DbConnector.getInstance().getConn();
+            stmt.setInt(6, c.getPerson().getId());
+            stmt.setInt(7, c.getClub().getId());
             
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.executeUpdate();
                 
-                stmt.setObject(1, c.getStartDate());
-                stmt.setObject(2, c.getEndDate());
-                stmt.setDouble(3, c.getSalary());
-                stmt.setDouble(4, c.getReleaseClause());
-                stmt.setObject(5, c.getReleaseDate());
-                
-                stmt.setInt(6, c.getPerson().getId());
-                stmt.setInt(7, c.getClub().getId());
-                
-                stmt.executeUpdate();
-                
-            }
+            
 
         } catch (SQLException e) {
             
             e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
             
-            if (conn != null) DbConnector.getInstance().releaseConn();
+        	closeResources(null, stmt);
         
         }
     }
     
-    public void release(int id) {
+    public void release(int id) throws SQLException {
     	
-    	Connection conn = null;
-        String query = "UPDATE contract SET release_date = curdate() WHERE id = ?";
+    	PreparedStatement stmt = null;
         
         try {
             
-            conn = DbConnector.getInstance().getConn();
-            
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                
-                stmt.setInt(1, id);
-                stmt.executeUpdate();
-                
-            }
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        			"UPDATE contract SET release_date = curdate() WHERE id = ?"
+    			);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
     
         } catch (SQLException e) {
             
             e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
             
-            if (conn != null) DbConnector.getInstance().releaseConn();
+        	closeResources(null, stmt);
         
         }
     	
     }
 
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         
-        Connection conn = null;
-        String query = "DELETE FROM contract WHERE id = ?";
-        
-        try {
-            
-            conn = DbConnector.getInstance().getConn();
-            
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                
-                stmt.setInt(1, id);
-                stmt.executeUpdate();
-                
-            }
-    
-        } catch (SQLException e) {
-            
-            e.printStackTrace();
-        
-        } finally {
-            
-            if (conn != null) DbConnector.getInstance().releaseConn();
-        
-        }
+    	PreparedStatement stmt = null;
+		
+		try {
+			
+			stmt = DbConnector.getInstance().getConn().prepareStatement(
+				"DELETE FROM contract WHERE id = ?"
+			);
+			stmt.setInt(1, id);
+			stmt.executeUpdate();
+	
+		} catch (SQLException e) {
+	        
+			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
+		
+		} finally {
+	    
+			closeResources(null, stmt);
+		
+		}
         
     }
 	
@@ -353,5 +334,21 @@ public class DataContract {
         return contract;
         
     }
+    
+    private void closeResources(ResultSet rs, Statement stmt) {
+        
+		try {
+            
+			if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            DbConnector.getInstance().releaseConn();
+        
+		} catch (SQLException e) {
+        
+			e.printStackTrace();
+        
+		}
+    
+	}
 	
 }

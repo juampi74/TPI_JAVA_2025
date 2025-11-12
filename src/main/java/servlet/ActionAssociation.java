@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -36,7 +37,7 @@ public class ActionAssociation extends HttpServlet {
 	
 	}
 	
-	private boolean checkTournaments(Integer id, Logic ctrl) {
+	private boolean checkTournaments(Integer id, Logic ctrl) throws SQLException {
 		
 		LinkedList<Tournament> tournaments = ctrl.getTournamentsByAssociationId(id);
 		return tournaments.size() == 0;
@@ -49,23 +50,32 @@ public class ActionAssociation extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)) {
-			
-			Association association = ctrl.getAssociationById(Integer.parseInt(request.getParameter("id")));
-			request.setAttribute("association", association);
-			request.getRequestDispatcher("WEB-INF/Edit/EditAssociation.jsp").forward(request, response);
 		
-		} else if ("add".equals(action)) {
+		try {
 			
-			request.getRequestDispatcher("WEB-INF/Add/AddAssociation.jsp").forward(request, response);
-		
-		} else {
+			if ("edit".equals(action)) {
+				
+				Association association = ctrl.getAssociationById(Integer.parseInt(request.getParameter("id")));
+				request.setAttribute("association", association);
+				request.getRequestDispatcher("WEB-INF/Edit/EditAssociation.jsp").forward(request, response);
 			
-			LinkedList<Association> associations = ctrl.getAllAssociations();
-		    request.setAttribute("associationsList", associations);
-		    request.getRequestDispatcher("/WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
-		
+			} else if ("add".equals(action)) {
+				
+				request.getRequestDispatcher("WEB-INF/Add/AddAssociation.jsp").forward(request, response);
+			
+			} else {
+				
+				LinkedList<Association> associations = ctrl.getAllAssociations();
+			    request.setAttribute("associationsList", associations);
+			    request.getRequestDispatcher("/WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
+			
+			}
+			
+		} catch(SQLException e) {
+			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 		}
+		
 	
 	}
 
@@ -75,54 +85,64 @@ public class ActionAssociation extends HttpServlet {
 
         Logic ctrl = new Logic();
         
-        if ("add".equals(action)) {
+        try {
         	
-        	Association association = buildAssociationFromRequest(request, action);
-        	
-        	if (checkCreationDate(association.getCreationDate())) {
-        	
-        		ctrl.addAssociation(association);
-        	
-        	} else {
-        		
-        		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	}
-        	
-        } else if ("edit".equals(action)) {
-        	
-        	Association association = buildAssociationFromRequest(request, action);
-        	
-        	if (checkCreationDate(association.getCreationDate())) {
-        	
-        		ctrl.updateAssociation(association);
-        	
-        	} else {
-        		
-        		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
+        	if ("add".equals(action)) {
+            	
+            	Association association = buildAssociationFromRequest(request, action);
+
+            	if (checkCreationDate(association.getCreationDate())) {
+
+            		ctrl.addAssociation(association);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
+            	
+            } else if ("edit".equals(action)) {
+            	
+            	Association association = buildAssociationFromRequest(request, action);
+
+            	if (checkCreationDate(association.getCreationDate())) {
+
+            		ctrl.updateAssociation(association);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
+        	    
+            } else if ("delete".equals(action)){
+            	
+            	Integer id = Integer.parseInt(request.getParameter("id"));
+
+            	if (checkTournaments(id, ctrl)) {
+
+            		ctrl.deleteAssociation(id);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "No se puede eliminar una asociación que organiza torneos");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+					
+            	}
+            }
     	    
-        } else if ("delete".equals(action)){
+    	    LinkedList<Association> associations = ctrl.getAllAssociations();
+    		request.setAttribute("associationsList", associations);
+    	    request.getRequestDispatcher("WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
         	
-        	Integer id = Integer.parseInt(request.getParameter("id"));
+        } catch(SQLException e) {
         	
-        	if (checkTournaments(id, ctrl)) {
-        		
-        		ctrl.deleteAssociation(id);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "No se puede eliminar una asociación que organiza torneos");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
-        }
-	    
-	    LinkedList<Association> associations = ctrl.getAllAssociations();
-		request.setAttribute("associationsList", associations);
-	    request.getRequestDispatcher("WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
+        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+	        
+        }       
 	
 	}
 

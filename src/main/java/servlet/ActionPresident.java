@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -45,23 +46,33 @@ public class ActionPresident extends HttpServlet {
 		
 		Logic ctrl = new Logic();
 		
-		if ("edit".equals(action)) {
+		try {
 			
-			President president = ctrl.getPresidentById(Integer.parseInt(request.getParameter("id")));
-			request.setAttribute("president", president);
-			request.getRequestDispatcher("WEB-INF/Edit/EditPresident.jsp").forward(request, response);
-		
-		} else if ("add".equals(action)) {
+			if ("edit".equals(action)) {
+				
+				President president = ctrl.getPresidentById(Integer.parseInt(request.getParameter("id")));
+				request.setAttribute("president", president);
+				request.getRequestDispatcher("WEB-INF/Edit/EditPresident.jsp").forward(request, response);
 			
-			request.getRequestDispatcher("WEB-INF/Add/AddPresident.jsp").forward(request, response);
-		
-		} else {
+			} else if ("add".equals(action)) {
+				
+				request.getRequestDispatcher("WEB-INF/Add/AddPresident.jsp").forward(request, response);
 			
-			LinkedList<President> presidents = ctrl.getAllPresidents();
-		    request.setAttribute("presidentsList", presidents);
-		    request.getRequestDispatcher("/WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
-		
+			} else {
+				
+				LinkedList<President> presidents = ctrl.getAllPresidents();
+			    request.setAttribute("presidentsList", presidents);
+			    request.getRequestDispatcher("/WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
+			
+			}
+			
+		} catch (SQLException e) {
+
+			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			
 		}
+		
 		
 	}
 
@@ -71,45 +82,54 @@ public class ActionPresident extends HttpServlet {
 
         Logic ctrl = new Logic();
         
-        if ("add".equals(action)) {
+        try {
         	
-        	President president =buildPresidentFromRequest(request);
-        	
-        	if (checkBirthdate(president.getBirthdate())) {
-        	
-        		ctrl.addPresident(president);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
-        	
-        } else if ("edit".equals(action)) {
-        	
-        	President president =buildPresidentFromRequest(request);
-        	
-        	if (checkBirthdate(president.getBirthdate())) {
-        	
-        		ctrl.updatePresident(president);
-        	
-        	} else {
-        	
-        		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-        	}
+        	if ("add".equals(action)) {
+            	
+            	President president =buildPresidentFromRequest(request);
+
+            	if (checkBirthdate(president.getBirthdate())) {
+
+            		ctrl.addPresident(president);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
+            	
+            } else if ("edit".equals(action)) {
+            	
+            	President president =buildPresidentFromRequest(request);
+
+            	if (checkBirthdate(president.getBirthdate())) {
+
+            		ctrl.updatePresident(president);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
+        	    
+            } else if ("delete".equals(action)){
+            	
+        	    ctrl.deletePresident(Integer.parseInt(request.getParameter("id")));
+        	    
+            }
     	    
-        } else if ("delete".equals(action)){
-        	
-    	    ctrl.deletePresident(Integer.parseInt(request.getParameter("id")));
+    	    LinkedList<President> presidents = ctrl.getAllPresidents();
+    		request.setAttribute("presidentsList", presidents);
+    	    request.getRequestDispatcher("WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
     	    
+        } catch (SQLException e) {
+
+        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			
         }
-	    
-	    LinkedList<President> presidents = ctrl.getAllPresidents();
-		request.setAttribute("presidentsList", presidents);
-	    request.getRequestDispatcher("WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
 	    
 	}
 

@@ -28,7 +28,7 @@ public class DataCoach {
 	private static final String SELECT_COACH_FIELDS = 
 		"SELECT id, fullname, birthdate, address, role, preferred_formation, coaching_license, license_obtained_date FROM person";
 	
-	public LinkedList<Coach> getAll(){
+	public LinkedList<Coach> getAll() throws SQLException {
 		
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -57,6 +57,7 @@ public class DataCoach {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 		} finally {
 			
@@ -68,7 +69,7 @@ public class DataCoach {
 		
 	}
 	
-	public LinkedList<Coach> getAvailable(){
+	public LinkedList<Coach> getAvailable() throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -100,6 +101,7 @@ public class DataCoach {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -111,7 +113,7 @@ public class DataCoach {
 		
 	}
 
-	public Coach getById(int id) {
+	public Coach getById(int id) throws SQLException {
 		
 		Coach coach = null;
 		PreparedStatement stmt = null;
@@ -134,6 +136,7 @@ public class DataCoach {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -144,7 +147,7 @@ public class DataCoach {
 	
 	}
 	
-	public LinkedList<Coach> getByFullname(String fullname){
+	public LinkedList<Coach> getByFullname(String fullname) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -177,6 +180,7 @@ public class DataCoach {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -188,7 +192,7 @@ public class DataCoach {
 		
 	}
 	
-	public void add(Coach td) {
+	public void add(Coach td) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -211,6 +215,7 @@ public class DataCoach {
 		}  catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -220,7 +225,7 @@ public class DataCoach {
     
 	}
 	
-	public void update(Coach td) {
+	public void update(Coach td) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -243,6 +248,7 @@ public class DataCoach {
 		}  catch (SQLException e) {
           
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -252,7 +258,7 @@ public class DataCoach {
 	
 	}
 	
-	public void delete(int id) {
+	public void delete(int id) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -267,6 +273,7 @@ public class DataCoach {
 		} catch (SQLException e) {
 	        
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 	    

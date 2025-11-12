@@ -26,7 +26,7 @@ public class DataPresident {
 	private static final String SELECT_PRESIDENT_FIELDS = 
 		"SELECT id, fullname, birthdate, address, role, management_policy FROM person";
 	
-	public LinkedList<President> getAll(){
+	public LinkedList<President> getAll() throws SQLException {
 		
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -55,6 +55,7 @@ public class DataPresident {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 		} finally {
 			
@@ -66,7 +67,7 @@ public class DataPresident {
 		
 	}
 
-	public President getById(int id) {
+	public President getById(int id) throws SQLException {
 		
 		President president = null;
 		PreparedStatement stmt = null;
@@ -89,6 +90,7 @@ public class DataPresident {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -99,7 +101,7 @@ public class DataPresident {
 	
 	}
 	
-	public LinkedList<President> getByFullname(String fullname){
+	public LinkedList<President> getByFullname(String fullname) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -132,6 +134,7 @@ public class DataPresident {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -143,7 +146,7 @@ public class DataPresident {
 		
 	}
 	
-	public void add(President p) {
+	public void add(President p) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -164,6 +167,7 @@ public class DataPresident {
 		}  catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -173,7 +177,7 @@ public class DataPresident {
     
 	}
 	
-	public void update(President p) {
+	public void update(President p) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -194,6 +198,7 @@ public class DataPresident {
 		}  catch (SQLException e) {
           
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -203,7 +208,7 @@ public class DataPresident {
 	
 	}
 	
-	public void delete(int id) {
+	public void delete(int id) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -218,6 +223,7 @@ public class DataPresident {
 		} catch (SQLException e) {
 	        
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 	    

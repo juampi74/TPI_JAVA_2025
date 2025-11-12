@@ -11,7 +11,7 @@ import entities.Association;
 
 public class DataAssociation {
 	
-	public LinkedList<Association> getAll(){
+	public LinkedList<Association> getAll() throws SQLException{
 		
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -40,6 +40,7 @@ public class DataAssociation {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 		} finally {
 			
@@ -52,6 +53,7 @@ public class DataAssociation {
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
+				throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 			}
 		
@@ -61,7 +63,7 @@ public class DataAssociation {
 
 	}
 
-	public Association getById(int id) {
+	public Association getById(int id) throws SQLException {
 		
 		Association association = null;
 		PreparedStatement stmt = null;
@@ -87,6 +89,7 @@ public class DataAssociation {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -99,6 +102,7 @@ public class DataAssociation {
 			} catch (SQLException e) {
 			
 				e.printStackTrace();
+				throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 			}
 		
@@ -109,7 +113,7 @@ public class DataAssociation {
 	}
 	
 	
-	public LinkedList<Association> getByName(String name) {
+	public LinkedList<Association> getByName(String name) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -141,6 +145,7 @@ public class DataAssociation {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -153,6 +158,7 @@ public class DataAssociation {
 			} catch (SQLException e) {
 			
 				e.printStackTrace();
+				throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 			}
 		
@@ -162,7 +168,7 @@ public class DataAssociation {
 		
 	}
 	
-	public void add(Association a) {
+	public void add(Association a) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet keyResultSet = null;
@@ -187,6 +193,7 @@ public class DataAssociation {
 		} catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -199,6 +206,7 @@ public class DataAssociation {
             } catch (SQLException e) {
             	
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
 		
@@ -206,7 +214,7 @@ public class DataAssociation {
     
 	}
 	
-	public void update(Association a) {
+	public void update(Association a) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -223,6 +231,7 @@ public class DataAssociation {
 		} catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -234,6 +243,7 @@ public class DataAssociation {
             } catch (SQLException e) {
             	
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
 		
@@ -241,7 +251,7 @@ public class DataAssociation {
 	
 	}
 	
-	public void delete(int id) {
+	public void delete(int id) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -256,6 +266,7 @@ public class DataAssociation {
 		} catch (SQLException e) {
 	        
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 	        
@@ -267,6 +278,7 @@ public class DataAssociation {
 	        } catch (SQLException e) {
 	        	
 	        	e.printStackTrace();
+	        	throw new SQLException("No se pudo conectar a la base de datos.", e);
 	        
 	        }
 		

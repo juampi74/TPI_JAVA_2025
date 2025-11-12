@@ -8,7 +8,7 @@ import java.time.*;
 
 public class DataClub {
 
-    public LinkedList<Club> getAll() {
+    public LinkedList<Club> getAll() throws SQLException {
         
     	Statement stmt = null;
         ResultSet rs = null;
@@ -59,6 +59,7 @@ public class DataClub {
             	    } catch (SQLException e) {
                         
                     	e.printStackTrace();
+                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
                     } finally {
                         
@@ -82,6 +83,7 @@ public class DataClub {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
         } finally {
             
@@ -94,6 +96,7 @@ public class DataClub {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -102,7 +105,7 @@ public class DataClub {
         return clubs;
     }
 
-    public Club getById(int id) {
+    public Club getById(int id) throws SQLException {
         
     	Club club = null;
         PreparedStatement stmt = null;
@@ -152,6 +155,7 @@ public class DataClub {
         	    } catch (SQLException e) {
                     
         	    	e.printStackTrace();
+        	    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
                 } finally {
                     
@@ -163,6 +167,7 @@ public class DataClub {
                     } catch (SQLException e) {
                         
                     	e.printStackTrace();
+                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
                     
                     }
                 
@@ -172,6 +177,7 @@ public class DataClub {
         } catch (SQLException e) {
         
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -184,6 +190,7 @@ public class DataClub {
             } catch (SQLException e) {
             
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -192,7 +199,7 @@ public class DataClub {
         return club;
     }
     
-public Club getByStadiumId(int id) {
+    public Club getByStadiumId(int id) throws SQLException {
         
     	Club club = null;
         PreparedStatement stmt = null;
@@ -242,6 +249,7 @@ public Club getByStadiumId(int id) {
         	    } catch (SQLException e) {
                     
         	    	e.printStackTrace();
+        	    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
                 } finally {
                     
@@ -253,6 +261,7 @@ public Club getByStadiumId(int id) {
                     } catch (SQLException e) {
                         
                     	e.printStackTrace();
+                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
                     
                     }
                 
@@ -262,6 +271,7 @@ public Club getByStadiumId(int id) {
         } catch (SQLException e) {
         
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -274,6 +284,7 @@ public Club getByStadiumId(int id) {
             } catch (SQLException e) {
             
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -282,7 +293,7 @@ public Club getByStadiumId(int id) {
         return club;
     }
 
-    public LinkedList<Club> getByName(String name) {
+    public LinkedList<Club> getByName(String name) throws SQLException {
         
     	PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -336,6 +347,7 @@ public Club getByStadiumId(int id) {
             	    } catch (SQLException e) {
                         
 	                	e.printStackTrace();
+	                	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
 	                } finally {
                     
@@ -347,6 +359,7 @@ public Club getByStadiumId(int id) {
 	                    } catch (SQLException e) {
 	                        
 	                    	e.printStackTrace();
+	                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 	                    
 	                    }
                 
@@ -359,6 +372,7 @@ public Club getByStadiumId(int id) {
         } catch (SQLException e) {
         
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -371,6 +385,7 @@ public Club getByStadiumId(int id) {
             } catch (SQLException e) {
              
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -380,7 +395,7 @@ public Club getByStadiumId(int id) {
 
     }
 
-    public void add(Club c) {
+    public void add(Club c) throws SQLException {
         
     	PreparedStatement stmt = null;
         ResultSet keyResultSet = null;
@@ -410,6 +425,7 @@ public Club getByStadiumId(int id) {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -422,6 +438,7 @@ public Club getByStadiumId(int id) {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -429,7 +446,7 @@ public Club getByStadiumId(int id) {
         
     }
 
-    public void update(Club c) {
+    public void update(Club c) throws SQLException {
         
     	PreparedStatement stmt = null;
         
@@ -450,6 +467,7 @@ public Club getByStadiumId(int id) {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -468,7 +486,7 @@ public Club getByStadiumId(int id) {
     
     }
 
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         
     	PreparedStatement stmt = null;
         
@@ -483,6 +501,7 @@ public Club getByStadiumId(int id) {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -494,6 +513,7 @@ public Club getByStadiumId(int id) {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         

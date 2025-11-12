@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class DataPerson {
 	
-	public PersonRole getRoleByPersonId(int id) {
+	public PersonRole getRoleByPersonId(int id) throws SQLException {
 		
 		PersonRole role = null;
 		PreparedStatement stmt = null;
@@ -29,6 +29,7 @@ public class DataPerson {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			

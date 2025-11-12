@@ -29,7 +29,7 @@ public class DataPlayer {
 	private static final String SELECT_PLAYER_FIELDS = 
 		"SELECT id, fullname, birthdate, address, role, dominant_foot, jersey_number, height, weight FROM person";
 	
-	public LinkedList<Player> getAll(){
+	public LinkedList<Player> getAll() throws SQLException {
 		
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -58,6 +58,7 @@ public class DataPlayer {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 		} finally {
 			
@@ -69,7 +70,7 @@ public class DataPlayer {
 		
 	}
 	
-	public LinkedList<Player> getAvailable(){
+	public LinkedList<Player> getAvailable() throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -101,6 +102,7 @@ public class DataPlayer {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -112,7 +114,7 @@ public class DataPlayer {
 		
 	}
 
-	public Player getById(int id) {
+	public Player getById(int id) throws SQLException {
 		
 		Player player = null;
 		PreparedStatement stmt = null;
@@ -135,6 +137,7 @@ public class DataPlayer {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -145,7 +148,7 @@ public class DataPlayer {
 	
 	}
 	
-	public LinkedList<Player> getByFullname(String fullname){
+	public LinkedList<Player> getByFullname(String fullname) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -178,6 +181,7 @@ public class DataPlayer {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -189,7 +193,7 @@ public class DataPlayer {
 		
 	}
 	
-	public LinkedList<Player> getByClub(int id_club){
+	public LinkedList<Player> getByClub(int id_club) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -222,6 +226,7 @@ public class DataPlayer {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -234,7 +239,7 @@ public class DataPlayer {
 	}
 	
 	
-	public void add(Player p) {
+	public void add(Player p) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -258,6 +263,7 @@ public class DataPlayer {
 		}  catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -267,7 +273,7 @@ public class DataPlayer {
     
 	}
 	
-	public void update(Player p) {
+	public void update(Player p) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -291,6 +297,7 @@ public class DataPlayer {
 		}  catch (SQLException e) {
           
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -300,7 +307,7 @@ public class DataPlayer {
 	
 	}
 	
-	public void delete(int id) {
+	public void delete(int id) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -315,6 +322,7 @@ public class DataPlayer {
 		} catch (SQLException e) {
 	        
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 	    

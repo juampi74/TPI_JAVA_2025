@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -19,7 +20,7 @@ public class ActionContract extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
     
-	private Contract buildContractFromRequest(HttpServletRequest request, String action, Logic ctrl) {
+	private Contract buildContractFromRequest(HttpServletRequest request, String action, Logic ctrl) throws SQLException {
 	    
 	    Contract contract = new Contract();
 	    if (action.equals("edit")) contract.setId(Integer.parseInt(request.getParameter("id")));
@@ -63,7 +64,7 @@ public class ActionContract extends HttpServlet {
 	}
 	
 	// No debería ser necesario porque si la persona tiene un contrato activo no se muestra en el droplist
-	private boolean checkContracts(int id, Logic ctrl) {
+	private boolean checkContracts(int id, Logic ctrl) throws SQLException {
 		
 		LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
 		boolean hasActiveContract = false;
@@ -78,52 +79,62 @@ public class ActionContract extends HttpServlet {
 		String action = request.getParameter("action");
 		Logic ctrl = new Logic();
 		
-		if ("add".equals(action)) {
+		try {
 			
-			LinkedList<Person> people = new LinkedList<>();
+			if ("add".equals(action)) {
+				
+				LinkedList<Person> people = new LinkedList<>();
 			
-			LinkedList<Player> players = ctrl.getAvailablePlayers();
-			LinkedList<Coach> coaches = ctrl.getAvailableCoaches();
+				LinkedList<Player> players = ctrl.getAvailablePlayers();
+				LinkedList<Coach> coaches = ctrl.getAvailableCoaches();
+				
+				people.addAll(players);
+				people.addAll(coaches);
+				
+				LinkedList<Club> clubs = ctrl.getAllClubs();
+							
+				if (people.size() > 0 && clubs.size() > 0) {
+					
+					request.setAttribute("peopleList", people);
+					request.setAttribute("clubsList", clubs);
+					request.getRequestDispatcher("WEB-INF/Add/AddContract.jsp").forward(request, response);
+				
+				} else {
+					
+					request.setAttribute("errorMessage", "Debe agregar un club y un jugador o un director técnico primero");
+					request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+					
+				}
 			
-			people.addAll(players);
-			people.addAll(coaches);
-			
-			LinkedList<Club> clubs = ctrl.getAllClubs();
-						
-			if (people.size() > 0 && clubs.size() > 0) {
-        		
+			} else {
+				
+				LinkedList<Contract> contracts = ctrl.getAllContracts();
+			    request.setAttribute("contractsList", contracts);
+			    
+				LinkedList<Person> people = new LinkedList<>();
+				
+				LinkedList<Player> players = ctrl.getAllPlayers();
+				LinkedList<Coach> coaches = ctrl.getAllCoaches();
+				
+				people.addAll(players);
+				people.addAll(coaches);
+				
 				request.setAttribute("peopleList", people);
+				
+				LinkedList<Club> clubs = ctrl.getAllClubs();
 				request.setAttribute("clubsList", clubs);
-            	request.getRequestDispatcher("WEB-INF/Add/AddContract.jsp").forward(request, response);
-        	
-        	} else {
-        		
-        		request.setAttribute("errorMessage", "Debe agregar un club y un jugador o un director técnico primero");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        		
-        	}
+			    
+			    request.getRequestDispatcher("/WEB-INF/Management/ContractManagement.jsp").forward(request, response);
+			
+			}
+			
+		} catch (SQLException e) {
 
-		} else {
-			
-			LinkedList<Contract> contracts = ctrl.getAllContracts();
-		    request.setAttribute("contractsList", contracts);
-		    
-			LinkedList<Person> people = new LinkedList<>();
-			
-			LinkedList<Player> players = ctrl.getAllPlayers();
-			LinkedList<Coach> coaches = ctrl.getAllCoaches();
-			
-			people.addAll(players);
-			people.addAll(coaches);
-			
-			request.setAttribute("peopleList", people);
-			
-			LinkedList<Club> clubs = ctrl.getAllClubs();
-			request.setAttribute("clubsList", clubs);
-		    
-		    request.getRequestDispatcher("/WEB-INF/Management/ContractManagement.jsp").forward(request, response);
-		
+			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
 		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -131,39 +142,49 @@ public class ActionContract extends HttpServlet {
 		String action = request.getParameter("action");
         Logic ctrl = new Logic();
         
-    	if ("add".equals(action)) {
+        
+        try {
         	
-    		Contract contract = buildContractFromRequest(request, action, ctrl);
-        	
-    		if (!checkDates(contract.getStartDate(), contract.getEndDate())) {
-        	
-    			request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-    		} else if (checkContracts(contract.getPerson().getId(), ctrl)){
-        	
-    			request.setAttribute("errorMessage", "La persona ya tiene un contrato activo");
-        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	
-    		} else {
-        	
-    			ctrl.addContract(contract);
-        	
-    		}
-        	
-        } else if ("release".equals(action)) {
-        	
-        	ctrl.releaseContract(Integer.parseInt(request.getParameter("id")));
-        	
-        } else if ("delete".equals(action)){
-        	
-        	ctrl.deleteContract(Integer.parseInt(request.getParameter("id")));
-        	
-        }
+        	if ("add".equals(action)) {
+            	
+        		Contract contract = buildContractFromRequest(request, action, ctrl);
 
-    	LinkedList<Contract> contracts = ctrl.getAllContracts();
-		request.setAttribute("contractsList", contracts);
-	    request.getRequestDispatcher("WEB-INF/Management/ContractManagement.jsp").forward(request, response);
+            	if (!checkDates(contract.getStartDate(), contract.getEndDate())) {
+
+            		request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	} else if (checkContracts(contract.getPerson().getId(), ctrl)){
+
+            		request.setAttribute("errorMessage", "La persona ya tiene un contrato activo");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	} else {
+
+            		ctrl.addContract(contract);
+
+            	}
+            	
+            } else if ("release".equals(action)) {
+            	
+            	ctrl.releaseContract(Integer.parseInt(request.getParameter("id")));
+            	
+            } else if ("delete".equals(action)){
+            	
+            	ctrl.deleteContract(Integer.parseInt(request.getParameter("id")));
+            	
+            }
+
+        	LinkedList<Contract> contracts = ctrl.getAllContracts();
+    		request.setAttribute("contractsList", contracts);
+    	    request.getRequestDispatcher("WEB-INF/Management/ContractManagement.jsp").forward(request, response);
+        	
+        } catch(SQLException e) {
+
+        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			
+        }
 	    
 	}
 }

@@ -10,7 +10,7 @@ import entities.Stadium;
 
 public class DataStadium {
 	
-	public LinkedList<Stadium> getAll(){
+	public LinkedList<Stadium> getAll() throws SQLException {
 		
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -39,6 +39,7 @@ public class DataStadium {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 		} finally {
 			
@@ -51,6 +52,7 @@ public class DataStadium {
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
+				throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 			}
 		
@@ -60,7 +62,7 @@ public class DataStadium {
 
 	}
 
-	public Stadium getById(int id) {
+	public Stadium getById(int id) throws SQLException {
 		
 		Stadium stadium = null;
 		PreparedStatement stmt = null;
@@ -86,6 +88,7 @@ public class DataStadium {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -97,6 +100,7 @@ public class DataStadium {
 			} catch (SQLException e) {
 			
 				e.printStackTrace();
+				throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 			}
 		
@@ -107,7 +111,7 @@ public class DataStadium {
 	}
 	
 	
-	public LinkedList<Stadium> getByName(String name) {
+	public LinkedList<Stadium> getByName(String name) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -139,6 +143,7 @@ public class DataStadium {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -151,6 +156,7 @@ public class DataStadium {
 			} catch (SQLException e) {
 			
 				e.printStackTrace();
+				throw new SQLException("No se pudo conectar a la base de datos.", e);
 			
 			}
 		
@@ -160,7 +166,7 @@ public class DataStadium {
 		
 	}
 	
-	public void add(Stadium s) {
+	public void add(Stadium s) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		ResultSet keyResultSet = null;
@@ -185,6 +191,7 @@ public class DataStadium {
 		} catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 			
@@ -197,6 +204,7 @@ public class DataStadium {
             } catch (SQLException e) {
             	
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
 		
@@ -204,7 +212,7 @@ public class DataStadium {
     
 	}
 	
-	public void update(Stadium s) {
+	public void update(Stadium s) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -221,6 +229,7 @@ public class DataStadium {
 		} catch (SQLException e) {
             
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
             
@@ -232,6 +241,7 @@ public class DataStadium {
             } catch (SQLException e) {
             	
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
 		
@@ -239,7 +249,7 @@ public class DataStadium {
 	
 	}
 	
-	public void delete(int id) {
+	public void delete(int id) throws SQLException {
 		
 		PreparedStatement stmt = null;
 		
@@ -254,6 +264,7 @@ public class DataStadium {
 		} catch (SQLException e) {
 	        
 			e.printStackTrace();
+			throw new SQLException("No se pudo conectar a la base de datos.", e);
 		
 		} finally {
 	        
@@ -265,6 +276,7 @@ public class DataStadium {
 	        } catch (SQLException e) {
 	        	
 	        	e.printStackTrace();
+	        	throw new SQLException("No se pudo conectar a la base de datos.", e);
 	        
 	        }
 		

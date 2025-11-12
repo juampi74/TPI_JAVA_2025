@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -19,13 +20,20 @@ public class Signin extends HttpServlet {
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		Logic ctrl = new Logic();
-		
-	    LinkedList<Player> players = ctrl.getAllPlayers();
-	    
-	    request.setAttribute("playersList", players);
-	    
-	    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
+		try {
+			
+			Logic ctrl = new Logic();
+			
+		    LinkedList<Player> players = ctrl.getAllPlayers();
+		    
+		    request.setAttribute("playersList", players);
+		    
+		    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
+		    
+		} catch (SQLException e) {
+			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+		}
 	
 	}
 	

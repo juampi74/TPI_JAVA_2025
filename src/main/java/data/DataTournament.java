@@ -8,7 +8,7 @@ import java.time.*;
 
 public class DataTournament {
 
-	public LinkedList<Tournament> getAll() {
+	public LinkedList<Tournament> getAll() throws SQLException {
         
     	Statement stmt = null;
         ResultSet rs = null;
@@ -57,6 +57,7 @@ public class DataTournament {
             	    } catch (SQLException e) {
                         
                     	e.printStackTrace();
+                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
                     } finally {
                         
@@ -68,6 +69,7 @@ public class DataTournament {
                         } catch (SQLException e) {
                             
                         	e.printStackTrace();
+                        	throw new SQLException("No se pudo conectar a la base de datos.", e);
                         
                         }
                     
@@ -80,6 +82,7 @@ public class DataTournament {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
         } finally {
             
@@ -92,6 +95,7 @@ public class DataTournament {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -100,7 +104,7 @@ public class DataTournament {
         return tournaments;
     }
 
-    public Tournament getById(int id) {
+    public Tournament getById(int id) throws SQLException {
         
     	Tournament tournament = null;
         PreparedStatement stmt = null;
@@ -149,6 +153,7 @@ public class DataTournament {
         	    } catch (SQLException e) {
                         
         	    	e.printStackTrace();
+        	    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
                 } finally {
                     
@@ -160,6 +165,7 @@ public class DataTournament {
                     } catch (SQLException e) {
                         
                     	e.printStackTrace();
+                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
                     
                     }
                 
@@ -170,6 +176,7 @@ public class DataTournament {
         } catch (SQLException e) {
         
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -182,6 +189,7 @@ public class DataTournament {
             } catch (SQLException e) {
             
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -190,7 +198,7 @@ public class DataTournament {
         return tournament;
     }
     
-public LinkedList<Tournament> getByAssociationId(int id) {
+    public LinkedList<Tournament> getByAssociationId(int id) throws SQLException {
         
     	LinkedList<Tournament> tournaments = new LinkedList<Tournament>();
         PreparedStatement stmt = null;
@@ -241,6 +249,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         	    } catch (SQLException e) {
                         
         	    	e.printStackTrace();
+        	    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
                 } finally {
                     
@@ -252,6 +261,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
                     } catch (SQLException e) {
                         
                     	e.printStackTrace();
+                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
                     
                     }
                 
@@ -262,6 +272,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         } catch (SQLException e) {
         
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -274,6 +285,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
             } catch (SQLException e) {
             
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -282,7 +294,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         return tournaments;
     }
 
-    public LinkedList<Tournament> getByName(String name) {
+    public LinkedList<Tournament> getByName(String name) throws SQLException {
         
     	PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -335,6 +347,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
 	                } catch (SQLException e) {
                         
 	                	e.printStackTrace();
+	                	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
 	                } finally {
                     
@@ -346,6 +359,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
 	                    } catch (SQLException e) {
 	                        
 	                    	e.printStackTrace();
+	                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 	                    
 	                    }
                 
@@ -358,6 +372,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         } catch (SQLException e) {
         
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -370,6 +385,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
             } catch (SQLException e) {
              
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -379,7 +395,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
 
     }
     
-    public void add(Tournament t) {
+    public void add(Tournament t) throws SQLException {
         
     	PreparedStatement stmt = null;
         ResultSet keyResultSet = null;
@@ -408,6 +424,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -420,6 +437,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -427,7 +445,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         
     }
 
-    public void update(Tournament t) {
+    public void update(Tournament t) throws SQLException {
         
     	PreparedStatement stmt = null;
         
@@ -447,6 +465,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -458,6 +477,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
@@ -465,7 +485,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
     
     }
 
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         
     	PreparedStatement stmt = null;
         
@@ -480,6 +500,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
         } catch (SQLException e) {
             
         	e.printStackTrace();
+        	throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
         
@@ -491,6 +512,7 @@ public LinkedList<Tournament> getByAssociationId(int id) {
             } catch (SQLException e) {
                 
             	e.printStackTrace();
+            	throw new SQLException("No se pudo conectar a la base de datos.", e);
             
             }
         
