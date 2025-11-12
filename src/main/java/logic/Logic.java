@@ -3,14 +3,13 @@ package logic;
 import data.*;
 import entities.*;
 import enums.PersonRole;
-
 import java.sql.SQLException;
 import java.util.LinkedList;
 
 public class Logic {
 
     private DataPerson dpe;
-	private DataPlayer dpl;
+    private DataPlayer dpl;
     private DataCoach dc;
     private DataPresident dpr;
     private DataStadium dst;
@@ -20,19 +19,19 @@ public class Logic {
     private DataContract dco;
 
     public Logic() {
-        
-    	dpe = new DataPerson();
-    	dpl = new DataPlayer();
+
+        dpe = new DataPerson();
+        dpl = new DataPlayer();
         dc = new DataCoach();
         dpr = new DataPresident();
-    	dst = new DataStadium();
+        dst = new DataStadium();
         dcl = new DataClub();
         das = new DataAssociation();
         dto = new DataTournament();
         dco = new DataContract();
-    
+
     }
-    
+
     public PersonRole getRoleByPersonId(int id) throws SQLException {
 
         return dpe.getRoleByPersonId(id);
@@ -40,11 +39,11 @@ public class Logic {
     }
 
     public LinkedList<Player> getAllPlayers() throws SQLException {
-    	
-    	return dpl.getAll();
+
+        return dpl.getAll();
 
     }
-    
+
     public LinkedList<Player> getAvailablePlayers() throws SQLException {
 
         return dpl.getAvailable();
@@ -62,9 +61,9 @@ public class Logic {
         return dpl.getByFullname(fullname);
 
     }
-    
+
     public LinkedList<Player> getPlayersByClub(int id_club) throws SQLException {
-    	return dpl.getByClub(id_club);
+        return dpl.getByClub(id_club);
     }
 
     public void addPlayer(Player p) throws SQLException {
@@ -84,13 +83,13 @@ public class Logic {
         dpl.delete(id);
 
     }
-    
+
     public LinkedList<Coach> getAllCoaches() throws SQLException {
 
         return dc.getAll();
 
     }
-    
+
     public LinkedList<Coach> getAvailableCoaches() throws SQLException {
 
         return dc.getAvailable();
@@ -126,7 +125,7 @@ public class Logic {
         dc.delete(id);
 
     }
-    
+
     public LinkedList<President> getAllPresidents() throws SQLException {
 
         return dpr.getAll();
@@ -200,165 +199,176 @@ public class Logic {
     }
 
     public LinkedList<Club> getAllClubs() throws SQLException {
-        
-    	return dcl.getAll();
-    
+
+        return dcl.getAll();
+
+    }
+
+    public Club getClubMoreContracts() {
+        return dcl.getClubMoreContracts();
     }
 
     public Club getClubById(int id) throws SQLException {
-        
-    	return dcl.getById(id);
-    
+
+        return dcl.getById(id);
+
     }
-    
+
     public Club getClubByStadiumId(int id) throws SQLException {
-        
-    	return dcl.getByStadiumId(id);
-    
+
+        return dcl.getByStadiumId(id);
+
     }
 
     public LinkedList<Club> getClubByName(String name) throws SQLException {
-        
-    	return dcl.getByName(name);
-    
+
+        return dcl.getByName(name);
+
     }
 
     public void addClub(Club c) throws SQLException {
-        
-    	dcl.add(c);
-    
+
+        dcl.add(c);
+
     }
 
     public void updateClub(Club c) throws SQLException {
-        
-    	dcl.update(c);
-    
+
+        dcl.update(c);
+
     }
 
     public void deleteClub(int id) throws SQLException {
-    
-    	dcl.delete(id);
-    
+
+        dcl.delete(id);
+
     }
-    
+
     public LinkedList<Association> getAllAssociations() throws SQLException {
-        
-    	return das.getAll();
-    
+
+        return das.getAll();
+
     }
 
     public Association getAssociationById(int id) throws SQLException {
-        
-    	return das.getById(id);
-    
+
+        return das.getById(id);
+
     }
 
     public LinkedList<Association> getAssociationByName(String name) throws SQLException {
-        
-    	return das.getByName(name);
-    
+
+        return das.getByName(name);
+
     }
 
     public void addAssociation(Association a) throws SQLException {
-        
-    	das.add(a);
-    
+
+        das.add(a);
+
     }
 
     public void updateAssociation(Association a) throws SQLException {
-        
-    	das.update(a);
-    
+
+        das.update(a);
+
     }
 
     public void deleteAssociation(int id) throws SQLException {
-    
-    	das.delete(id);
-    
+
+        das.delete(id);
+
     }
-    
+
     public LinkedList<Tournament> getAllTournaments() throws SQLException {
-        
-    	return dto.getAll();
-    
+
+        return dto.getAll();
+
     }
 
     public Tournament getTournamentById(int id) throws SQLException {
-        
-    	return dto.getById(id);
-    
+
+        return dto.getById(id);
+
     }
-    
+
     public LinkedList<Tournament> getTournamentsByAssociationId(int id) throws SQLException {
-        
-    	return dto.getByAssociationId(id);
-    
+
+        return dto.getByAssociationId(id);
+
     }
 
     public LinkedList<Tournament> getTournamentByName(String name) throws SQLException {
-        
-    	return dto.getByName(name);
-    
+
+        return dto.getByName(name);
+
     }
 
     public void addTournament(Tournament t) throws SQLException {
-        
-    	dto.add(t);
-    
+
+        dto.add(t);
+
     }
 
     public void updateTournament(Tournament t) throws SQLException {
-        
-    	dto.update(t);
-    
+
+        dto.update(t);
+
     }
 
-    public void deleteTournament(int id) throws SQLException{
-    
-    	dto.delete(id);
-    
+    public void deleteTournament(int id) throws SQLException {
+
+        dto.delete(id);
+
     }
-    
+
     public LinkedList<Contract> getAllContracts() throws SQLException {
-        
-    	return dco.getAll();
-    
+
+        return dco.getAll();
+
     }
 
     public Contract getContractById(int id) throws SQLException {
-        
-    	return dco.getById(id);
-    
+
+        return dco.getById(id);
+
     }
-    
+
+    public Contract getNextExpiringContract() throws SQLException {
+        return dco.getNextExpiringContract();
+    }
+
     public LinkedList<Contract> getContractsByPersonId(int id) throws SQLException {
-        
-    	return dco.getByPersonId(id);
-    
+
+        return dco.getByPersonId(id);
+
     }
-    
+
     public LinkedList<Contract> getContractsByClubId(int id) throws SQLException {
-        
-    	return dco.getByClubId(id);
-    
+
+        return dco.getByClubId(id);
+
     }
 
     public void addContract(Contract c) throws SQLException {
-        
-    	dco.add(c);
-    
+
+        dco.add(c);
+
     }
-    
+
+    public void updateContract(Contract c) throws SQLException {
+        dco.update(c);
+    }
+
     public void releaseContract(int id) throws SQLException {
-        
-    	dco.release(id);
-    
+        dco.release(id);
+
     }
 
     public void deleteContract(int id) throws SQLException {
-    
-    	dco.delete(id);
-    
+
+        dco.delete(id);
+
     }
 
 }

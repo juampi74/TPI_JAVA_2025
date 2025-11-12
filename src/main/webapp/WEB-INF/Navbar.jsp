@@ -27,7 +27,7 @@
 	<body>
 	    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	        <div class="container-fluid">
-	            <a class="navbar-brand" href="actionplayer">
+	            <a class="navbar-brand" href="main">
 	            	<img src="assets/TeamUp_LogoNavbar.png" alt="TeamUp Logo" width="80" height="50">
 	            </a>
 	            
