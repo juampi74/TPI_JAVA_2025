@@ -23,6 +23,11 @@
 	    	.table {
 	    		text-align: center;	
 	    	}
+	    	
+	    	table th,
+			table td {
+			  	vertical-align: middle !important;
+			}
 	    
 	    </style>
 		
@@ -63,8 +68,8 @@
 					</div>
 				<% } else { %>
 	            	<div class="col-12 col-sm-12 col-lg-12">
-	                	<div class="table-responsive">
-	                    	<table class="table">
+	                	<div class="table-responsive rounded-3 border overflow-hidden mb-5">
+	                    	<table class="table table-dark mb-0">
 	                    		<thead>
 	                    			<tr>
 	                    				<th>DNI</th>
@@ -94,7 +99,7 @@
 	                    					<form method="get" action="actioncoach" style="display:inline;" class="d-flex justify-content-center align-items-center">
 	                    						<input type="hidden" name="action" value="edit" />
 			        							<input type="hidden" name="id" value="<%=c.getId()%>" />
-			        							<button type="submit" class="btn btn-warning btn-sm">
+			        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
 													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
 												</button>
 			    							</form>
@@ -103,7 +108,7 @@
 	                    					<form method="post" action="actioncoach" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este director técnico?');">
 												<input type="hidden" name="action" value="delete" />
 												<input type="hidden" name="id" value="<%=c.getId()%>" />
-												<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>">
+												<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>" >
 													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
 												</button>
 											</form>
@@ -138,35 +143,35 @@
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
-		document.addEventListener("DOMContentLoaded", function() {
-		    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-		    const modalBody = document.getElementById('confirmModalBody');
-		    const confirmBtn = document.getElementById('confirmModalYes');
-		
-		    let currentForm = null;
-		    let actionType = "";
-		
-		    document.querySelectorAll('.btn-open-modal').forEach(button => {
-		        button.addEventListener('click', function() {
-		            actionType = this.getAttribute('data-action');
-		            const id = this.getAttribute('data-id');
-	
-		            currentForm = this.closest('form');
-		
-		            modalBody.textContent = "¿Estás seguro que querés eliminar este director técnico?";
-		           
-		
-		            modal.show();
-		        });
-		    });
+			document.addEventListener("DOMContentLoaded", function() {
+			    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+			    const modalBody = document.getElementById('confirmModalBody');
+			    const confirmBtn = document.getElementById('confirmModalYes');
 			
-		    confirmBtn.addEventListener('click', function() {
-		        if (currentForm) {
-		            currentForm.submit();
-		        }
-		        modal.hide();
-		    });
-		});
+			    let currentForm = null;
+			    let actionType = "";
+			
+			    document.querySelectorAll('.btn-open-modal').forEach(button => {
+			        button.addEventListener('click', function() {
+			            actionType = this.getAttribute('data-action');
+			            const id = this.getAttribute('data-id');
+		
+			            currentForm = this.closest('form');
+			
+			            modalBody.textContent = "¿Estás seguro que querés eliminar este director técnico?";
+			           
+			
+			            modal.show();
+			        });
+			    });
+				
+			    confirmBtn.addEventListener('click', function() {
+			        if (currentForm) {
+			            currentForm.submit();
+			        }
+			        modal.hide();
+			    });
+			});
 		</script>
 	</body>
 </html>

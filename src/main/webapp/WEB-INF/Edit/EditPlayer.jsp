@@ -63,8 +63,8 @@
 		        </div>
 		        
 		        <div class="button-container mb-3">
-			          <button type="button" class="btn btn-secondary" onclick="history.back()">Cancelar</button>
-			          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+			        <button type="button" class="btn btn-dark border border-white" onclick="history.back()">Cancelar</button>
+		        	<button type="submit" class="btn text-white" style="background-color: #0D47A1">Guardar Cambios</button>
 		        </div>
 		    </form>
 		</div>

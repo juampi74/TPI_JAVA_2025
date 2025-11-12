@@ -16,8 +16,8 @@ import entities.Player;
 import entities.Tournament;
 import logic.Logic;
 
-@WebServlet({"/signin", "/SIGNIN", "/Signin", "/SignIn", "/signIn"})
-public class Signin extends HttpServlet {
+@WebServlet({"/home", "/HOME", "/Home"})
+public class Home extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,18 +26,22 @@ public class Signin extends HttpServlet {
         try {
 
             Logic ctrl = new Logic();
-            Club club = ctrl.getClubMoreContracts();
+            
+            Club club = ctrl.getClubWithMostContracts();
             Contract contract = ctrl.getNextExpiringContract();
             LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
 
             request.setAttribute("nextExpiringContract", contract);
-            request.setAttribute("clubMoreContracts", club);
+            request.setAttribute("clubWithMostContracts", club);
             request.setAttribute("tournaments", tournaments);
-            request.getRequestDispatcher("/WEB-INF/main.jsp").forward(request, response);
+            
+            request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 
         } catch (SQLException e) {
-            request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+            
+        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
             request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        
         }
 
     }

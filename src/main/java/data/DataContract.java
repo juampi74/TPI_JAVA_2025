@@ -129,6 +129,7 @@ public class DataContract {
         }
 
         return contract;
+        
     }
 
     public LinkedList<Contract> getByPersonId(int id) throws SQLException {
@@ -171,6 +172,7 @@ public class DataContract {
         }
 
         return contracts;
+        
     }
 
     public LinkedList<Contract> getByClubId(int id) throws SQLException {
@@ -213,6 +215,7 @@ public class DataContract {
         }
 
         return contracts;
+        
     }
 
     public void add(Contract c) throws SQLException {
@@ -255,6 +258,7 @@ public class DataContract {
             closeResources(null, stmt);
 
         }
+        
     }
 
     public void update(Contract c) throws SQLException {
@@ -264,7 +268,7 @@ public class DataContract {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE contract SET end_date = ? WHERE id = ?"
+            	"UPDATE contract SET end_date = ? WHERE id = ?"
             );
             stmt.setObject(1, c.getEndDate());
 

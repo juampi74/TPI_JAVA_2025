@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -71,28 +72,38 @@ public class ActionPlayer extends HttpServlet {
 				request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
 			
 			} else {
+				
 				String clubIdParam = request.getParameter("clubId");
+				
 				LinkedList<Player> players;
+				
 				if (clubIdParam != null && !clubIdParam.isEmpty()) {
-			        int clubId = Integer.parseInt(clubIdParam);
+			    
+					int clubId = Integer.parseInt(clubIdParam);
 			        players = ctrl.getPlayersByClub(clubId);
-			    } else {
-			        players = ctrl.getAllPlayers();
-			    }
+			    
+				} else {
+			    
+					players = ctrl.getAllPlayers();
+			    
+				}
 
 			    request.setAttribute("playersList", players);
 			    
 			    LinkedList<Club> clubs = ctrl.getAllClubs();
+            	clubs.sort(Comparator.comparing(Club::getName));
 			    request.setAttribute("clubsList", clubs);
 			    
 			    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
 			
 			}
+		
 		} catch (SQLException e) {
+		
 			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-		}
 		
+		}
 		
 	}
 

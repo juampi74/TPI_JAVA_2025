@@ -204,8 +204,10 @@ public class Logic {
 
     }
 
-    public Club getClubMoreContracts() {
-        return dcl.getClubMoreContracts();
+    public Club getClubWithMostContracts() {
+    	
+        return dcl.getClubWithMostContracts();
+    
     }
 
     public Club getClubById(int id) throws SQLException {

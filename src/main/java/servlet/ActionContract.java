@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -23,9 +24,7 @@ public class ActionContract extends HttpServlet {
     private Contract buildContractFromRequest(HttpServletRequest request, String action, Logic ctrl) throws SQLException {
 
         Contract contract = new Contract();
-        if (action.equals("edit")) {
-            contract.setId(Integer.parseInt(request.getParameter("id")));
-        }
+        if (action.equals("edit")) contract.setId(Integer.parseInt(request.getParameter("id")));
         contract.setStartDate(LocalDate.parse(request.getParameter("startDate")));
         contract.setEndDate(LocalDate.parse(request.getParameter("endDate")));
         String releaseClause = request.getParameter("releaseClause");
@@ -110,6 +109,9 @@ public class ActionContract extends HttpServlet {
                 LinkedList<Club> clubs = ctrl.getAllClubs();
 
                 if (people.size() > 0 && clubs.size() > 0) {
+                	
+                	people.sort(Comparator.comparing(Person::getFullname));
+                	clubs.sort(Comparator.comparing(Club::getName));
 
                     request.setAttribute("peopleList", people);
                     request.setAttribute("clubsList", clubs);

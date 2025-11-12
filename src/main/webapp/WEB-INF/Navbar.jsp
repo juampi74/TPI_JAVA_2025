@@ -14,7 +14,6 @@
 	      }
 	
 	      .navbar-nav .nav-link:hover {
-
 	        color: #1A6B32 !important;
 	      }
 	
@@ -27,7 +26,7 @@
 	<body>
 	    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	        <div class="container-fluid">
-	            <a class="navbar-brand" href="main">
+	            <a class="navbar-brand" href="Home">
 	            	<img src="assets/TeamUp_LogoNavbar.png" alt="TeamUp Logo" width="80" height="50">
 	            </a>
 	            
@@ -63,14 +62,14 @@
 	    </nav>
 	    
 	    <script>
-	      const currentPage = window.location.pathname.split("/").pop();
-	      const links = document.querySelectorAll(".navbar-nav .nav-link");
-	
-	      links.forEach(link => {
-	        if (link.getAttribute("href") === currentPage) {
-	          link.classList.add("active");
-	        }
-	      });
+	    	const currentPage = window.location.pathname.split("/").pop();
+		    const links = document.querySelectorAll(".navbar-nav .nav-link");
+		
+		    links.forEach(link => {
+		      	if (link.getAttribute("href") === currentPage) {
+		        	link.classList.add("active");
+		      	}
+		    });
 	    </script>
 	    
 	</body>

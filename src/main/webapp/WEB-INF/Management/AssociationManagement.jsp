@@ -22,6 +22,11 @@
 	    	.table {
 	    		text-align: center;	
 	    	}
+	    	
+	    	table th,
+			table td {
+			  	vertical-align: middle !important;
+			}
 	    
 	    </style>
 		
@@ -62,8 +67,8 @@
 					</div>
 				<% } else { %>
 	            	<div class="col-12 col-sm-12 col-lg-12">
-	                	<div class="table-responsive">
-	                    	<table class="table">
+	                	<div class="table-responsive rounded-3 border overflow-hidden mb-5">
+	                    	<table class="table table-dark mb-0">
 	                    		<thead>
 	                    			<tr>
 	                    				<th>Nombre</th>
@@ -83,7 +88,7 @@
 	                    					<form method="get" action="actionassociation" style="display:inline;" class="d-flex justify-content-center align-items-center">
 	                    						<input type="hidden" name="action" value="edit" />
 			        							<input type="hidden" name="id" value="<%=a.getId()%>" />
-			        							<button type="submit" class="btn btn-warning btn-sm">
+			        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
 													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
 												</button>
 			    							</form>
@@ -92,7 +97,7 @@
 	                    					<form method="post" action="actionassociation" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta asociación?');">
 												<input type="hidden" name="action" value="delete" />
 												<input type="hidden" name="id" value="<%=a.getId()%>" />
-												<button type="button" class="btn btn-danger btn-sm btn-open-modal" data-id="<%= a.getId() %>>">
+												<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= a.getId() %>" >
 													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Agregar" width="25" height="25">
 												</button>
 											</form>

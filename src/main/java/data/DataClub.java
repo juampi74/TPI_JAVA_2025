@@ -213,7 +213,7 @@ public class DataClub {
         return club;
     }
 
-    public Club getClubMoreContracts() {
+    public Club getClubWithMostContracts() {
 
         Statement stmt = null;
         ResultSet rs = null;
