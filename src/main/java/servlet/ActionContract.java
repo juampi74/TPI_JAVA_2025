@@ -88,13 +88,21 @@ public class ActionContract extends HttpServlet {
 			people.addAll(players);
 			people.addAll(coaches);
 			
-			request.setAttribute("peopleList", people);
-			
 			LinkedList<Club> clubs = ctrl.getAllClubs();
-			request.setAttribute("clubsList", clubs);
-			
-			request.getRequestDispatcher("WEB-INF/Add/AddContract.jsp").forward(request, response);
-		
+						
+			if (people.size() > 0 && clubs.size() > 0) {
+        		
+				request.setAttribute("peopleList", people);
+				request.setAttribute("clubsList", clubs);
+            	request.getRequestDispatcher("WEB-INF/Add/AddContract.jsp").forward(request, response);
+        	
+        	} else {
+        		
+        		request.setAttribute("errorMessage", "Debe agregar un club y un jugador o un director técnico primero");
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        		
+        	}
+
 		} else {
 			
 			LinkedList<Contract> contracts = ctrl.getAllContracts();
@@ -126,15 +134,22 @@ public class ActionContract extends HttpServlet {
     	if ("add".equals(action)) {
         	
     		Contract contract = buildContractFromRequest(request, action, ctrl);
-        	if (!checkDates(contract.getStartDate(), contract.getEndDate())) {
-        		request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
+        	
+    		if (!checkDates(contract.getStartDate(), contract.getEndDate())) {
+        	
+    			request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	} else if (checkContracts(contract.getPerson().getId(), ctrl)){
-        		request.setAttribute("errorMessage", "La persona ya tiene un contrato activo");
+        	
+    		} else if (checkContracts(contract.getPerson().getId(), ctrl)){
+        	
+    			request.setAttribute("errorMessage", "La persona ya tiene un contrato activo");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-        	} else {
-        		ctrl.addContract(contract);
-        	}
+        	
+    		} else {
+        	
+    			ctrl.addContract(contract);
+        	
+    		}
         	
         } else if ("release".equals(action)) {
         	

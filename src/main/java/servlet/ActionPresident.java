@@ -36,6 +36,7 @@ public class ActionPresident extends HttpServlet {
 	private boolean checkBirthdate(LocalDate birthdate) {
 		
 		return birthdate.isBefore(LocalDate.now().minusYears(18));
+	
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -73,21 +74,31 @@ public class ActionPresident extends HttpServlet {
         if ("add".equals(action)) {
         	
         	President president =buildPresidentFromRequest(request);
+        	
         	if (checkBirthdate(president.getBirthdate())) {
+        	
         		ctrl.addPresident(president);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
         	
         } else if ("edit".equals(action)) {
         	
         	President president =buildPresidentFromRequest(request);
+        	
         	if (checkBirthdate(president.getBirthdate())) {
+        	
         		ctrl.updatePresident(president);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
     	    
         } else if ("delete".equals(action)){

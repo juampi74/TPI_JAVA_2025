@@ -42,13 +42,15 @@ public class ActionPlayer extends HttpServlet {
 	private boolean checkBirthdate(LocalDate birthdate) {
 		
 		return birthdate.isBefore(LocalDate.now().minusYears(15));
+	
 	}
 	
-	private boolean checkContracts(Integer id) {
-    	Logic ctrl = new Logic();
+	private boolean checkContracts(Integer id, Logic ctrl) {
+
     	LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
-    	return 0 == contracts.size();	
-    }
+    	return contracts.size() == 0;	
+    
+	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -96,31 +98,48 @@ public class ActionPlayer extends HttpServlet {
         if ("add".equals(action)) {
         	
         	Player player = buildPlayerFromRequest(request);
+        	
         	if (checkBirthdate(player.getBirthdate())) {
+        	
         		ctrl.addPlayer(player);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
         	
         } else if ("edit".equals(action)) {
         	
         	Player player = buildPlayerFromRequest(request);
+        	
         	if (checkBirthdate(player.getBirthdate())) {
+        	
         		ctrl.updatePlayer(player);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
     	    
         } else if ("delete".equals(action)){
+        
         	Integer id_player = Integer.parseInt(request.getParameter("id")); 
-    	    if (checkContracts(id_player)) {
+    	    
+        	if (checkContracts(id_player, ctrl)) {
+        	
         		ctrl.deletePlayer(id_player);
-    	    } else {
-    	    	request.setAttribute("errorMessage", "No se puede eliminar un jugador con contratos activos");
+    	    
+        	} else {
+    	    
+        		request.setAttribute("errorMessage", "No se puede eliminar un jugador con contratos activos");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-    	    }
+    	    
+        	}
+        
         }
 	    
 	    LinkedList<Player> players = ctrl.getAllPlayers();

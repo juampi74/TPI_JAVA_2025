@@ -39,13 +39,15 @@ public class ActionCoach extends HttpServlet {
 	private boolean checkDates(LocalDate birthdate, LocalDate licenseObtainedDate) {
 		
 		return (birthdate.isBefore(LocalDate.now().minusYears(18)) && licenseObtainedDate.isBefore(LocalDate.now()) && licenseObtainedDate.isAfter(birthdate.plusYears(18)));
+	
 	}
 	
-	private boolean checkContracts(Integer id) {
-    	Logic ctrl = new Logic();
+	private boolean checkContracts(Integer id, Logic ctrl) {
+
     	LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
-    	return 0 == contracts.size();	
-    }
+    	return contracts.size() == 0;	
+    
+	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -82,32 +84,47 @@ public class ActionCoach extends HttpServlet {
         if ("add".equals(action)) {
         	
         	Coach c = buildCoachFromRequest(request);
+        	
         	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
+        	
         		ctrl.addCoach(c);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
         	
         } else if ("edit".equals(action)) {
         	
         	Coach c = buildCoachFromRequest(request);
+        	
         	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
-            	ctrl.updateCoach(c);
+            
+        		ctrl.updateCoach(c);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
     	    
         } else if ("delete".equals(action)){
         	
         	Integer id_c = Integer.parseInt(request.getParameter("id")); 
-    	    if (checkContracts(id_c)) {
+    	    
+        	if (checkContracts(id_c, ctrl)) {
+        	
         		ctrl.deleteCoach(id_c);
-    	    } else {
-    	    	request.setAttribute("errorMessage", "No se puede eliminar un técnico con contratos activos");
+    	    
+        	} else {
+    	    
+        		request.setAttribute("errorMessage", "No se puede eliminar un técnico con contratos activos");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-    	    }
+    	    
+        	}
     	    
         }
 	    

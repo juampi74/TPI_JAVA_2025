@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import entities.Association;
-import entities.Club;
 import entities.Tournament;
 import logic.Logic;
 
@@ -34,12 +33,14 @@ public class ActionAssociation extends HttpServlet {
 	private boolean checkCreationDate(LocalDate creationDate) {
 		
 		return creationDate.isBefore(LocalDate.now().plusDays(1));
+	
 	}
 	
-	private boolean checkTournaments(Integer id) {
-		Logic ctrl = new Logic();
+	private boolean checkTournaments(Integer id, Logic ctrl) {
+		
 		LinkedList<Tournament> tournaments = ctrl.getTournamentsByAssociationId(id);
-		return tournaments.isEmpty();
+		return tournaments.size() == 0;
+	
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -77,9 +78,13 @@ public class ActionAssociation extends HttpServlet {
         if ("add".equals(action)) {
         	
         	Association association = buildAssociationFromRequest(request, action);
+        	
         	if (checkCreationDate(association.getCreationDate())) {
+        	
         		ctrl.addAssociation(association);
+        	
         	} else {
+        		
         		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         	}
@@ -87,21 +92,31 @@ public class ActionAssociation extends HttpServlet {
         } else if ("edit".equals(action)) {
         	
         	Association association = buildAssociationFromRequest(request, action);
+        	
         	if (checkCreationDate(association.getCreationDate())) {
+        	
         		ctrl.updateAssociation(association);
+        	
         	} else {
+        		
         		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
     	    
         } else if ("delete".equals(action)){
         	
         	Integer id = Integer.parseInt(request.getParameter("id"));
-        	if (checkTournaments(id)) {
+        	
+        	if (checkTournaments(id, ctrl)) {
+        		
         		ctrl.deleteAssociation(id);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "No se puede eliminar una asociación que organiza torneos");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
         }
 	    

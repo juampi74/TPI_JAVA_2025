@@ -38,11 +38,15 @@ public class ActionTournament extends HttpServlet {
 		 LocalDate today = LocalDate.now();
 
 		    if (startDate.isBefore(today)) {
-		        return false;
+		        
+		    	return false;
+		    
 		    }
 
 		    if (endDate.isBefore(startDate.plusMonths(4))) {
-		        return false;
+		    
+		    	return false;
+		    
 		    }
 
 		    return true;
@@ -67,9 +71,18 @@ public class ActionTournament extends HttpServlet {
         } else if ("add".equals(action)) {
         
         	LinkedList<Association> associations = ctrl.getAllAssociations();
-        	request.setAttribute("associationsList", associations);
         	
-        	request.getRequestDispatcher("WEB-INF/Add/AddTournament.jsp").forward(request, response);
+        	if (associations.size() > 0) {
+        		
+        		request.setAttribute("associationsList", associations);
+            	request.getRequestDispatcher("WEB-INF/Add/AddTournament.jsp").forward(request, response);
+        	
+        	} else {
+        		
+        		request.setAttribute("errorMessage", "Debe agregar una asociación primero");
+        		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        		
+        	}
         
         } else {
         

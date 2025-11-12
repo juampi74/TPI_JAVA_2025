@@ -9,7 +9,7 @@ import java.time.*;
 
 public class DataContract {
 	
-	private static final String SELECT_ALL_CONTRACTS_JOINED= 
+	private static final String SELECT_ALL_CONTRACTS_JOINED = 
 		"SELECT " +
 	    "    c.id AS contract_id, c.start_date, c.end_date, c.salary, c.release_clause, c.release_date, " +
 	    "    p.id AS person_id, p.fullname, p.birthdate, p.address, p.role, " +

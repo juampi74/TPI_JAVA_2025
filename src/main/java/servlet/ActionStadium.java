@@ -33,12 +33,15 @@ public class ActionStadium extends HttpServlet {
 	private boolean checkCapacity(Integer capacity) {
 		
 		return capacity > 0;
+	
 	}
 	
 	private boolean checkClub(Integer id) {
+		
 		Logic ctrl = new Logic();
 		Club club = ctrl.getClubByStadiumId(id);
 		return club == null;
+	
 	}
 	
 
@@ -77,31 +80,48 @@ public class ActionStadium extends HttpServlet {
         if ("add".equals(action)) {
         	
         	Stadium stadium = buildStadiumFromRequest(request, action);
-    		if (checkCapacity(stadium.getCapacity())) {
-    			ctrl.addStadium(stadium);
-    		} else {
-    			request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
+    		
+        	if (checkCapacity(stadium.getCapacity())) {
+    		
+        		ctrl.addStadium(stadium);
+    		
+        	} else {
+    		
+        		request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
     			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
-    		}
+    		
+        	}
+        	
         } else if ("edit".equals(action)) {
         	
         	Stadium stadium = buildStadiumFromRequest(request, action);
-    		if (checkCapacity(stadium.getCapacity())) {
-    			ctrl.updateStadium(stadium);
-    		} else {
-    			request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
+    		
+        	if (checkCapacity(stadium.getCapacity())) {
+    		
+        		ctrl.updateStadium(stadium);
+    		
+        	} else {
+    		
+        		request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
     			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
-    		}
+    		
+        	}
     	    
         } else if ("delete".equals(action)){
         	
         	Integer id = Integer.parseInt(request.getParameter("id"));
+        	
         	if (checkClub(id)) {
+        	
         		ctrl.deleteStadium(id);
+        	
         	} else {
+        	
         		request.setAttribute("errorMessage", "No se puede eliminar un estadio que pertenece a un club");
         		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        	
         	}
+        
         }
 	    
 	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();

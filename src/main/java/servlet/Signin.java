@@ -28,9 +28,5 @@ public class Signin extends HttpServlet {
 	    request.getRequestDispatcher("/WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
 	
 	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO
-	}
-
+	
 }
