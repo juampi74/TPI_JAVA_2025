@@ -12,6 +12,7 @@
 	    <meta name="description" content="">
 	    <meta name="author" content="">
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
+	    <title>Clubes</title>
 		
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	
