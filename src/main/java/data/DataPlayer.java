@@ -2,40 +2,39 @@ package data;
 
 import entities.Player;
 import enums.PersonRole;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataPlayer {
 
-    private static final String SELECT_PLAYER_BASE =
-            "SELECT id, fullname, birthdate, address, role, " +
-            "       dominant_foot, jersey_number, height, weight " +
-            "FROM person " +
-            "WHERE role = 'PLAYER'";
+    private static final String SELECT_PLAYER_BASE
+            = "SELECT id, fullname, birthdate, address, role, "
+            + "       dominant_foot, jersey_number, height, weight, photo "
+            + "FROM person "
+            + "WHERE role = 'PLAYER'";
 
-    private static final String SELECT_AVAILABLE_PLAYERS =
-            "SELECT p.id, p.fullname, p.birthdate, p.address, p.role, " +
-            "       p.dominant_foot, p.jersey_number, p.height, p.weight " +
-            "FROM person p " +
-            "WHERE p.role = 'PLAYER' " +
-            "  AND NOT EXISTS ( " +
-            "      SELECT 1 FROM contract c " +
-            "      WHERE c.id_person = p.id " +
-            "        AND c.release_date IS NULL " +
-            "        AND c.end_date >= CURDATE() " +
-            "  )";
+    private static final String SELECT_AVAILABLE_PLAYERS
+            = "SELECT p.id, p.fullname, p.birthdate, p.address, p.role, "
+            + "       p.dominant_foot, p.jersey_number, p.height, p.weight "
+            + "FROM person p "
+            + "WHERE p.role = 'PLAYER' "
+            + "  AND NOT EXISTS ( "
+            + "      SELECT 1 FROM contract c "
+            + "      WHERE c.id_person = p.id "
+            + "        AND c.release_date IS NULL "
+            + "        AND c.end_date >= CURDATE() "
+            + "  )";
 
-    private static final String SELECT_PLAYERS_BY_CLUB =
-            "SELECT p.id, p.fullname, p.birthdate, p.address, p.role, " +
-            "       p.dominant_foot, p.jersey_number, p.height, p.weight " +
-            "FROM person p " +
-            "INNER JOIN contract c ON p.id = c.id_person " +
-            "WHERE c.id_club = ? " +
-            "  AND c.release_date IS NULL " +
-            "  AND c.end_date >= CURDATE() " +
-            "  AND p.role = 'PLAYER'";
+    private static final String SELECT_PLAYERS_BY_CLUB
+            = "SELECT p.id, p.fullname, p.birthdate, p.address, p.role, "
+            + "       p.dominant_foot, p.jersey_number, p.height, p.weight "
+            + "FROM person p "
+            + "INNER JOIN contract c ON p.id = c.id_person "
+            + "WHERE c.id_club = ? "
+            + "  AND c.release_date IS NULL "
+            + "  AND c.end_date >= CURDATE() "
+            + "  AND p.role = 'PLAYER'";
 
     private Player mapPlayer(ResultSet rs) throws SQLException {
 
@@ -62,15 +61,19 @@ public class DataPlayer {
         player.setWeight(rs.getDouble("weight"));
 
         return player;
-        
+
     }
 
     private void closeResources(ResultSet rs, Statement stmt) {
 
         try {
 
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {
@@ -259,10 +262,10 @@ public class DataPlayer {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO person " +
-                    "(id, fullname, birthdate, address, role, " +
-                    " dominant_foot, jersey_number, height, weight) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO person "
+                    + "(id, fullname, birthdate, address, role, "
+                    + " dominant_foot, jersey_number, height, weight) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getFullname());
@@ -296,10 +299,10 @@ public class DataPlayer {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE person " +
-                    "SET fullname = ?, birthdate = ?, address = ?, role = ?, " +
-                    "    dominant_foot = ?, jersey_number = ?, height = ?, weight = ? " +
-                    "WHERE id = ?"
+                    "UPDATE person "
+                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, "
+                    + "    dominant_foot = ?, jersey_number = ?, height = ?, weight = ? "
+                    + "WHERE id = ?"
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());

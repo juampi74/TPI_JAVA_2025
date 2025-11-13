@@ -1,6 +1,7 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Player"%>
+<%@ page import="entities.Contract"%>
 <%@ page import="entities.Club"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -47,8 +48,8 @@
 		</style>
 
 		<%
-			LinkedList<Player> pll = (LinkedList<Player>) request.getAttribute("playersList");
-		    boolean emptyList = (pll == null || pll.isEmpty());
+			LinkedList<Contract> cll = (LinkedList<Contract>) request.getAttribute("contractList");
+		    boolean emptyList = (cll == null || cll.isEmpty());
 		%>
 	</head>
 	<body style="background-color: #10442E;">
@@ -173,7 +174,8 @@
 				        	<table class="table table-dark mb-0">
 				            	<thead>
 				              		<tr>
-				                		<th>DNI</th>
+				              			<th>#</th>
+				                		<th>Jugador</th>
 	                    		    	<th>Apellido y Nombre</th>
 	                        			<th>Fecha Nacimiento</th>
 	                        			<th>Dirección</th>
@@ -187,21 +189,23 @@
 					            </thead>
 					           	<tbody>
 					            <%
-					            	for (Player pl : pll) {
+					            	for (Contract c : cll) {
 					            %>
 						            	<tr>
-							                <td><%=pl.getId()%></td>
-		                    				<td><%=pl.getFullname()%></td>
-		                    				<td><%=pl.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-		                    				<td><%=pl.getAddress()%></td>
-		                    				<td><%=pl.getDominantFoot()%></td>
-		                    				<td><%=pl.getJerseyNumber()%></td>
-		                    				<td><%=pl.getHeight()%></td>
-		                    				<td><%=pl.getWeight()%></td>
+						            		<td><%=c.getPerson().getJerseyNumber()%></td>
+							                <td>
+							                	<img alt="" src="<%=c.getPerson().getPhoto()%>" width="55" height="70">
+							                </td>
+		                    				<td><%=c.getPerson().getFullname()%></td>
+		                    				<td><%=c.getPerson().getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+		                    				<td><%=c.getPerson().getAddress()%></td>
+		                    				<td><%=c.getPerson().getDominantFoot()%></td>
+		                    				<td><%=c.getPerson().getHeight()%></td>
+		                    				<td><%=c.getPerson().getWeight()%></td>
 							                <td>
 							                  	<form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
 								                    <input type="hidden" name="action" value="edit" />
-								                    <input type="hidden" name="id" value="<%= pl.getId() %>" />
+								                    <input type="hidden" name="id" value="<%= c.getPerson().getId() %>" />
 								                    <button type="submit" class="btn btn-sm" style="background-color:#0D47A1;">
 								                    	<img src="${pageContext.request.contextPath}/assets/edit.svg" alt="Edit" width="25" height="25" style="display:block;">
 								                    </button>
@@ -210,7 +214,7 @@
 						                	<td>
 							                  	<form method="post" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
 							                    	<input type="hidden" name="action" value="delete" />
-							                    	<input type="hidden" name="id" value="<%= pl.getId() %>" />
+							                    	<input type="hidden" name="id" value="<%= c.getPerson().getId() %>" />
 							                    	<button type="button" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= pl.getId() %>" style="background-color:#9B1C1C;">
 							                      		<img src="${pageContext.request.contextPath}/assets/delete.svg" alt="Delete" width="25" height="25" style="display:block;">
 							                    	</button>

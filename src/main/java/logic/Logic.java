@@ -43,6 +43,8 @@ public class Logic {
         return dpl.getAll();
 
     }
+    
+    
 
     public LinkedList<Player> getAvailablePlayers() throws SQLException {
 

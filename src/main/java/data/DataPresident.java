@@ -2,17 +2,16 @@ package data;
 
 import entities.President;
 import enums.PersonRole;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataPresident {
 
-    private static final String SELECT_PRESIDENT_BASE =
-            "SELECT id, fullname, birthdate, address, role, management_policy " +
-            "FROM person " +
-            "WHERE role = 'PRESIDENT'";
+    private static final String SELECT_PRESIDENT_BASE
+            = "SELECT id, fullname, birthdate, address, role, management_policy, photo "
+            + "FROM person "
+            + "WHERE role = 'PRESIDENT'";
 
     private President mapPresident(ResultSet rs) throws SQLException {
 
@@ -36,15 +35,19 @@ public class DataPresident {
         president.setManagementPolicy(rs.getString("management_policy"));
 
         return president;
-        
+
     }
 
     private void closeResources(ResultSet rs, Statement stmt) {
 
         try {
 
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {
@@ -166,9 +169,9 @@ public class DataPresident {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO person " +
-                    "(id, fullname, birthdate, address, role, management_policy) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO person "
+                    + "(id, fullname, birthdate, address, role, management_policy) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getFullname());
@@ -199,9 +202,9 @@ public class DataPresident {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE person " +
-                    "SET fullname = ?, birthdate = ?, address = ?, role = ?, management_policy = ? " +
-                    "WHERE id = ?"
+                    "UPDATE person "
+                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, management_policy = ? "
+                    + "WHERE id = ?"
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());

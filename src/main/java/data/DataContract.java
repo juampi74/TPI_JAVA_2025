@@ -2,10 +2,9 @@ package data;
 
 import entities.*;
 import enums.PersonRole;
-
 import java.sql.*;
-import java.util.LinkedList;
 import java.time.*;
+import java.util.LinkedList;
 
 public class DataContract {
 
@@ -14,7 +13,7 @@ public class DataContract {
             + "    c.id AS contract_id, c.start_date, c.end_date, c.salary, c.release_clause, c.release_date, "
             + "    p.id AS person_id, p.fullname, p.birthdate, p.address, p.role, "
             + "    p.dominant_foot, p.jersey_number, p.height, p.weight, "
-            + "    p.preferred_formation, p.coaching_license, p.license_obtained_date, "
+            + "    p.preferred_formation, p.coaching_license, p.license_obtained_date, p.photo, "
             + "    cl.id AS club_id, cl.name, cl.foundation_date, cl.phone_number, cl.email, cl.badge_image, cl.budget "
             + "FROM contract c "
             + "INNER JOIN person p ON c.id_person = p.id "
@@ -85,7 +84,7 @@ public class DataContract {
         }
 
         return contract;
-        
+
     }
 
     public Contract getNextExpiringContract() throws SQLException {
@@ -98,10 +97,10 @@ public class DataContract {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     SELECT_ALL_CONTRACTS_JOINED
-                            + " WHERE c.release_date IS NULL "
-                            + "   AND c.end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH) "
-                            + " ORDER BY c.end_date ASC "
-                            + " LIMIT 1"
+                    + " WHERE c.release_date IS NULL "
+                    + "   AND c.end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH) "
+                    + " ORDER BY c.end_date ASC "
+                    + " LIMIT 1"
             );
 
             rs = stmt.executeQuery();
@@ -207,8 +206,8 @@ public class DataContract {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "INSERT INTO contract "
-                            + "(start_date, end_date, salary, release_clause, release_date, id_person, id_club) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?)"
+                    + "(start_date, end_date, salary, release_clause, release_date, id_person, id_club) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setObject(1, c.getStartDate());
             stmt.setObject(2, c.getEndDate());
@@ -341,6 +340,7 @@ public class DataContract {
             player.setJerseyNumber(rs.getInt("jersey_number"));
             player.setHeight(rs.getDouble("height"));
             player.setWeight(rs.getDouble("weight"));
+            player.setPhoto(rs.getString("photo"));
             person = player;
 
         } else if (role.equals(PersonRole.COACH)) {
@@ -349,6 +349,7 @@ public class DataContract {
             c.setPreferredFormation(rs.getString("preferred_formation"));
             c.setCoachingLicense(rs.getString("coaching_license"));
             c.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
+            c.setPhoto(rs.getString("photo"));
             person = c;
 
         } else {
@@ -397,8 +398,12 @@ public class DataContract {
 
         try {
 
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {

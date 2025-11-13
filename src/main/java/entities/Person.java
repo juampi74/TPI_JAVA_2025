@@ -10,6 +10,7 @@ public abstract class Person {
 	private LocalDate birthdate;
 	private String address;
 	private PersonRole role;
+	private String photo;
 	
 	public int getId() {
 		
@@ -68,6 +69,18 @@ public abstract class Person {
 	public void setRole(PersonRole role) {
 	
 		this.role = role;
+	
+	}
+	
+	public String getPhoto() {
+		
+		return photo;
+	
+	}
+	
+	public void setPhoto(String photo) {
+	
+		this.photo = photo;
 	
 	}
 

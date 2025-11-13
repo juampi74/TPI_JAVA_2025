@@ -2,30 +2,29 @@ package data;
 
 import entities.Coach;
 import enums.PersonRole;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataCoach {
 
-    private static final String SELECT_COACH_BASE =
-            "SELECT id, fullname, birthdate, address, role, " +
-            "       preferred_formation, coaching_license, license_obtained_date " +
-            "FROM person " +
-            "WHERE role = 'COACH'";
+    private static final String SELECT_COACH_BASE
+            = "SELECT id, fullname, birthdate, address, role, "
+            + "       preferred_formation, coaching_license, license_obtained_date "
+            + "FROM person "
+            + "WHERE role = 'COACH'";
 
-    private static final String SELECT_AVAILABLE_COACHES =
-            "SELECT id, fullname, birthdate, address, role, " +
-            "       preferred_formation, coaching_license, license_obtained_date " +
-            "FROM person p " +
-            "WHERE p.role = 'COACH' " +
-            "  AND NOT EXISTS ( " +
-            "      SELECT 1 FROM contract c " +
-            "      WHERE c.id_person = p.id " +
-            "        AND c.release_date IS NULL " +
-            "        AND c.end_date >= CURDATE() " +
-            "  )";
+    private static final String SELECT_AVAILABLE_COACHES
+            = "SELECT id, fullname, birthdate, address, role, "
+            + "       preferred_formation, coaching_license, license_obtained_date "
+            + "FROM person p "
+            + "WHERE p.role = 'COACH' "
+            + "  AND NOT EXISTS ( "
+            + "      SELECT 1 FROM contract c "
+            + "      WHERE c.id_person = p.id "
+            + "        AND c.release_date IS NULL "
+            + "        AND c.end_date >= CURDATE() "
+            + "  )";
 
     private Coach mapCoach(ResultSet rs) throws SQLException {
 
@@ -42,15 +41,19 @@ public class DataCoach {
         coach.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
 
         return coach;
-        
+
     }
 
     private void closeResources(ResultSet rs, Statement stmt) {
 
         try {
 
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {
@@ -197,7 +200,7 @@ public class DataCoach {
         return coaches;
 
     }
-    
+
     public void add(Coach coach) throws SQLException {
 
         PreparedStatement stmt = null;
@@ -205,10 +208,10 @@ public class DataCoach {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO person " +
-                    "(id, fullname, birthdate, address, role, " +
-                    " preferred_formation, coaching_license, license_obtained_date) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO person "
+                    + "(id, fullname, birthdate, address, role, "
+                    + " preferred_formation, coaching_license, license_obtained_date) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, coach.getId());
             stmt.setString(2, coach.getFullname());
@@ -241,10 +244,10 @@ public class DataCoach {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE person " +
-                    "SET fullname = ?, birthdate = ?, address = ?, role = ?, " +
-                    "    preferred_formation = ?, coaching_license = ?, license_obtained_date = ? " +
-                    "WHERE id = ?"
+                    "UPDATE person "
+                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, "
+                    + "    preferred_formation = ?, coaching_license = ?, license_obtained_date = ? "
+                    + "WHERE id = ?"
             );
             stmt.setString(1, coach.getFullname());
             stmt.setObject(2, coach.getBirthdate());
