@@ -94,7 +94,7 @@
 							
 							    <div class="d-flex justify-content-center align-items-center gap-2">
 								    <select name="extension" id="extension"
-				                  		class="form-select form-select-md w-auto fancy-select bg-dark text-white">
+				                  		class="form-select form-select-md w-auto fancy-select bg-dark text-white" required>
 							            <option value="" disabled selected>Seleccionar duración</option>
 							            <option value="6">6 meses</option>
 							            <option value="12">1 año</option>

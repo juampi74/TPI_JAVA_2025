@@ -94,16 +94,19 @@ public class ActionClub extends HttpServlet {
             }
         	
         } catch(SQLException e) {
+        	
         	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        
         }
 
-        
-    
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    	request.setCharacterEncoding("UTF-8");
+	    response.setCharacterEncoding("UTF-8");
+    	
         String action = request.getParameter("action");
 
         Logic ctrl = new Logic();

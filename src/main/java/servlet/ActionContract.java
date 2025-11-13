@@ -80,18 +80,26 @@ public class ActionContract extends HttpServlet {
     private boolean checkContracts(int id, Logic ctrl) throws SQLException {
 
         LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);
+        
         boolean hasActiveContract = false;
+        
         for (Contract c : contracts) {
-            if (c.getEndDate().isAfter(LocalDate.now()) && c.getReleaseDate() == null) {
-                hasActiveContract = true;
+            
+        	if (c.getEndDate().isAfter(LocalDate.now()) && c.getReleaseDate() == null) {
+            
+            	hasActiveContract = true;
+        
             }
+    
         }
+        
         return hasActiveContract;
+    
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+    	String action = request.getParameter("action");
         Logic ctrl = new Logic();
 
         try {
@@ -157,6 +165,9 @@ public class ActionContract extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    	request.setCharacterEncoding("UTF-8");
+	    response.setCharacterEncoding("UTF-8");
+    	
         String action = request.getParameter("action");
         Logic ctrl = new Logic();
 
