@@ -16,7 +16,7 @@ public class DataPlayer {
 
     private static final String SELECT_AVAILABLE_PLAYERS
             = "SELECT p.id, p.fullname, p.birthdate, p.address, p.role, "
-            + "       p.dominant_foot, p.jersey_number, p.height, p.weight "
+            + "       p.dominant_foot, p.jersey_number, p.height, p.weight, p.photo "
             + "FROM person p "
             + "WHERE p.role = 'PLAYER' "
             + "  AND NOT EXISTS ( "
@@ -28,7 +28,7 @@ public class DataPlayer {
 
     private static final String SELECT_PLAYERS_BY_CLUB
             = "SELECT p.id, p.fullname, p.birthdate, p.address, p.role, "
-            + "       p.dominant_foot, p.jersey_number, p.height, p.weight "
+            + "       p.dominant_foot, p.jersey_number, p.height, p.weight, p.photo "
             + "FROM person p "
             + "INNER JOIN contract c ON p.id = c.id_person "
             + "WHERE c.id_club = ? "
@@ -59,6 +59,7 @@ public class DataPlayer {
         player.setJerseyNumber(rs.getInt("jersey_number"));
         player.setHeight(rs.getDouble("height"));
         player.setWeight(rs.getDouble("weight"));
+        player.setPhoto(rs.getString("photo"));
 
         return player;
 
@@ -264,8 +265,8 @@ public class DataPlayer {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "INSERT INTO person "
                     + "(id, fullname, birthdate, address, role, "
-                    + " dominant_foot, jersey_number, height, weight) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    + " dominant_foot, jersey_number, height, weight, photo) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getFullname());
@@ -301,7 +302,7 @@ public class DataPlayer {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "UPDATE person "
                     + "SET fullname = ?, birthdate = ?, address = ?, role = ?, "
-                    + "    dominant_foot = ?, jersey_number = ?, height = ?, weight = ? "
+                    + "    dominant_foot = ?, jersey_number = ?, height = ?, weight = ?, photo = ? "
                     + "WHERE id = ?"
             );
             stmt.setString(1, p.getFullname());
