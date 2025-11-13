@@ -21,14 +21,6 @@
 		    .table{ text-align:center; }
 		    .table th, .table td{ vertical-align:middle !important; }
 
-		    .page-header-sticky{
-		      position: sticky;
-		      top: 56px;    
-		      z-index: 1020;
-		      background:#10442E;
-		      padding:1rem 0;
-		    }
-
 		    .fancy-select{
 		      --bs-form-select-bg: rgba(255,255,255,.07);
 		      --bs-form-select-border-color: rgba(255,255,255,.35);
@@ -61,12 +53,10 @@
 	</head>
 	<body style="background-color: #10442E;">
   		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
-
 		<div class="container text-white">
-			<div class="page-header-sticky">
-		    	<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 my-2">
+			<div class="row">
+		    	<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 my-4">
 		        	<h1 class="m-0">Jugadores</h1>
-		
 		        	<form method="get" action="actionplayer" class="d-flex align-items-center gap-3 ms-auto m-0">
 		          		<label for="clubFilter" class="form-label m-0 fs-5">Filtrar por club:</label>
 		          			<select name="clubId" id="clubFilter"
@@ -189,7 +179,7 @@
 	                        			<th>Dirección</th>
 	                        			<th>Pie Dominante</th>
 	                        			<th>Número de Camiseta</th>
-	                        			<th>Altura (cm)</th>
+	                        			<th>Altura (mts)</th>
 	                        			<th>Peso (kg)</th>
 	                        			<th>Editar</th>
 	                        			<th>Eliminar</th>

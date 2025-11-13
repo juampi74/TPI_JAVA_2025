@@ -3,408 +3,187 @@ package data;
 import entities.*;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.LinkedList;
-import java.time.*;
 
 public class DataTournament {
 
-	public LinkedList<Tournament> getAll() throws SQLException {
-        
-    	Statement stmt = null;
+    private static final String SELECT_ALL_TOURNAMENTS_JOINED =
+            "SELECT "
+            + "    t.id AS tournament_id, "
+            + "    t.name AS tournament_name, "
+            + "    t.start_date AS tournament_start_date, "
+            + "    t.end_date AS tournament_end_date, "
+            + "    t.format AS tournament_format, "
+            + "    t.season AS tournament_season, "
+            + "    t.id_association, "
+            + "    a.id AS association_id, "
+            + "    a.name AS association_name, "
+            + "    a.creation_date AS association_creation_date "
+            + "FROM tournament t "
+            + "INNER JOIN association a ON t.id_association = a.id";
+
+    public LinkedList<Tournament> getAll() throws SQLException {
+
+        Statement stmt = null;
         ResultSet rs = null;
         LinkedList<Tournament> tournaments = new LinkedList<>();
 
         try {
-            
-        	stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery("SELECT id, name, start_date, end_date, format, season, id_association FROM tournament");
+
+            stmt = DbConnector.getInstance().getConn().createStatement();
+            rs = stmt.executeQuery(SELECT_ALL_TOURNAMENTS_JOINED);
+
             if (rs != null) {
-                
-            	while (rs.next()) {
-                    
-            		Tournament tournament = new Tournament();
-            		tournament.setId(rs.getInt("id"));
-            		tournament.setName(rs.getString("name"));
-            		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
-            		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
-            		tournament.setFormat(rs.getString("format"));
-            		tournament.setSeason(rs.getString("season"));
 
-            		PreparedStatement stmt2 = null;
-            	    ResultSet rs2 = null;
-            		
-            	    try {
-            	    
-	            		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-	            			"SELECT id, name, creation_date FROM association WHERE id = ?"
-	                	);
-	                    stmt2.setInt(1, rs.getInt("id_association"));
-	                    rs2 = stmt2.executeQuery();
-	                    
-	                    if (rs2 != null && rs2.next()) {
-	                    	
-	                    	Association association = new Association();
-	                    	association.setId(rs2.getInt("id"));
-	                    	association.setName(rs2.getString("name"));
-	                    	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
-	                    	
-	                    	tournament.setAssociation(association);
-	                    	
-	                    }
-	            		
-	                    tournaments.add(tournament);
-                
-            	    } catch (SQLException e) {
-                        
-                    	e.printStackTrace();
-                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
+                while (rs.next()) {
 
-                    } finally {
-                        
-                    	try {
-                            
-                    		if (rs2 != null) rs2.close();
-                            if (stmt2 != null) stmt2.close();
-                            
-                        } catch (SQLException e) {
-                            
-                        	e.printStackTrace();
-                        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-                        
-                        }
-                    
-                    }
-            	
-            	}
-            
+                    Tournament tournament = mapFullTournament(rs);
+                    tournaments.add(tournament);
+
+                }
+                
             }
 
         } catch (SQLException e) {
-            
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
 
         } finally {
-            
-        	try {
-                
-        		if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
-            } catch (SQLException e) {
-                
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
-            }
-        
+
+            closeResources(rs, stmt);
+
         }
 
         return tournaments;
+        
     }
 
     public Tournament getById(int id) throws SQLException {
-        
-    	Tournament tournament = null;
+
+        Tournament tournament = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        
+
         try {
-            
-        	stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"SELECT id, name, start_date, end_date, format, season, id_association FROM tournament WHERE id = ?"
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
-            
+
             if (rs != null && rs.next()) {
-                
-            	tournament = new Tournament();
-        		tournament.setId(rs.getInt("id"));
-        		tournament.setName(rs.getString("name"));
-        		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
-        		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
-        		tournament.setFormat(rs.getString("format"));
-        		tournament.setSeason(rs.getString("season"));
 
-        		PreparedStatement stmt2 = null;
-        	    ResultSet rs2 = null;
-        	    
-        	    try {
-        		
-	        		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-	        			"SELECT id, name, creation_date FROM association WHERE id = ?"
-	            	);
-	                stmt2.setInt(1, rs.getInt("id_association"));
-	                rs2 = stmt2.executeQuery();
-	                
-	                if (rs2 != null && rs2.next()) {
-	                	
-	                	Association association = new Association();
-	                	association.setId(rs2.getInt("id"));
-	                	association.setName(rs2.getString("name"));
-	                	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
-	                	
-	                	tournament.setAssociation(association);
-	                	
-	                }
-        	    
-        	    } catch (SQLException e) {
-                        
-        	    	e.printStackTrace();
-        	    	throw new SQLException("No se pudo conectar a la base de datos.", e);
+                tournament = mapFullTournament(rs);
 
-                } finally {
-                    
-                	try {
-                        
-                		if (rs2 != null) rs2.close();
-                        if (stmt2 != null) stmt2.close();
-                        
-                    } catch (SQLException e) {
-                        
-                    	e.printStackTrace();
-                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
-                    
-                    }
-                
-                }    
-            
             }
-        
+
         } catch (SQLException e) {
-        
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-        
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
         } finally {
-        
-        	try {
-            
-        		if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
-            } catch (SQLException e) {
-            
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
-            }
-        
+
+            closeResources(rs, stmt);
+
         }
-        
+
         return tournament;
-    }
-    
-    public LinkedList<Tournament> getByAssociationId(int id) throws SQLException {
         
-    	LinkedList<Tournament> tournaments = new LinkedList<Tournament>();
+    }
+
+    public LinkedList<Tournament> getByAssociationId(int id) throws SQLException {
+
+        LinkedList<Tournament> tournaments = new LinkedList<>();
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        
+
         try {
-            
-        	stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"SELECT t.* FROM tournament t  INNER JOIN association a ON t.id_association = a.id WHERE id_association = ?"
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    SELECT_ALL_TOURNAMENTS_JOINED + " WHERE a.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                
-        		Tournament tournament = new Tournament();
-        		tournament.setId(rs.getInt("id"));
-        		tournament.setName(rs.getString("name"));
-        		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
-        		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
-        		tournament.setFormat(rs.getString("format"));
-        		tournament.setSeason(rs.getString("season"));
 
-        		PreparedStatement stmt2 = null;
-        	    ResultSet rs2 = null;
-        		
-        	    try {
-        	    
-            		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-            			"SELECT id, name, creation_date FROM association WHERE id = ?"
-                	);
-                    stmt2.setInt(1, rs.getInt("id_association"));
-                    rs2 = stmt2.executeQuery();
-                    
-                    if (rs2 != null && rs2.next()) {
-                    	
-                    	Association association = new Association();
-                    	association.setId(rs2.getInt("id"));
-                    	association.setName(rs2.getString("name"));
-                    	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
-                    	
-                    	tournament.setAssociation(association);
-                    	
-                    }
-            		
+            if (rs != null) {
+
+                while (rs.next()) {
+
+                    Tournament tournament = mapFullTournament(rs);
                     tournaments.add(tournament);
-        	    
-        	    } catch (SQLException e) {
-                        
-        	    	e.printStackTrace();
-        	    	throw new SQLException("No se pudo conectar a la base de datos.", e);
 
-                } finally {
-                    
-                	try {
-                        
-                		if (rs2 != null) rs2.close();
-                        if (stmt2 != null) stmt2.close();
-                        
-                    } catch (SQLException e) {
-                        
-                    	e.printStackTrace();
-                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
-                    
-                    }
-                
-                }    
-            
+                }
             }
-        
+
         } catch (SQLException e) {
-        
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-        
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
         } finally {
-        
-        	try {
-            
-        		if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
-            } catch (SQLException e) {
-            
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
-            }
-        
+
+            closeResources(rs, stmt);
+
         }
-        
+
         return tournaments;
+        
     }
 
     public LinkedList<Tournament> getByName(String name) throws SQLException {
-        
-    	PreparedStatement stmt = null;
+
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Tournament> tournaments = new LinkedList<>();
 
         try {
-            
-        	stmt = DbConnector.getInstance().getConn().prepareStatement(
-        		"SELECT id, name, start_date, end_date, format, season, id_association FROM tournament WHERE name = ?"
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
-            
+
             if (rs != null) {
-            	
+
                 while (rs.next()) {
-                    
-                	Tournament tournament = new Tournament();
-            		tournament.setId(rs.getInt("id"));
-            		tournament.setName(rs.getString("name"));
-            		tournament.setStartDate(rs.getObject("start_date", LocalDate.class));
-            		tournament.setEndDate(rs.getObject("end_date", LocalDate.class));
-            		tournament.setFormat(rs.getString("format"));
-            		tournament.setSeason(rs.getString("season"));
 
-            		PreparedStatement stmt2 = null;
-            	    ResultSet rs2 = null;
-            		
-            	    try {
-            	    
-	            		stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-	            			"SELECT id, name, creation_date FROM association WHERE id = ?"
-	                	);
-	                    stmt2.setInt(1, rs.getInt("id_association"));
-	                    rs2 = stmt2.executeQuery();
-	                    
-	                    if (rs2 != null && rs2.next()) {
-	                    	
-	                    	Association association = new Association();
-	                    	association.setId(rs2.getInt("id"));
-	                    	association.setName(rs2.getString("name"));
-	                    	association.setCreationDate(rs2.getObject("creation_date", LocalDate.class));
-	                    	
-	                    	tournament.setAssociation(association);
-	                    	
-	                    }
-	            		
-	                    tournaments.add(tournament);
-	                    
-	                } catch (SQLException e) {
-                        
-	                	e.printStackTrace();
-	                	throw new SQLException("No se pudo conectar a la base de datos.", e);
+                    Tournament tournament = mapFullTournament(rs);
+                    tournaments.add(tournament);
 
-	                } finally {
-                    
-	                	try {
-	                        
-	                		if (rs2 != null) rs2.close();
-	                        if (stmt2 != null) stmt2.close();
-	                        
-	                    } catch (SQLException e) {
-	                        
-	                    	e.printStackTrace();
-	                    	throw new SQLException("No se pudo conectar a la base de datos.", e);
-	                    
-	                    }
-                
-	                }
-                
                 }
-            
             }
-        
+
         } catch (SQLException e) {
-        
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-        
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
         } finally {
-        
-        	try {
-                
-        		if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
-            } catch (SQLException e) {
-             
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
-            }
-        
+
+            closeResources(rs, stmt);
+
         }
 
         return tournaments;
-
+        
     }
-    
+
     public void add(Tournament t) throws SQLException {
-        
-    	PreparedStatement stmt = null;
+
+        PreparedStatement stmt = null;
         ResultSet keyResultSet = null;
-        
+
         try {
-        	
+
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"INSERT INTO tournament (name, start_date, end_date, format, season, id_association) VALUES (?, ?, ?, ?, ?, ?)",
-            	PreparedStatement.RETURN_GENERATED_KEYS
+                    "INSERT INTO tournament (name, start_date, end_date, format, season, id_association) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());
@@ -416,42 +195,44 @@ public class DataTournament {
 
             keyResultSet = stmt.getGeneratedKeys();
             if (keyResultSet != null && keyResultSet.next()) {
-                
-            	t.setId(keyResultSet.getInt(1));
-            
+
+                t.setId(keyResultSet.getInt(1));
+
             }
-        
+
         } catch (SQLException e) {
-            
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-        
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
         } finally {
-        
-        	try {
-            
-        		if (keyResultSet != null) keyResultSet.close();
-                if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
+
+            try {
+
+                if (keyResultSet != null) keyResultSet.close();
+
             } catch (SQLException e) {
-                
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
+
+                e.printStackTrace();
+
             }
-        
+
+            closeResources(null, stmt);
+
         }
-        
+
     }
 
     public void update(Tournament t) throws SQLException {
-        
-    	PreparedStatement stmt = null;
-        
-    	try {
+
+        PreparedStatement stmt = null;
+
+        try {
+
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"UPDATE tournament SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? WHERE id = ?"
+                    "UPDATE tournament "
+                    + "SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? "
+                    + "WHERE id = ?"
             );
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());
@@ -461,63 +242,79 @@ public class DataTournament {
             stmt.setInt(6, t.getAssociation().getId());
             stmt.setInt(7, t.getId());
             stmt.executeUpdate();
-            
+
         } catch (SQLException e) {
-            
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-        
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
         } finally {
-        
-        	try {
-            
-        		if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
-            } catch (SQLException e) {
-                
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
-            }
-        
+
+            closeResources(null, stmt);
+
         }
-    
+
     }
 
     public void delete(int id) throws SQLException {
-        
-    	PreparedStatement stmt = null;
-        
-    	try {
-        
-    		stmt = DbConnector.getInstance().getConn().prepareStatement(
-    			"DELETE FROM tournament WHERE id = ?"
+
+        PreparedStatement stmt = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    "DELETE FROM tournament WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();
-            
+
         } catch (SQLException e) {
-            
-        	e.printStackTrace();
-        	throw new SQLException("No se pudo conectar a la base de datos.", e);
-        
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
         } finally {
-        
-        	try {
-            
-        		if (stmt != null) stmt.close();
-                DbConnector.getInstance().releaseConn();
-                
-            } catch (SQLException e) {
-                
-            	e.printStackTrace();
-            	throw new SQLException("No se pudo conectar a la base de datos.", e);
-            
-            }
-        
+
+            closeResources(null, stmt);
+
         }
-    
+
+    }
+
+    private Tournament mapFullTournament(ResultSet rs) throws SQLException {
+
+        Tournament tournament = new Tournament();
+        tournament.setId(rs.getInt("tournament_id"));
+        tournament.setName(rs.getString("tournament_name"));
+        tournament.setStartDate(rs.getObject("tournament_start_date", LocalDate.class));
+        tournament.setEndDate(rs.getObject("tournament_end_date", LocalDate.class));
+        tournament.setFormat(rs.getString("tournament_format"));
+        tournament.setSeason(rs.getString("tournament_season"));
+
+        Association association = new Association();
+        association.setId(rs.getInt("association_id"));
+        association.setName(rs.getString("association_name"));
+        association.setCreationDate(rs.getObject("association_creation_date", LocalDate.class));
+
+        tournament.setAssociation(association);
+
+        return tournament;
+    }
+
+    private void closeResources(ResultSet rs, Statement stmt) {
+
+        try {
+
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            DbConnector.getInstance().releaseConn();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+        }
+
     }
 
 }

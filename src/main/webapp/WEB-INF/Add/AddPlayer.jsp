@@ -53,7 +53,7 @@
 		        </div>
 		        
 		        <div class="form-group">
-		            <label for="height">Altura (cm):</label>
+		            <label for="height">Altura (mts):</label>
 		            <input type="number" class="form-control" id="height" name="height" required />
 		        </div>
 		        

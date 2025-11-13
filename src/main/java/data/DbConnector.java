@@ -39,13 +39,14 @@ public class DbConnector {
 		}
 		
 		return instance;
+		
 	}
 	
 	public Connection getConn() throws SQLException {
 		
 		try {
 			
-			if(conn == null || conn.isClosed()) {
+			if (conn == null || conn.isClosed()) {
 				
 				conn=DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db, user, password);
 				connected = 0;
@@ -62,6 +63,7 @@ public class DbConnector {
 		connected++;
 		
 		return conn;
+		
 	}
 	
 	public void releaseConn() throws SQLException {
@@ -73,7 +75,9 @@ public class DbConnector {
 			if (connected <= 0) {
 				
 				if (conn != null) {
+					
 					conn.close();
+				
 				}
 			
 			}

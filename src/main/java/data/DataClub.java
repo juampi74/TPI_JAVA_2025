@@ -2,10 +2,52 @@ package data;
 
 import entities.*;
 import java.sql.*;
-import java.time.*;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataClub {
+
+    private static final String SELECT_ALL_CLUBS_JOINED =
+            "SELECT "
+            + "    cl.id AS club_id, "
+            + "    cl.name AS club_name, "
+            + "    cl.foundation_date AS club_foundation_date, "
+            + "    cl.phone_number AS club_phone_number, "
+            + "    cl.email AS club_email, "
+            + "    cl.badge_image AS club_badge_image, "
+            + "    cl.budget AS club_budget, "
+            + "    cl.id_stadium, "
+            + "    s.id AS stadium_id, "
+            + "    s.name AS stadium_name, "
+            + "    s.capacity AS stadium_capacity "
+            + "FROM club cl "
+            + "INNER JOIN stadium s ON cl.id_stadium = s.id";
+
+    private static final String SELECT_CLUB_WITH_MOST_CONTRACTS =
+            "SELECT "
+            + "    cl.id AS club_id, "
+            + "    cl.name AS club_name, "
+            + "    cl.foundation_date AS club_foundation_date, "
+            + "    cl.phone_number AS club_phone_number, "
+            + "    cl.email AS club_email, "
+            + "    cl.badge_image AS club_badge_image, "
+            + "    cl.budget AS club_budget, "
+            + "    cl.id_stadium, "
+            + "    s.id AS stadium_id, "
+            + "    s.name AS stadium_name, "
+            + "    s.capacity AS stadium_capacity, "
+            + "    COUNT(c.id) AS contracts_count "
+            + "FROM club cl "
+            + "INNER JOIN contract c ON c.id_club = cl.id "
+            + "INNER JOIN stadium s ON cl.id_stadium = s.id "
+            + "WHERE c.release_date IS NULL "
+            + "  AND c.end_date > CURDATE() "
+            + "GROUP BY "
+            + "    cl.id, cl.name, cl.foundation_date, cl.phone_number, cl.email, "
+            + "    cl.badge_image, cl.budget, cl.id_stadium, "
+            + "    s.id, s.name, s.capacity "
+            + "ORDER BY contracts_count DESC "
+            + "LIMIT 1";
 
     public LinkedList<Club> getAll() throws SQLException {
 
@@ -16,70 +58,17 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery("SELECT id, name, foundation_date, email, badge_image, phone_number, budget, id_stadium FROM club");
+            rs = stmt.executeQuery(SELECT_ALL_CLUBS_JOINED);
+
             if (rs != null) {
 
                 while (rs.next()) {
 
-                    Club club = new Club();
-                    club.setId(rs.getInt("id"));
-                    club.setName(rs.getString("name"));
-                    club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-                    club.setPhoneNumber(rs.getString("phone_number"));
-                    club.setEmail(rs.getString("email"));
-                    club.setBadgeImage(rs.getString("badge_image"));
-                    club.setBudget(rs.getDouble("budget"));
-
-                    PreparedStatement stmt2 = null;
-                    ResultSet rs2 = null;
-
-                    try {
-
-                        stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                                "SELECT id, name, capacity FROM stadium WHERE id = ?"
-                        );
-                        stmt2.setInt(1, rs.getInt("id_stadium"));
-                        rs2 = stmt2.executeQuery();
-
-                        if (rs2 != null && rs2.next()) {
-
-                            Stadium stadium = new Stadium();
-                            stadium.setId(rs2.getInt("id"));
-                            stadium.setName(rs2.getString("name"));
-                            stadium.setCapacity(rs2.getInt("capacity"));
-
-                            club.setStadium(stadium);
-
-                        }
-
-                        clubs.add(club);
-
-                    } catch (SQLException e) {
-
-                        e.printStackTrace();
-                        throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                    } finally {
-
-                        try {
-
-                            if (rs2 != null) {
-                                rs2.close();
-                            }
-                            if (stmt2 != null) {
-                                stmt2.close();
-                            }
-
-                        } catch (SQLException e) {
-
-                            e.printStackTrace();
-
-                        }
-
-                    }
+                    Club club = mapFullClub(rs);
+                    clubs.add(club);
 
                 }
-
+                
             }
 
         } catch (SQLException e) {
@@ -89,26 +78,12 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-                throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-            }
+            closeResources(rs, stmt);
 
         }
 
         return clubs;
+        
     }
 
     public Club getById(int id) throws SQLException {
@@ -120,68 +95,15 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE id = ?"
+                    SELECT_ALL_CLUBS_JOINED + " WHERE cl.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             if (rs != null && rs.next()) {
 
-                club = new Club();
-                club.setId(rs.getInt("id"));
-                club.setName(rs.getString("name"));
-                club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-                club.setPhoneNumber(rs.getString("phone_number"));
-                club.setEmail(rs.getString("email"));
-                club.setBadgeImage(rs.getString("badge_image"));
-                club.setBudget(rs.getDouble("budget"));
+                club = mapFullClub(rs);
 
-                PreparedStatement stmt2 = null;
-                ResultSet rs2 = null;
-
-                try {
-
-                    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                            "SELECT id, name, capacity FROM stadium WHERE id = ?"
-                    );
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
-                    rs2 = stmt2.executeQuery();
-
-                    if (rs2 != null && rs2.next()) {
-
-                        Stadium stadium = new Stadium();
-                        stadium.setId(rs2.getInt("id"));
-                        stadium.setName(rs2.getString("name"));
-                        stadium.setCapacity(rs2.getInt("capacity"));
-
-                        club.setStadium(stadium);
-
-                    }
-
-                } catch (SQLException e) {
-
-                    e.printStackTrace();
-                    throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                } finally {
-
-                    try {
-
-                        if (rs2 != null) {
-                            rs2.close();
-                        }
-                        if (stmt2 != null) {
-                            stmt2.close();
-                        }
-
-                    } catch (SQLException e) {
-
-                        e.printStackTrace();
-                        throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                    }
-
-                }
             }
 
         } catch (SQLException e) {
@@ -191,26 +113,12 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-                throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-            }
+            closeResources(rs, stmt);
 
         }
 
         return club;
+        
     }
 
     public Club getClubWithMostContracts() {
@@ -222,62 +130,12 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery("SELECT cl.*, count(c.id) as cantidad FROM club cl inner join contract c on c.id_club = cl.id where c.release_date is null and c.end_date > curdate() group by c.id_club order by cantidad desc LIMIT 1;");
-            if (rs.next()) {
+            rs = stmt.executeQuery(SELECT_CLUB_WITH_MOST_CONTRACTS);
 
-                club = new Club();
-                club.setId(rs.getInt("id"));
-                club.setName(rs.getString("name"));
-                club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-                club.setPhoneNumber(rs.getString("phone_number"));
-                club.setEmail(rs.getString("email"));
-                club.setBadgeImage(rs.getString("badge_image"));
-                club.setBudget(rs.getDouble("budget"));
+            if (rs != null && rs.next()) {
 
-                PreparedStatement stmt2 = null;
-                ResultSet rs2 = null;
+                club = mapFullClub(rs);
 
-                try {
-
-                    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                            "SELECT id, name, capacity FROM stadium WHERE id = ?"
-                    );
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
-                    rs2 = stmt2.executeQuery();
-
-                    if (rs2 != null && rs2.next()) {
-
-                        Stadium stadium = new Stadium();
-                        stadium.setId(rs2.getInt("id"));
-                        stadium.setName(rs2.getString("name"));
-                        stadium.setCapacity(rs2.getInt("capacity"));
-
-                        club.setStadium(stadium);
-
-                    }
-
-                } catch (SQLException e) {
-
-                    e.printStackTrace();
-
-                } finally {
-
-                    try {
-
-                        if (rs2 != null) {
-                            rs2.close();
-                        }
-                        if (stmt2 != null) {
-                            stmt2.close();
-                        }
-
-                    } catch (SQLException e) {
-
-                        e.printStackTrace();
-
-                    }
-
-                }
             }
 
         } catch (SQLException e) {
@@ -286,25 +144,12 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-
-            }
+            closeResources(rs, stmt);
 
         }
 
         return club;
+        
     }
 
     public Club getByStadiumId(int id) throws SQLException {
@@ -316,68 +161,15 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE id_stadium = ?"
+                    SELECT_ALL_CLUBS_JOINED + " WHERE s.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             if (rs != null && rs.next()) {
 
-                club = new Club();
-                club.setId(rs.getInt("id"));
-                club.setName(rs.getString("name"));
-                club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-                club.setPhoneNumber(rs.getString("phone_number"));
-                club.setEmail(rs.getString("email"));
-                club.setBadgeImage(rs.getString("badge_image"));
-                club.setBudget(rs.getDouble("budget"));
+                club = mapFullClub(rs);
 
-                PreparedStatement stmt2 = null;
-                ResultSet rs2 = null;
-
-                try {
-
-                    stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                            "SELECT id, name, capacity FROM stadium WHERE id = ?"
-                    );
-                    stmt2.setInt(1, rs.getInt("id_stadium"));
-                    rs2 = stmt2.executeQuery();
-
-                    if (rs2 != null && rs2.next()) {
-
-                        Stadium stadium = new Stadium();
-                        stadium.setId(rs2.getInt("id"));
-                        stadium.setName(rs2.getString("name"));
-                        stadium.setCapacity(rs2.getInt("capacity"));
-
-                        club.setStadium(stadium);
-
-                    }
-
-                } catch (SQLException e) {
-
-                    e.printStackTrace();
-                    throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                } finally {
-
-                    try {
-
-                        if (rs2 != null) {
-                            rs2.close();
-                        }
-                        if (stmt2 != null) {
-                            stmt2.close();
-                        }
-
-                    } catch (SQLException e) {
-
-                        e.printStackTrace();
-                        throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                    }
-
-                }
             }
 
         } catch (SQLException e) {
@@ -387,26 +179,12 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-                throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-            }
+            closeResources(rs, stmt);
 
         }
 
         return club;
+        
     }
 
     public LinkedList<Club> getByName(String name) throws SQLException {
@@ -418,7 +196,7 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "SELECT id, name, foundation_date, phone_number, email, badge_image, budget, id_stadium FROM club WHERE name = ?"
+                    SELECT_ALL_CLUBS_JOINED + " WHERE cl.name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -427,66 +205,10 @@ public class DataClub {
 
                 while (rs.next()) {
 
-                    Club club = new Club();
-                    club.setId(rs.getInt("id"));
-                    club.setName(rs.getString("name"));
-                    club.setFoundationDate(rs.getObject("foundation_date", LocalDate.class));
-                    club.setPhoneNumber(rs.getString("phone_number"));
-                    club.setEmail(rs.getString("email"));
-                    club.setBadgeImage(rs.getString("badge_image"));
-                    club.setBudget(rs.getDouble("budget"));
-
-                    PreparedStatement stmt2 = null;
-                    ResultSet rs2 = null;
-
-                    try {
-
-                        stmt2 = DbConnector.getInstance().getConn().prepareStatement(
-                                "SELECT id, name, capacity FROM stadium WHERE id = ?"
-                        );
-                        stmt2.setInt(1, rs.getInt("id_stadium"));
-                        rs2 = stmt2.executeQuery();
-
-                        if (rs2 != null && rs2.next()) {
-
-                            Stadium stadium = new Stadium();
-                            stadium.setId(rs2.getInt("id"));
-                            stadium.setName(rs2.getString("name"));
-                            stadium.setCapacity(rs2.getInt("capacity"));
-
-                            club.setStadium(stadium);
-
-                        }
-
-                        clubs.add(club);
-
-                    } catch (SQLException e) {
-
-                        e.printStackTrace();
-                        throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                    } finally {
-
-                        try {
-
-                            if (rs2 != null) {
-                                rs2.close();
-                            }
-                            if (stmt2 != null) {
-                                stmt2.close();
-                            }
-
-                        } catch (SQLException e) {
-
-                            e.printStackTrace();
-                            throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-                        }
-
-                    }
+                    Club club = mapFullClub(rs);
+                    clubs.add(club);
 
                 }
-
             }
 
         } catch (SQLException e) {
@@ -496,27 +218,12 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-                throw new SQLException("No se pudo conectar a la base de datos.", e);
-
-            }
+            closeResources(rs, stmt);
 
         }
 
         return clubs;
-
+        
     }
 
     public void add(Club c) throws SQLException {
@@ -527,7 +234,8 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, c.getName());
@@ -558,17 +266,14 @@ public class DataClub {
                 if (keyResultSet != null) {
                     keyResultSet.close();
                 }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
 
             } catch (SQLException e) {
 
                 e.printStackTrace();
-                throw new SQLException("No se pudo conectar a la base de datos.", e);
 
             }
+
+            closeResources(null, stmt);
 
         }
 
@@ -579,8 +284,11 @@ public class DataClub {
         PreparedStatement stmt = null;
 
         try {
+
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE club SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ? WHERE id = ?"
+                    "UPDATE club "
+                    + "SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ? "
+                    + "WHERE id = ?"
             );
             stmt.setString(1, c.getName());
             stmt.setObject(2, c.getFoundationDate());
@@ -599,18 +307,7 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-
-            }
+            closeResources(null, stmt);
 
         }
 
@@ -635,19 +332,44 @@ public class DataClub {
 
         } finally {
 
-            try {
+            closeResources(null, stmt);
 
-                if (stmt != null) {
-                    stmt.close();
-                }
-                DbConnector.getInstance().releaseConn();
+        }
 
-            } catch (SQLException e) {
+    }
 
-                e.printStackTrace();
-                throw new SQLException("No se pudo conectar a la base de datos.", e);
+    private Club mapFullClub(ResultSet rs) throws SQLException {
 
-            }
+        Club club = new Club();
+        club.setId(rs.getInt("club_id"));
+        club.setName(rs.getString("club_name"));
+        club.setFoundationDate(rs.getObject("club_foundation_date", LocalDate.class));
+        club.setPhoneNumber(rs.getString("club_phone_number"));
+        club.setEmail(rs.getString("club_email"));
+        club.setBadgeImage(rs.getString("club_badge_image"));
+        club.setBudget(rs.getDouble("club_budget"));
+
+        Stadium stadium = new Stadium();
+        stadium.setId(rs.getInt("stadium_id"));
+        stadium.setName(rs.getString("stadium_name"));
+        stadium.setCapacity(rs.getInt("stadium_capacity"));
+
+        club.setStadium(stadium);
+
+        return club;
+    }
+
+    private void closeResources(ResultSet rs, Statement stmt) {
+
+        try {
+
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            DbConnector.getInstance().releaseConn();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
 
         }
 

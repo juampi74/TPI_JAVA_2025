@@ -31,17 +31,11 @@ public class DataContract {
             stmt = DbConnector.getInstance().getConn().createStatement();
             rs = stmt.executeQuery(SELECT_ALL_CONTRACTS_JOINED);
 
-            if (rs != null) {
+            while (rs.next()) {
 
-                while (rs.next()) {
+                Contract contract = mapFullContract(rs);
+                contracts.add(contract);
 
-                    Contract contract = mapFullContract(rs);
-
-                    if (contract != null) {
-                        contracts.add(contract);
-                    }
-
-                }
             }
 
         } catch (SQLException e) {
@@ -73,7 +67,7 @@ public class DataContract {
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
-            if (rs != null && rs.next()) {
+            if (rs.next()) {
 
                 contract = mapFullContract(rs);
 
@@ -91,6 +85,7 @@ public class DataContract {
         }
 
         return contract;
+        
     }
 
     public Contract getNextExpiringContract() throws SQLException {
@@ -102,18 +97,18 @@ public class DataContract {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                SELECT_ALL_CONTRACTS_JOINED + " where c.release_date is null and c.end_date between curdate() and date_add(curdate(), interval 6 month) order by end_date asc LIMIT 1"
-            ); 
+                    SELECT_ALL_CONTRACTS_JOINED
+                            + " WHERE c.release_date IS NULL "
+                            + "   AND c.end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH) "
+                            + " ORDER BY c.end_date ASC "
+                            + " LIMIT 1"
+            );
 
             rs = stmt.executeQuery();
 
-            if (rs != null) {
+            if (rs.next()) {
 
-                while (rs.next()) {
-
-                    contract = mapFullContract(rs);
-
-                }
+                contract = mapFullContract(rs);
 
             }
 
@@ -129,35 +124,28 @@ public class DataContract {
         }
 
         return contract;
-        
+
     }
 
     public LinkedList<Contract> getByPersonId(int id) throws SQLException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        LinkedList<Contract> contracts = new LinkedList<Contract>();
+        LinkedList<Contract> contracts = new LinkedList<>();
 
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_person = ?"
             );
-
             stmt.setInt(1, id);
-
             rs = stmt.executeQuery();
 
-            if (rs != null) {
+            while (rs.next()) {
 
-                while (rs.next()) {
+                Contract contract = mapFullContract(rs);
+                contracts.add(contract);
 
-                    Contract contract = mapFullContract(rs);
-                    if (contract != null) {
-                        contracts.add(contract);
-
-                    }
-                }
             }
 
         } catch (SQLException e) {
@@ -172,35 +160,28 @@ public class DataContract {
         }
 
         return contracts;
-        
+
     }
 
     public LinkedList<Contract> getByClubId(int id) throws SQLException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        LinkedList<Contract> contracts = new LinkedList<Contract>();
+        LinkedList<Contract> contracts = new LinkedList<>();
 
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     SELECT_ALL_CONTRACTS_JOINED + " WHERE c.id_club = ?"
             );
-
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
-            if (rs != null) {
+            while (rs.next()) {
 
-                while (rs.next()) {
+                Contract contract = mapFullContract(rs);
+                contracts.add(contract);
 
-                    Contract contract = mapFullContract(rs);
-
-                    if (contract != null) {
-                        contracts.add(contract);
-                    }
-
-                }
             }
 
         } catch (SQLException e) {
@@ -215,7 +196,7 @@ public class DataContract {
         }
 
         return contracts;
-        
+
     }
 
     public void add(Contract c) throws SQLException {
@@ -225,7 +206,9 @@ public class DataContract {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO contract (start_date, end_date, salary, release_clause, release_date, id_person, id_club) VALUES (?, ?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO contract "
+                            + "(start_date, end_date, salary, release_clause, release_date, id_person, id_club) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setObject(1, c.getStartDate());
             stmt.setObject(2, c.getEndDate());
@@ -237,12 +220,11 @@ public class DataContract {
 
             } else {
 
-                stmt.setNull(4, java.sql.Types.DOUBLE);
+                stmt.setNull(4, Types.DOUBLE);
 
             }
 
             stmt.setObject(5, c.getReleaseDate());
-
             stmt.setInt(6, c.getPerson().getId());
             stmt.setInt(7, c.getClub().getId());
 
@@ -258,7 +240,7 @@ public class DataContract {
             closeResources(null, stmt);
 
         }
-        
+
     }
 
     public void update(Contract c) throws SQLException {
@@ -268,12 +250,10 @@ public class DataContract {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"UPDATE contract SET end_date = ? WHERE id = ?"
+                    "UPDATE contract SET end_date = ? WHERE id = ?"
             );
             stmt.setObject(1, c.getEndDate());
-
             stmt.setInt(2, c.getId());
-
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -296,7 +276,7 @@ public class DataContract {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE contract SET release_date = curdate() WHERE id = ?"
+                    "UPDATE contract SET release_date = CURDATE() WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -341,8 +321,8 @@ public class DataContract {
 
     private Contract mapFullContract(ResultSet rs) throws SQLException {
 
-        Person person = null;
-        PersonRole role = null;
+        Person person;
+        PersonRole role;
 
         try {
 
@@ -371,9 +351,7 @@ public class DataContract {
             c.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
             person = c;
 
-        }
-
-        if (person == null) {
+        } else {
 
             throw new SQLException("Rol no manejado en la lógica: " + role);
 
@@ -402,17 +380,12 @@ public class DataContract {
 
         Double value = rs.getDouble("release_clause");
         if (rs.wasNull()) {
-
             contract.setReleaseClause(null);
-
         } else {
-
             contract.setReleaseClause(value);
-
         }
 
         contract.setReleaseDate(rs.getObject("release_date", LocalDate.class));
-
         contract.setPerson(person);
         contract.setClub(club);
 
@@ -424,12 +397,8 @@ public class DataContract {
 
         try {
 
-            if (rs != null) {
-                rs.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {
