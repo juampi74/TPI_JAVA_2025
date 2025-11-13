@@ -10,10 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import entities.Club;
-import entities.Contract;
-import entities.Player;
-import entities.Tournament;
+import entities.*;
 import logic.Logic;
 
 @WebServlet({"/home", "/HOME", "/Home"})

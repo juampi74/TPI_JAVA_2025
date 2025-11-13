@@ -79,10 +79,10 @@
                 %>		
                 		<div class="col-auto text-dark border border-dark rounded p-3 bg-dark border border-white" style="width: 300px; min-height: 200px;">
 	                		<h3 style="color:white;">Extender Contrato</h3>
-	                		<div class="d-flex my-3 align-items-center justify-content-between">
+	                		<div class="d-flex my-3 align-items-center justify-content-between gap-3">
 	                			<img alt="" src="<%= contract.getPerson().getPhoto() %>" width="70" height="90">
 		                		<div class="text-left" style="vertical-align: middle !important;">
-		                			<p class="text-white m-0" >Nombre: <b><%= contract.getPerson().getFullname() %></b></p>
+		                			<p class="text-white m-0">Nombre: <b><%= contract.getPerson().getFullname() %></b></p>
 		                			<p class="text-white m-0">Fecha Inicio: <b><%= contract.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>
 		                			<p class="text-white m-0">Fecha Fin: <b><%= contract.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>
 		                		</div>
