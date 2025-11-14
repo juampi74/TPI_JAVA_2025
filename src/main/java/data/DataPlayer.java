@@ -277,6 +277,7 @@ public class DataPlayer {
             stmt.setInt(7, p.getJerseyNumber());
             stmt.setDouble(8, p.getHeight());
             stmt.setDouble(9, p.getWeight());
+            stmt.setString(10, p.getPhoto());
 
             stmt.executeUpdate();
 
@@ -313,7 +314,8 @@ public class DataPlayer {
             stmt.setInt(6, p.getJerseyNumber());
             stmt.setDouble(7, p.getHeight());
             stmt.setDouble(8, p.getWeight());
-            stmt.setInt(9, p.getId());
+            stmt.setString(9, p.getPhoto());
+            stmt.setInt(10, p.getId());
 
             stmt.executeUpdate();
 

@@ -35,6 +35,7 @@ public class ActionPlayer extends HttpServlet {
         player.setJerseyNumber(Integer.parseInt(request.getParameter("jerseyNumber")));
         player.setHeight(Double.parseDouble(request.getParameter("height")));
         player.setWeight(Double.parseDouble(request.getParameter("weight")));
+        player.setPhoto(request.getParameter("photo"));
 
         return player;
     

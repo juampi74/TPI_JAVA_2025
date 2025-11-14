@@ -54,12 +54,17 @@
 		        
 		        <div class="form-group">
 		            <label for="height">Altura (mts):</label>
-		            <input type="number" class="form-control" id="height" name="height" required />
+		            <input type="number" class="form-control" id="height" name="height" step="0.01" required />
 		        </div>
 		        
 		        <div class="form-group">
 		            <label for="weight">Peso (kg):</label>
-		            <input type="number" class="form-control" id="weight" name="weight" required />
+		            <input type="number" class="form-control" id="weight" name="weight" step="0.01" required />
+		        </div>
+		        
+		        <div class="form-group">
+		            <label for="photo">Foto:</label>
+		            <input type="text" class="form-control" id="photo" name="photo" maxlength="250" required />
 		        </div>
 		
 		        <div class="button-container mb-3">
