@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
 -- Host: localhost    Database: tpjava
 -- ------------------------------------------------------
--- Server version	8.0.37
+-- Server version	8.0.39
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -147,6 +147,33 @@ INSERT INTO `person` VALUES (12487283,'Russo, Miguel Angel','1956-04-09','Corrie
 UNLOCK TABLES;
 
 --
+-- Table structure for table `position`
+--
+
+DROP TABLE IF EXISTS `position`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `position` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `description` varchar(45) NOT NULL,
+  `abbreviation` varchar(5) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `description_UNIQUE` (`description`),
+  UNIQUE KEY `abbreviation_UNIQUE` (`abbreviation`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `position`
+--
+
+LOCK TABLES `position` WRITE;
+/*!40000 ALTER TABLE `position` DISABLE KEYS */;
+INSERT INTO `position` VALUES (3,'Delantero Centro','DC'),(4,'Mediocampista Ofensivo','MCO'),(5,'Extremo Izquierdo','EI'),(6,'Extremo Derecho','ED'),(7,'Mediocampista Central','MC'),(8,'Mediocampista Defensivo','MCD'),(9,'Lateral Izquierdo','LI'),(10,'Lateral Derecho','LD'),(11,'Defensor Central','DFC'),(12,'Arquero','POR'),(13,'Mediapunta','MP'),(14,'Mediocampista Derecho','MD'),(15,'Mediocampista Izquierdo','MI'),(18,'Segundo Delantero Izquierdo','SDI'),(19,'Segundo Delantero Derecho','SDD');
+/*!40000 ALTER TABLE `position` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `stadium`
 --
 
@@ -215,4 +242,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-13  0:53:59
+-- Dump completed on 2025-11-15 17:59:35

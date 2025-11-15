@@ -17,6 +17,7 @@ public class Logic {
     private DataAssociation das;
     private DataTournament dto;
     private DataContract dco;
+    private DataPosition dpo;
 
     public Logic() {
 
@@ -29,6 +30,7 @@ public class Logic {
         das = new DataAssociation();
         dto = new DataTournament();
         dco = new DataContract();
+        dpo = new DataPosition();
 
     }
 
@@ -372,6 +374,42 @@ public class Logic {
     public void deleteContract(int id) throws SQLException {
 
         dco.delete(id);
+
+    }
+    
+    public LinkedList<Position> getAllPositions() throws SQLException {
+
+        return dpo.getAll();
+
+    }
+
+    public Position getPositionById(int id) throws SQLException {
+
+        return dpo.getById(id);
+
+    }
+
+    public LinkedList<Position> getPositionByDescription(String description) throws SQLException {
+
+        return dpo.getByDescription(description);
+
+    }
+
+    public void addPosition(Position p) throws SQLException {
+
+        dpo.add(p);
+
+    }
+
+    public void updatePosition(Position p) throws SQLException {
+
+        dpo.update(p);
+
+    }
+
+    public void deletePosition(int id) throws SQLException {
+
+        dpo.delete(id);
 
     }
 

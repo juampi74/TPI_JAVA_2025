@@ -3,7 +3,7 @@
 <html>
 	<head>
 	    <meta charset="UTF-8">
-	    <title>Agregar Asociación</title>
+	    <title>Agregar Posición</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <style>
 	        .button-container {
@@ -18,18 +18,18 @@
 	<body style="background-color: #10442E;">
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
-		    <h2 class="mt-4">Agregar Asociación</h2>
-		    <form action="actionassociation" method="post" class="mt-4">
+		    <h2 class="mt-4">Agregar Posición</h2>
+		    <form action="actionposition" method="post" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />
 		        
 		        <div class="form-group">
-		            <label for="name">Nombre:</label>
-		            <input type="text" class="form-control" id="name" name="name" required />
+		            <label for="description">Descripción:</label>
+		            <input type="text" class="form-control" id="description" name="description" required />
 		        </div>
 		
 		        <div class="form-group">
-		            <label for="creationDate">Fecha de Creación:</label>
-		            <input type="date" class="form-control" id="creationDate" name="creationDate" required />
+		            <label for="abbreviation">Abreviatura:</label>
+		            <input type="text" class="form-control" id="abbreviation" name="abbreviation" required />
 		        </div>
 		
 		        <div class="button-container mb-3">

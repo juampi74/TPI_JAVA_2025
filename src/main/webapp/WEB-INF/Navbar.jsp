@@ -56,6 +56,9 @@
 	                    <li class="nav-item">
 	                        <a class="nav-link" href="actioncontract">Contratos</a>
 	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" href="actionposition">Posiciones</a>
+	                    </li>
 	                </ul>
 	            </div>
 	        </div>
