@@ -73,6 +73,7 @@
 	                    		<thead>
 	                    			<tr>
 	                    				<th>DNI</th>
+	                    				<th>Técnico</th>
 	                    		    	<th>Apellido y Nombre</th>
 	                        			<th>Fecha Nacimiento</th>
 	                        			<th>Dirección</th>
@@ -89,6 +90,9 @@
 	                    		%>
 	                    			<tr>
 	                    				<td><%=c.getId()%></td>
+	                    				<td>
+	                    					<img alt="" src="<%=request.getContextPath() + "/images?id=" + c.getPhoto()%>" width="55" height="70">
+	                    				</td>
 	                    				<td><%=c.getFullname()%></td>
 	                    				<td><%=c.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=c.getAddress()%></td>

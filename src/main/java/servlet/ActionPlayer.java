@@ -1,16 +1,21 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import entities.Club;
 import entities.Contract;
@@ -19,11 +24,12 @@ import enums.PersonRole;
 import logic.Logic;
 
 @WebServlet("/actionplayer")
+@MultipartConfig
 public class ActionPlayer extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
        
-	private Player buildPlayerFromRequest(HttpServletRequest request) {
+	private Player buildPlayerFromRequest(HttpServletRequest request) throws IOException, ServletException {
         
     	Player player = new Player();
     	player.setId(Integer.parseInt(request.getParameter("id")));
@@ -35,8 +41,38 @@ public class ActionPlayer extends HttpServlet {
         player.setJerseyNumber(Integer.parseInt(request.getParameter("jerseyNumber")));
         player.setHeight(Double.parseDouble(request.getParameter("height")));
         player.setWeight(Double.parseDouble(request.getParameter("weight")));
-        player.setPhoto(request.getParameter("photo"));
-
+        
+        String action = request.getParameter("action");
+        Part photo = request.getPart("photo");
+        if (photo != null && photo.getSize() > 0) {
+        	String filename = player.getId() + "_" + photo.getSubmittedFileName();
+        	String projectRoot = new File(
+        	        getServletContext().getRealPath("/")
+        	).getParentFile() 
+        	 .getParentFile() 
+        	 .getPath();
+        	
+        	String uploadPath = projectRoot.replace(".metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0", "").trim() + "TPI_JAVA_2025" + File.separator + "uploads";
+        	
+        	File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+            
+            File file = new File(uploadDir, filename);
+            
+            Files.copy(photo.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            player.setPhoto(filename);
+            
+        } else {
+            if ("edit".equals(action)) {
+                String oldPhoto = request.getParameter("currentPhoto");
+                player.setPhoto(oldPhoto);
+            } else {
+                player.setPhoto("-");
+            }
+        }
+        
+        
         return player;
     
 	}

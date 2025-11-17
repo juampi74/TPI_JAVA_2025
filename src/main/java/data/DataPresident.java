@@ -20,6 +20,7 @@ public class DataPresident {
         president.setFullname(rs.getString("fullname"));
         president.setBirthdate(rs.getObject("birthdate", LocalDate.class));
         president.setAddress(rs.getString("address"));
+        president.setPhoto(rs.getString("photo"));
 
         String roleStr = rs.getString("role");
         try {
@@ -170,8 +171,8 @@ public class DataPresident {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "INSERT INTO person "
-                    + "(id, fullname, birthdate, address, role, management_policy) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)"
+                    + "(id, fullname, birthdate, address, role, management_policy, photo) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getFullname());
@@ -179,6 +180,7 @@ public class DataPresident {
             stmt.setString(4, p.getAddress());
             stmt.setString(5, p.getRole().name());
             stmt.setString(6, p.getManagementPolicy());
+            stmt.setString(7, p.getPhoto());
 
             stmt.executeUpdate();
 
@@ -203,7 +205,7 @@ public class DataPresident {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "UPDATE person "
-                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, management_policy = ? "
+                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, management_policy = ?, photo = ?"
                     + "WHERE id = ?"
             );
             stmt.setString(1, p.getFullname());
@@ -211,7 +213,9 @@ public class DataPresident {
             stmt.setString(3, p.getAddress());
             stmt.setString(4, p.getRole().name());
             stmt.setString(5, p.getManagementPolicy());
-            stmt.setInt(6, p.getId());
+            stmt.setString(6, p.getPhoto());
+            stmt.setInt(7, p.getId());
+            
 
             stmt.executeUpdate();
 

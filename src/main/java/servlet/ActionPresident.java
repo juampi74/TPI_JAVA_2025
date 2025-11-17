@@ -1,26 +1,32 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import entities.President;
 import enums.PersonRole;
 import logic.Logic;
 
+@MultipartConfig
 @WebServlet("/actionpresident")
 public class ActionPresident extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
        
-	private President buildPresidentFromRequest(HttpServletRequest request) {
+	private President buildPresidentFromRequest(HttpServletRequest request) throws IOException, ServletException {
         
 		President president = new President();
 		president.setId(Integer.parseInt(request.getParameter("id")));
@@ -29,7 +35,44 @@ public class ActionPresident extends HttpServlet {
 		president.setAddress(request.getParameter("address"));
 		president.setRole(PersonRole.valueOf("PRESIDENT"));
 		president.setManagementPolicy(request.getParameter("managementPolicy"));
+		
+		String action = request.getParameter("action");
+		Part photo = request.getPart("photo");
+        if (photo != null && photo.getSize() > 0) {
+        	String filename = president.getId() + "_" + photo.getSubmittedFileName();
+        	
+        	
+        	
+        	String projectRoot = new File(
+        	        getServletContext().getRealPath("/")
+        	).getParentFile() 
+        	 .getParentFile() 
+        	 .getPath();
+        	
+        	String uploadPath = projectRoot.replace(".metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0", "").trim() + "TPI_JAVA_2025" + File.separator + "uploads";
+        	
+        	System.out.println("PROJECT ROOT >>> " + projectRoot);
 
+        	System.out.println("UPLOAD PATH >>> " + uploadPath);
+        	File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+            
+            File file = new File(uploadDir, filename);
+            
+            Files.copy(photo.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            president.setPhoto(filename);
+            
+        } else {
+            if ("edit".equals(action)) {
+                String oldPhoto = request.getParameter("currentPhoto");
+                president.setPhoto(oldPhoto);
+            } else {
+                president.setPhoto("-");
+            }
+        }
+        
+		
         return president;
     
 	}

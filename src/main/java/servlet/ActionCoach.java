@@ -1,27 +1,33 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import entities.Contract;
 import entities.Coach;
 import enums.PersonRole;
 import logic.Logic;
 
+@MultipartConfig
 @WebServlet("/actioncoach")
 public class ActionCoach extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
        
-	private Coach buildCoachFromRequest(HttpServletRequest request) {
+	private Coach buildCoachFromRequest(HttpServletRequest request) throws IOException, ServletException {
                         
         Coach coach = new Coach();
         coach.setId(Integer.parseInt(request.getParameter("id")));
@@ -32,7 +38,37 @@ public class ActionCoach extends HttpServlet {
         coach.setPreferredFormation(request.getParameter("preferredFormation"));
         coach.setCoachingLicense(request.getParameter("coachingLicense"));
         coach.setLicenseObtainedDate(LocalDate.parse(request.getParameter("licenseObtainedDate")));
-
+        
+        String action = request.getParameter("action");
+        Part photo = request.getPart("photo");
+        if (photo != null && photo.getSize() > 0) {
+        	String filename = coach.getId() + "_" + photo.getSubmittedFileName();
+        	String projectRoot = new File(
+        	        getServletContext().getRealPath("/")
+        	).getParentFile() 
+        	 .getParentFile() 
+        	 .getPath();
+        	
+        	String uploadPath = projectRoot.replace(".metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0", "").trim() + "TPI_JAVA_2025" + File.separator + "uploads";
+        	
+        	File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+            
+            File file = new File(uploadDir, filename);
+            
+            Files.copy(photo.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            coach.setPhoto(filename);
+            
+        } else {
+            if ("edit".equals(action)) {
+                String oldPhoto = request.getParameter("currentPhoto");
+                coach.setPhoto(oldPhoto);
+            } else {
+                coach.setPhoto("-");
+            }
+        }
+        
         return coach;
     
 	}

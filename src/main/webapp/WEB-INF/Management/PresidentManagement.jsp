@@ -73,6 +73,7 @@
 	                    		<thead>
 	                    			<tr>
 	                    				<th>DNI</th>
+	                    				<th>Presidente</th>
 	                    		    	<th>Apellido y Nombre</th>
 	                        			<th>Fecha Nacimiento</th>
 	                        			<th>Dirección</th>
@@ -87,6 +88,9 @@
 	                    		%>
 	                    			<tr>
 	                    				<td><%=pr.getId()%></td>
+	                    				<td>
+							            	<img alt="" src="<%=request.getContextPath() + "/images?id=" + pr.getPhoto()%>" width="55" height="70">
+							            </td>
 	                    				<td><%=pr.getFullname()%></td>
 	                    				<td><%=pr.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=pr.getAddress()%></td>

@@ -192,7 +192,7 @@
 						            	<tr>
 						            		<td><%=p.getJerseyNumber()%></td>
 							                <td>
-							                	<img alt="" src="<%=p.getPhoto()%>" width="55" height="70">
+							                	<img alt="" src="<%=request.getContextPath() + "/images?id=" + p.getPhoto()%>" width="55" height="70">
 							                </td>
 		                    				<td><%=p.getFullname()%></td>
 		                    				<td><%=p.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
