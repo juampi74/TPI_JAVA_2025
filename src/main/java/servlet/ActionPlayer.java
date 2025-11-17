@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import entities.Club;
 import entities.Contract;
+import entities.Position;
 import entities.Player;
 import enums.PersonRole;
 import logic.Logic;
@@ -36,9 +37,29 @@ public class ActionPlayer extends HttpServlet {
         player.setHeight(Double.parseDouble(request.getParameter("height")));
         player.setWeight(Double.parseDouble(request.getParameter("weight")));
         player.setPhoto(request.getParameter("photo"));
-
+        
         return player;
     
+	}
+	
+	private LinkedList<Integer> buildPlayerPositionFromRequest(HttpServletRequest request) {
+
+	    LinkedList<Integer> positionsIds = new LinkedList<>();
+
+	    String[] selectedPositions = request.getParameterValues("positions");
+
+	    if (selectedPositions != null) {
+	        for (String posIdStr : selectedPositions) {
+	            try {
+	                int posId = Integer.parseInt(posIdStr);
+	                positionsIds.add(posId);
+	            } catch (NumberFormatException e) {
+	                System.err.println("ID de posición inválido: " + posIdStr);
+	            }
+	        }
+	    }
+
+	    return positionsIds;
 	}
 	
 	private boolean checkBirthdate(LocalDate birthdate) {
@@ -64,11 +85,27 @@ public class ActionPlayer extends HttpServlet {
 			
 			if ("edit".equals(action)) {
 				
-				Player player = ctrl.getPlayerById(Integer.parseInt(request.getParameter("id")));
+				int id = Integer.parseInt(request.getParameter("id"));
+				Player player = ctrl.getPlayerById(id);
 				request.setAttribute("player", player);
+				
+				LinkedList<Position> positions = ctrl.getAllPositions();
+            	request.setAttribute("positionsList", positions);
+            	
+            	LinkedList<Integer> playerPositions = ctrl.getPlayerPositions(id);
+            	request.setAttribute("playerPositionsList", playerPositions);
+            	
 				request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
 			
 			} else if ("add".equals(action)) {
+				
+				LinkedList<Position> positions = ctrl.getAllPositions();
+				
+				if (positions.size() > 0) {
+					
+					request.setAttribute("positionsList", positions);  
+				
+				}
 				
 				request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
 			
@@ -126,6 +163,13 @@ public class ActionPlayer extends HttpServlet {
             	if (checkBirthdate(player.getBirthdate())) {
 
             		ctrl.addPlayer(player);
+            		int playerId = player.getId();
+            		
+            		LinkedList<Integer> posIds = buildPlayerPositionFromRequest(request);
+
+            	    for (Integer posId : posIds) {
+            	            ctrl.addPlayerPosition(playerId, posId);
+            	    }
 
             	} else {
 
@@ -141,6 +185,15 @@ public class ActionPlayer extends HttpServlet {
             	if (checkBirthdate(player.getBirthdate())) {
 
             		ctrl.updatePlayer(player);
+            		
+            		LinkedList<Integer> posIds = buildPlayerPositionFromRequest(request);
+            		ctrl.deletePlayerPositions(player.getId());
+            		
+            		for (Integer posId : posIds) {
+        	        
+            			ctrl.addPlayerPosition(player.getId(), posId);
+            		
+            		}
 
             	} else {
 
@@ -155,7 +208,8 @@ public class ActionPlayer extends HttpServlet {
 
         	    if (checkContracts(id_player, ctrl)) {
 
-            		ctrl.deletePlayer(id_player);
+        	    	ctrl.deletePlayerPositions(id_player);
+        	    	ctrl.deletePlayer(id_player);
 
         	    } else {
 

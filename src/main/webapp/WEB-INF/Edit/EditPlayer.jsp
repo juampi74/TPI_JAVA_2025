@@ -1,7 +1,11 @@
+<%@ page import="java.util.LinkedList"%>
 <%@ page import="entities.Player"%>
+<%@ page import="entities.Position"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	Player player = (Player) request.getAttribute("player");
+	LinkedList<Position> positionsList = (LinkedList<Position>) request.getAttribute("positionsList");
+	LinkedList<Integer> playerPositionsList = (LinkedList<Integer>) request.getAttribute("playerPositionsList");
 %>
 <!DOCTYPE html>
 <html>
@@ -66,6 +70,40 @@
 		            <label for="photo">Foto:</label>
 		            <input type="text" class="form-control" id="photo" name="photo" maxlength="250" value="<%=player.getPhoto()%>" required />
 		        </div>
+		        
+		        <div class="form-group">
+				    <label>Posiciones:</label><br>
+				
+				    <%
+				        if (positionsList != null && !positionsList.isEmpty()) {
+				
+				            for (Position p : positionsList) {
+				
+				                boolean checked = false;
+				
+				                if (playerPositionsList != null) {
+				                    for (Integer pp : playerPositionsList) {
+				                        if (pp == p.getId()) {
+				                            checked = true;
+				                            break;
+				                        }
+				                    }
+				                }
+				
+				                out.print("<div class='form-check'>");
+				                out.print("<input type='checkbox' class='form-check-input' "
+				                        + "name='positions' id='pos_" + p.getId() + "' "
+				                        + "value='" + p.getId() + "' " + (checked ? "checked" : "") + ">");
+				                out.print("<label class='form-check-label' for='pos_" + p.getId() + "'>"
+				                        + p.getDescription() + "</label>");
+				                out.print("</div>");
+				            }
+				
+				        } else {
+				            out.print("<p class='text-white'>No hay posiciones cargadas</p>");
+				        }
+				    %>
+				</div>
 		        
 		        <div class="button-container mb-3">
 			        <button type="button" class="btn btn-dark border border-white" onclick="history.back()">Cancelar</button>

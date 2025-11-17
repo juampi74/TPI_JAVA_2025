@@ -18,6 +18,7 @@ public class Logic {
     private DataTournament dto;
     private DataContract dco;
     private DataPosition dpo;
+    private DataPlayerPosition dpp;
 
     public Logic() {
 
@@ -31,6 +32,7 @@ public class Logic {
         dto = new DataTournament();
         dco = new DataContract();
         dpo = new DataPosition();
+        dpp = new DataPlayerPosition();
 
     }
 
@@ -411,6 +413,30 @@ public class Logic {
 
         dpo.delete(id);
 
+    }
+    
+    public LinkedList<Integer> getPlayerPositions(int playerId) throws SQLException {
+    	
+    	return dpp.getPlayerPositions(playerId);
+    	
+    }
+    
+    
+    public void addPlayerPosition(int playerId, int posId) throws SQLException {
+    	
+    	dpp.add(playerId, posId);
+    	
+    }
+    
+    public void deletePlayerPositions(int id) throws SQLException {
+    	
+    	dpp.deleteAllFromPlayer(id);
+    	
+    }
+    
+    public int getNumberPlayersWithPosition(int idPosition) throws SQLException {
+    	
+    	return dpp.getNumberPlayersWithPosition(idPosition);
     }
 
 }

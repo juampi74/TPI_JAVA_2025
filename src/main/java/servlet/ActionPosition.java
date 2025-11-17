@@ -33,6 +33,12 @@ public class ActionPosition extends HttpServlet {
 		return abbreviation.length() <= 5;
 	}
 	
+	private boolean checkPlayersWithPosition(Integer idPosition, Logic ctrl) throws SQLException {
+    	
+    	return ctrl.getNumberPlayersWithPosition(idPosition) == 0;
+    
+    }
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");
@@ -111,7 +117,16 @@ public class ActionPosition extends HttpServlet {
             	
             	Integer id = Integer.parseInt(request.getParameter("id"));
 
-            	ctrl.deletePosition(id);
+            	if (checkPlayersWithPosition(id, ctrl)) {
+
+            		ctrl.deletePosition(id);
+
+            	} else {
+            		
+					request.setAttribute("errorMessage", "No se puede eliminar una posición que tiene jugadores asociados");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            	
+				}
             	
             }
     	    
