@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
 -- Host: localhost    Database: tpjava
 -- ------------------------------------------------------
--- Server version	8.0.37
+-- Server version	8.0.39
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -147,6 +147,33 @@ INSERT INTO `person` VALUES (12487283,'Russo, Miguel Angel','1956-04-09','Corrie
 UNLOCK TABLES;
 
 --
+-- Table structure for table `player_position`
+--
+
+DROP TABLE IF EXISTS `player_position`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `player_position` (
+  `id_player` int unsigned NOT NULL,
+  `id_position` int NOT NULL,
+  PRIMARY KEY (`id_player`,`id_position`),
+  KEY `fk_position_idx` (`id_position`),
+  CONSTRAINT `fk_player` FOREIGN KEY (`id_player`) REFERENCES `person` (`id`),
+  CONSTRAINT `fk_position` FOREIGN KEY (`id_position`) REFERENCES `position` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `player_position`
+--
+
+LOCK TABLES `player_position` WRITE;
+/*!40000 ALTER TABLE `player_position` DISABLE KEYS */;
+INSERT INTO `player_position` VALUES (33333333,3),(33333333,8),(33333333,11),(48894558,12),(48894559,12);
+/*!40000 ALTER TABLE `player_position` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `position`
 --
 
@@ -242,4 +269,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-17  2:31:05
+-- Dump completed on 2025-11-18 15:50:47
