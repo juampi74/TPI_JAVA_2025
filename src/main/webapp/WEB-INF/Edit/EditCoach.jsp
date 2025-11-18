@@ -23,7 +23,7 @@ Coach coach = (Coach) request.getAttribute("coach");
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Editar Director Técnico</h2>
-		    <form action="actioncoach" method="post" class="mt-4">
+		    <form action="actioncoach" method="post" enctype="multipart/form-data" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
 		        <input type="hidden" name="id" value="<%=coach.getId()%>" />
 		        
@@ -55,6 +55,11 @@ Coach coach = (Coach) request.getAttribute("coach");
 		        <div class="form-group">
 		            <label for="licenseObtainedDate">Fecha de Obtención de Licencia:</label>
 		            <input type="date" class="form-control" id="licenseObtainedDate" name="licenseObtainedDate" value="<%=coach.getLicenseObtainedDate()%>" required />
+		        </div>
+		        
+		        <div class="form-group">
+		            <label for="photo">Foto:</label>
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
 		        </div>
 		        
 		        <div class="button-container mb-3">

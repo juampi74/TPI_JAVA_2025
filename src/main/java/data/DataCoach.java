@@ -10,13 +10,13 @@ public class DataCoach {
 
     private static final String SELECT_COACH_BASE
             = "SELECT id, fullname, birthdate, address, role, "
-            + "       preferred_formation, coaching_license, license_obtained_date "
+            + "       preferred_formation, coaching_license, license_obtained_date, photo "
             + "FROM person "
             + "WHERE role = 'COACH'";
 
     private static final String SELECT_AVAILABLE_COACHES
             = "SELECT id, fullname, birthdate, address, role, "
-            + "       preferred_formation, coaching_license, license_obtained_date "
+            + "       preferred_formation, coaching_license, license_obtained_date, photo "
             + "FROM person p "
             + "WHERE p.role = 'COACH' "
             + "  AND NOT EXISTS ( "
@@ -33,7 +33,8 @@ public class DataCoach {
         coach.setFullname(rs.getString("fullname"));
         coach.setBirthdate(rs.getObject("birthdate", LocalDate.class));
         coach.setAddress(rs.getString("address"));
-
+        coach.setPhoto(rs.getString("photo"));
+        
         coach.setRole(PersonRole.valueOf(rs.getString("role").toUpperCase()));
 
         coach.setPreferredFormation(rs.getString("preferred_formation"));
@@ -210,8 +211,8 @@ public class DataCoach {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "INSERT INTO person "
                     + "(id, fullname, birthdate, address, role, "
-                    + " preferred_formation, coaching_license, license_obtained_date) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                    + " preferred_formation, coaching_license, license_obtained_date, photo) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, coach.getId());
             stmt.setString(2, coach.getFullname());
@@ -221,7 +222,8 @@ public class DataCoach {
             stmt.setString(6, coach.getPreferredFormation());
             stmt.setString(7, coach.getCoachingLicense());
             stmt.setObject(8, coach.getLicenseObtainedDate());
-
+            stmt.setString(9, coach.getPhoto());
+            
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -246,7 +248,7 @@ public class DataCoach {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "UPDATE person "
                     + "SET fullname = ?, birthdate = ?, address = ?, role = ?, "
-                    + "    preferred_formation = ?, coaching_license = ?, license_obtained_date = ? "
+                    + "    preferred_formation = ?, coaching_license = ?, license_obtained_date = ?, photo=? "
                     + "WHERE id = ?"
             );
             stmt.setString(1, coach.getFullname());
@@ -256,7 +258,9 @@ public class DataCoach {
             stmt.setString(5, coach.getPreferredFormation());
             stmt.setString(6, coach.getCoachingLicense());
             stmt.setObject(7, coach.getLicenseObtainedDate());
-            stmt.setInt(8, coach.getId());
+            stmt.setString(8, coach.getPhoto());
+            stmt.setInt(9, coach.getId());
+            
 
             stmt.executeUpdate();
 

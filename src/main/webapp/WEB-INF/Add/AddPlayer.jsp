@@ -24,7 +24,7 @@
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Agregar Jugador</h2>
-		    <form action="actionplayer" method="post" class="mt-4">
+		    <form action="actionplayer" method="post" enctype="multipart/form-data" class="mt-4" >
 		    	<input type="hidden" name="action" value="add" />
 		        
 		        <div class="form-group">
@@ -69,7 +69,7 @@
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
-		            <input type="text" class="form-control" id="photo" name="photo" maxlength="250" required />
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
 		        </div>
 		        
 		        <div class="form-group">

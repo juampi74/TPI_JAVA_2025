@@ -1,1 +1,4 @@
 /build/
+
+# archivo .config para las rutas donde guardar las imagenes
+src/main/resources/config.properties

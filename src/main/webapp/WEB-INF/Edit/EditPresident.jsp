@@ -23,7 +23,7 @@
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Editar Presidente</h2>
-		    <form action="actionpresident" method="post" class="mt-4">
+		    <form action="actionpresident" method="post" enctype="multipart/form-data" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
 		        <input type="hidden" name="id" value="<%=president.getId()%>" />
 		        
@@ -45,6 +45,11 @@
 		        <div class="form-group">
 		            <label for="managementPolicy">Política de Gestión:</label>
 		            <input type="text" class="form-control" id="managementPolicy" name="managementPolicy" value="<%=president.getManagementPolicy()%>" required />
+		        </div>
+		        
+		        <div class="form-group">
+		            <label for="photo">Foto:</label>
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
 		        </div>
 		        
 		        <div class="button-container mb-3">
