@@ -19,6 +19,7 @@ import javax.servlet.http.Part;
 import entities.President;
 import enums.PersonRole;
 import logic.Logic;
+import utils.Config;
 
 @MultipartConfig
 @WebServlet("/actionpresident")
@@ -41,17 +42,7 @@ public class ActionPresident extends HttpServlet {
         if (photo != null && photo.getSize() > 0) {
         	String filename = president.getId() + "_" + photo.getSubmittedFileName();
         	
-        	
-        	
-        	String projectRoot = new File(
-        	        getServletContext().getRealPath("/")
-        	).getParentFile() 
-        	 .getParentFile() 
-        	 .getPath();
-        	
-        	String uploadPath = projectRoot.replace(".metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0", "").trim() + "TPI_JAVA_2025" + File.separator + "uploads";
-        	
-        	System.out.println("PROJECT ROOT >>> " + projectRoot);
+        	String uploadPath = Config.get("uploads.path").replace("\"", " ");
 
         	System.out.println("UPLOAD PATH >>> " + uploadPath);
         	File uploadDir = new File(uploadPath);

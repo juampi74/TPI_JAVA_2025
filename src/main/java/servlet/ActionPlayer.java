@@ -22,6 +22,7 @@ import entities.Contract;
 import entities.Player;
 import enums.PersonRole;
 import logic.Logic;
+import utils.Config;
 
 @WebServlet("/actionplayer")
 @MultipartConfig
@@ -46,14 +47,10 @@ public class ActionPlayer extends HttpServlet {
         Part photo = request.getPart("photo");
         if (photo != null && photo.getSize() > 0) {
         	String filename = player.getId() + "_" + photo.getSubmittedFileName();
-        	String projectRoot = new File(
-        	        getServletContext().getRealPath("/")
-        	).getParentFile() 
-        	 .getParentFile() 
-        	 .getPath();
-        	
-        	String uploadPath = projectRoot.replace(".metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0", "").trim() + "TPI_JAVA_2025" + File.separator + "uploads";
-        	
+
+        	String uploadPath = Config.get("uploads.path").replace("\"", " ");
+
+        	System.out.println("UPLOAD PATH >>> " + uploadPath);
         	File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
             

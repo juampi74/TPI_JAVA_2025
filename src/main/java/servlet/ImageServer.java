@@ -5,6 +5,8 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
+import utils.Config;
+
 @WebServlet("/images")
 public class ImageServer extends HttpServlet {
 
@@ -20,15 +22,8 @@ public class ImageServer extends HttpServlet {
             response.sendError(400, "Archivo no especificado");
             return;
         }
-
-        String projectRoot = new File(
-    	        getServletContext().getRealPath("/")
-    	).getParentFile() 
-    	 .getParentFile() 
-    	 .getPath();
-    	
-    	String basePath = projectRoot.replace(".metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0", "").trim() + "TPI_JAVA_2025" + File.separator + "uploads" + File.separator;
-    	System.out.println("BASE PATH >>> " + basePath);
+        String basePath = Config.get("uploads.path").replace("\"", "");
+        System.out.println("BASE PATH: " + basePath);
         File file = new File(basePath + fileName);
 
         if (!file.exists()) {
