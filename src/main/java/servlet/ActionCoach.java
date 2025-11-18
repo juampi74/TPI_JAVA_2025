@@ -45,7 +45,7 @@ public class ActionCoach extends HttpServlet {
         if (photo != null && photo.getSize() > 0) {
         	String filename = coach.getId() + "_" + photo.getSubmittedFileName();
 
-        	String uploadPath = Config.get("uploads.path").replace("\"", " ");
+        	String uploadPath = Config.get("uploads.path").replace("\"", "");
 
         	System.out.println("UPLOAD PATH >>> " + uploadPath);
         	File uploadDir = new File(uploadPath);
