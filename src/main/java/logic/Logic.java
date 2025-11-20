@@ -19,6 +19,7 @@ public class Logic {
     private DataContract dco;
     private DataPosition dpo;
     private DataPlayerPosition dpp;
+    private DataMatch dm;
 
     public Logic() {
 
@@ -33,6 +34,7 @@ public class Logic {
         dco = new DataContract();
         dpo = new DataPosition();
         dpp = new DataPlayerPosition();
+        dm = new DataMatch();
 
     }
 
@@ -438,5 +440,28 @@ public class Logic {
     	
     	return dpp.getNumberPlayersWithPosition(idPosition);
     }
-
+    
+    public LinkedList<Match> getAllMatches() throws SQLException {
+    	return dm.getAll();
+    }
+    
+    public Match getMatchById(Integer id) throws SQLException {
+    	return dm.getById(id);
+    }
+    
+    public LinkedList<Match> getMatchesByClubId(Integer id) throws SQLException {
+    	return dm.getByClubId(id);
+    }
+    
+    public void addMatch(Match match) throws SQLException {
+    	dm.add(match);
+    }
+    
+    public void updateMatch(Match match) throws SQLException {
+    	dm.update(match);
+    }
+    
+    public void deleteMatch(Integer id) throws SQLException {
+    	dm.delete(id);
+    }
 }
