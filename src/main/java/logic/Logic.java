@@ -429,10 +429,21 @@ public class Logic {
     	
     }
     
+    public Integer getPlayerPrincipalPosition(int playerId) throws SQLException {
+    	
+    	return dpp.getPrincipalPosition(playerId);
+    }
+    
     
     public void addPlayerPosition(int playerId, int posId) throws SQLException {
     	
     	dpp.add(playerId, posId);
+    	
+    }
+    
+    public void setPlayerPrimaryPosition(int playerId, int mainPosId) throws SQLException{
+    	
+    	dpp.setPrimary(playerId, mainPosId);
     	
     }
     

@@ -6,6 +6,7 @@
 	Player player = (Player) request.getAttribute("player");
 	LinkedList<Position> positionsList = (LinkedList<Position>) request.getAttribute("positionsList");
 	LinkedList<Integer> playerPositionsList = (LinkedList<Integer>) request.getAttribute("playerPositionsList");
+	Integer primary = (Integer) request.getAttribute("playerPrimary");
 %>
 <!DOCTYPE html>
 <html>
@@ -68,39 +69,57 @@
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
-		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" />
+		            <input type="hidden" name="currentPhoto" value="<%= player.getPhoto() %>" />
 		        </div>
 		        
 		        <div class="form-group">
 				    <label>Posiciones:</label><br>
+				    <p style="font-size: 0.9rem; color:#ccc; margin-top:-4px;">
+				        Marque con los <b>checkbox</b> todas las posiciones en las que juega el jugador,<br>
+				        y seleccione con el <b>radio</b> cuál es la posición principal.
+				    </p>
 				
 				    <%
 				        if (positionsList != null && !positionsList.isEmpty()) {
-				
 				            for (Position p : positionsList) {
 				
-				                boolean checked = false;
+				                // si el jugador tiene esta posición
+				                boolean checked = (playerPositionsList != null && playerPositionsList.contains(p.getId()));
 				
-				                if (playerPositionsList != null) {
-				                    for (Integer pp : playerPositionsList) {
-				                        if (pp == p.getId()) {
-				                            checked = true;
-				                            break;
-				                        }
-				                    }
-				                }
+				                // si es la principal
+				                boolean isPrimary = (primary != null && primary == p.getId());
+				    %>
+				        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
 				
-				                out.print("<div class='form-check'>");
-				                out.print("<input type='checkbox' class='form-check-input' "
-				                        + "name='positions' id='pos_" + p.getId() + "' "
-				                        + "value='" + p.getId() + "' " + (checked ? "checked" : "") + ">");
-				                out.print("<label class='form-check-label' for='pos_" + p.getId() + "'>"
-				                        + p.getDescription() + "</label>");
-				                out.print("</div>");
+				            <!-- RADIO -->
+				            <input type="radio"
+				                   name="primaryPosition"
+				                   id="primary_<%= p.getId() %>"
+				                   value="<%= p.getId() %>"
+				                   <%= isPrimary ? "checked" : "" %>
+				                   <%= checked ? "" : "disabled" %> />
+				
+				            <!-- CHECKBOX -->
+				            <input type="checkbox"
+				                   name="positions"
+				                   id="pos_<%= p.getId() %>"
+				                   value="<%= p.getId() %>"
+				                   <%= checked ? "checked" : "" %>
+				                   onchange="toggleRadio(<%= p.getId() %>)" />
+				
+				            <!-- ETIQUETA -->
+				            <label for="pos_<%= p.getId() %>" style="margin:0;">
+				                <%= p.getDescription() %>
+				            </label>
+				
+				        </div>
+				    <%
 				            }
-				
 				        } else {
-				            out.print("<p class='text-white'>No hay posiciones cargadas</p>");
+				    %>
+				        <p class='text-white'>No hay posiciones cargadas</p>
+				    <%
 				        }
 				    %>
 				</div>
@@ -111,5 +130,29 @@
 		        </div>
 		    </form>
 		</div>
+		<script>
+		function toggleRadio(id) {
+			
+		    const checkbox = document.getElementById("pos_" + id);
+		    const radio = document.getElementById("primary_" + id);
+		
+		    if (checkbox.checked) {
+		    	
+		        radio.disabled = false;
+		        
+		    } else {
+		        
+		        if (radio.checked) {
+		        	
+		            radio.checked = false;
+		            
+		        }
+		        
+		        radio.disabled = true;
+		        
+		    }
+		    
+		}
+		</script>
 	</body>
 </html>

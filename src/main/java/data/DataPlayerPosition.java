@@ -49,6 +49,44 @@ public class DataPlayerPosition {
         
 	}
 	
+	public Integer getPrincipalPosition(int playerId) throws SQLException { 
+		
+		PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Integer primaryPosition = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    "SELECT id_position FROM player_position WHERE id_player = ? and is_primary = ?"
+            );
+            stmt.setInt(1, playerId);
+            stmt.setBoolean(2, true);
+            rs = stmt.executeQuery();
+            
+
+            if (rs.next()) {
+
+            	primaryPosition = rs.getInt("id_position");
+                
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return primaryPosition;
+		
+	}
+		
+	
 	public int getNumberPlayersWithPosition(int idPosition) throws SQLException {
 		
 		PreparedStatement stmt = null;
@@ -99,11 +137,12 @@ public class DataPlayerPosition {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO player_position (id_player, id_position) VALUES (?, ?)",
+                    "INSERT INTO player_position (id_player, id_position, is_primary) VALUES (?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setInt(1, playerId);
             stmt.setInt(2, positionId);
+            stmt.setBoolean(3, false);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -128,6 +167,33 @@ public class DataPlayerPosition {
         }
 
     }
+	
+	public void setPrimary(int idPlayer, int idMainPos) throws SQLException {
+		
+		PreparedStatement stmt = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    "UPDATE player_position SET is_primary = ? WHERE id_player = ? and id_position = ?"
+            );
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, idPlayer);
+            stmt.setInt(3, idMainPos);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(null, stmt);
+
+        }
+		
+	}
 	
 	public void deleteAllFromPlayer(int id) throws SQLException {
 

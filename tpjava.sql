@@ -110,6 +110,41 @@ INSERT INTO `contract` VALUES (1,'2024-07-06','2028-12-31',132000.00,2200000.00,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `match`
+--
+
+DROP TABLE IF EXISTS `match`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `match` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_home` int NOT NULL,
+  `id_away` int NOT NULL,
+  `id_tournament` int NOT NULL,
+  `home_goals` int DEFAULT NULL,
+  `away_goals` int DEFAULT NULL,
+  `matchday` int DEFAULT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_match_home` (`id_home`),
+  KEY `fk_match_away` (`id_away`),
+  KEY `fk_match_tournament` (`id_tournament`),
+  CONSTRAINT `fk_match_away` FOREIGN KEY (`id_away`) REFERENCES `club` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_match_home` FOREIGN KEY (`id_home`) REFERENCES `club` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_match_tournament` FOREIGN KEY (`id_tournament`) REFERENCES `tournament` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `match`
+--
+
+LOCK TABLES `match` WRITE;
+/*!40000 ALTER TABLE `match` DISABLE KEYS */;
+/*!40000 ALTER TABLE `match` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `person`
 --
 
@@ -156,6 +191,7 @@ DROP TABLE IF EXISTS `player_position`;
 CREATE TABLE `player_position` (
   `id_player` int unsigned NOT NULL,
   `id_position` int NOT NULL,
+  `is_primary` tinyint DEFAULT NULL,
   PRIMARY KEY (`id_player`,`id_position`),
   KEY `fk_position_idx` (`id_position`),
   CONSTRAINT `fk_player` FOREIGN KEY (`id_player`) REFERENCES `person` (`id`),
@@ -169,7 +205,7 @@ CREATE TABLE `player_position` (
 
 LOCK TABLES `player_position` WRITE;
 /*!40000 ALTER TABLE `player_position` DISABLE KEYS */;
-INSERT INTO `player_position` VALUES (33333333,3),(33333333,8),(33333333,11),(48894558,12),(48894559,12);
+INSERT INTO `player_position` VALUES (33333333,3,0),(33333333,8,0),(33333333,11,1),(48894558,12,1),(48894559,12,0);
 /*!40000 ALTER TABLE `player_position` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,4 +305,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-18 15:50:47
+-- Dump completed on 2025-11-22 19:09:16

@@ -95,6 +95,20 @@ public class ActionPlayer extends HttpServlet {
 	    return positionsIds;
 	}
 	
+	private Integer getPrimaryPositionFromRequest(HttpServletRequest request) {
+	    
+		String primaryPos = request.getParameter("primaryPosition");
+	    
+		if (primaryPos != null) {
+	        try {
+	            return Integer.parseInt(primaryPos);
+	        } catch (NumberFormatException e) {
+	            System.err.println("ID posición principal inválida: " + primaryPos);
+	        }
+	    }
+	    return null;
+	}
+	
 	private boolean checkBirthdate(LocalDate birthdate) {
 		
 		return birthdate.isBefore(LocalDate.now().minusYears(15));
@@ -128,11 +142,15 @@ public class ActionPlayer extends HttpServlet {
             	LinkedList<Integer> playerPositions = ctrl.getPlayerPositions(id);
             	request.setAttribute("playerPositionsList", playerPositions);
             	
+            	Integer primaryPos = ctrl.getPlayerPrincipalPosition(id);
+            	request.setAttribute("playerPrimary", primaryPos);
+            	
 				request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
 			
 			} else if ("add".equals(action)) {
 				
 				LinkedList<Position> positions = ctrl.getAllPositions();
+				
 				
 				if (positions.size() > 0) {
 					
@@ -199,9 +217,14 @@ public class ActionPlayer extends HttpServlet {
             		int playerId = player.getId();
             		
             		LinkedList<Integer> posIds = buildPlayerPositionFromRequest(request);
+            		Integer mainPosId = getPrimaryPositionFromRequest(request);
 
             	    for (Integer posId : posIds) {
             	        ctrl.addPlayerPosition(playerId, posId);
+            	    }
+            	    
+            	    if (mainPosId != null) {
+            	        ctrl.setPlayerPrimaryPosition(playerId, mainPosId);
             	    }
 
             	} else {
@@ -218,15 +241,21 @@ public class ActionPlayer extends HttpServlet {
             	if (checkBirthdate(player.getBirthdate())) {
 
             		ctrl.updatePlayer(player);
+            		int playerId = player.getId();
             		
             		LinkedList<Integer> posIds = buildPlayerPositionFromRequest(request);
-            		ctrl.deletePlayerPositions(player.getId());
+            		Integer mainPosId = getPrimaryPositionFromRequest(request);
+            		ctrl.deletePlayerPositions(playerId);
             		
             		for (Integer posId : posIds) {
         	        
-            			ctrl.addPlayerPosition(player.getId(), posId);
+            			ctrl.addPlayerPosition(playerId, posId);
             		
             		}
+            		
+            		if (mainPosId != null) {
+            	        ctrl.setPlayerPrimaryPosition(playerId, mainPosId);
+            	    }
 
             	} else {
 
