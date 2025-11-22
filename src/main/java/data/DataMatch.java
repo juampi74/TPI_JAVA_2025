@@ -100,6 +100,81 @@ public class DataMatch {
                     SELECT_ALL_MATCHES_JOINED + " WHERE m.id_home = ? or m.id_away = ?"
             );
             stmt.setInt(1, id);
+            stmt.setInt(2, id);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                Match match = mapFullMatch(rs);
+                matches.add(match);
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return matches;
+
+    }
+    
+    public LinkedList<Match> getByTournamentId(int id) throws SQLException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        LinkedList<Match> matches = new LinkedList<>();
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    SELECT_ALL_MATCHES_JOINED + " WHERE m.id_tournament = ?"
+            );
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                Match match = mapFullMatch(rs);
+                matches.add(match);
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return matches;
+
+    }
+    
+    public LinkedList<Match> getByClubAndTournamentId(int id_club, int id_tournament) throws SQLException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        LinkedList<Match> matches = new LinkedList<>();
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    SELECT_ALL_MATCHES_JOINED + " WHERE (m.id_home = ? or m.id_away = ?) and m.id_tournament = ?"
+            );
+            stmt.setInt(1, id_club);
+            stmt.setInt(2, id_club);
+            stmt.setInt(3, id_tournament);
             rs = stmt.executeQuery();
 
             while (rs.next()) {

@@ -211,6 +211,12 @@ public class Logic {
         return dcl.getAll();
 
     }
+    
+    public LinkedList<Club> getAllClubsByTournamentId(Integer id) throws SQLException {
+
+        return dcl.getAllByTournamentId(id);
+
+    }
 
     public Club getClubWithMostContracts() {
     	
@@ -451,6 +457,14 @@ public class Logic {
     
     public LinkedList<Match> getMatchesByClubId(Integer id) throws SQLException {
     	return dm.getByClubId(id);
+    }
+    
+    public LinkedList<Match> getMatchesByTournamentId(Integer id) throws SQLException {
+    	return dm.getByTournamentId(id);
+    }
+    
+    public LinkedList<Match> getMatchesByClubAndTournamentId(Integer id_club, Integer id_tournament) throws SQLException {
+    	return dm.getByClubAndTournamentId(id_club, id_tournament);
     }
     
     public void addMatch(Match match) throws SQLException {

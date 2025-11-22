@@ -22,6 +22,23 @@ public class DataClub {
             + "    s.capacity AS stadium_capacity "
             + "FROM club cl "
             + "INNER JOIN stadium s ON cl.id_stadium = s.id";
+    
+    private static final String SELECT_ALL_CLUBS_TOURNAMENT =
+            "SELECT "
+            + "    cl.id AS club_id, "
+            + "    cl.name AS club_name, "
+            + "    cl.foundation_date AS club_foundation_date, "
+            + "    cl.phone_number AS club_phone_number, "
+            + "    cl.email AS club_email, "
+            + "    cl.badge_image AS club_badge_image, "
+            + "    cl.budget AS club_budget, "
+            + "    cl.id_stadium, "
+            + "    s.id AS stadium_id, "
+            + "    s.name AS stadium_name, "
+            + "    s.capacity AS stadium_capacity "
+            + "FROM club cl "
+            + "INNER JOIN stadium s ON cl.id_stadium = s.id "
+            + "INNER JOIN `match` m ON cl.id = m.id_home or cl.id = m.id_away ";            
 
     private static final String SELECT_CLUB_WITH_MOST_CONTRACTS =
             "SELECT "
@@ -60,6 +77,54 @@ public class DataClub {
             stmt = DbConnector.getInstance().getConn().createStatement();
             rs = stmt.executeQuery(SELECT_ALL_CLUBS_JOINED);
 
+            if (rs != null) {
+
+                while (rs.next()) {
+
+                    Club club = mapFullClub(rs);
+                    clubs.add(club);
+
+                }
+                
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return clubs;
+        
+    }
+    
+    public LinkedList<Club> getAllByTournamentId(int id) throws SQLException {
+        LinkedList<Club> clubs = new LinkedList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+        	if (id != -1) {
+	            stmt = DbConnector.getInstance().getConn().prepareStatement(
+	            		SELECT_ALL_CLUBS_TOURNAMENT + " WHERE m.id_tournament = ?"
+	            );
+	            stmt.setInt(1, id);
+	            rs = stmt.executeQuery();
+
+        	} else {
+        		stmt = DbConnector.getInstance().getConn().prepareStatement(
+                        SELECT_ALL_CLUBS_JOINED
+                    );
+
+                    rs = stmt.executeQuery();
+        	}
+        	
+            
             if (rs != null) {
 
                 while (rs.next()) {

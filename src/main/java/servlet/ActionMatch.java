@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import entities.Club;
 import entities.Match;
+import entities.Player;
 import entities.Tournament;
 import logic.Logic;
 
@@ -68,7 +69,6 @@ public class ActionMatch extends HttpServlet {
 				Match match = ctrl.getMatchById(Integer.parseInt(request.getParameter("id")));
 				request.setAttribute("match", match);
 
-				// Necesitás listas de FK para los selects
 				request.setAttribute("clubs", ctrl.getAllClubs());
 				request.setAttribute("tournaments", ctrl.getAllTournaments());
 
@@ -82,10 +82,45 @@ public class ActionMatch extends HttpServlet {
 				request.getRequestDispatcher("WEB-INF/Add/AddMatch.jsp").forward(request, response);
 
 			} else {
+				
+				String clubIdParam = request.getParameter("clubId");
+				String tournamentIdParam = request.getParameter("tournamentId");
+				
+				LinkedList<Match> matches;
 
-				LinkedList<Match> matches = ctrl.getAllMatches();
+				if (clubIdParam != null && !clubIdParam.isEmpty() &&
+				    tournamentIdParam != null && !tournamentIdParam.isEmpty()) {
+
+				    int clubId = Integer.parseInt(clubIdParam);
+				    int tournamentId = Integer.parseInt(tournamentIdParam);
+
+				    matches = ctrl.getMatchesByClubAndTournamentId(clubId, tournamentId);
+
+				} else if (clubIdParam != null && !clubIdParam.isEmpty()) {
+
+				    int clubId = Integer.parseInt(clubIdParam);
+				    matches = ctrl.getMatchesByClubId(clubId);
+
+				} else if (tournamentIdParam != null && !tournamentIdParam.isEmpty()) {
+
+				    int tournamentId = Integer.parseInt(tournamentIdParam);
+				    matches = ctrl.getMatchesByTournamentId(tournamentId);
+
+				} else {
+				    matches = ctrl.getAllMatches();
+				}
+				
+				LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+				int tournamentId = -1;
+				if (tournamentIdParam != null && !tournamentIdParam.isEmpty()) {
+					tournamentId = Integer.parseInt(tournamentIdParam);
+				}
+				LinkedList<Club> clubs = ctrl.getAllClubsByTournamentId(tournamentId);
+
 				request.setAttribute("matchList", matches);
-
+				request.setAttribute("tournamentsList", tournaments);
+				request.setAttribute("clubsList", clubs);
+				
 				request.getRequestDispatcher("/WEB-INF/Management/MatchManagement.jsp").forward(request, response);
 			}
 

@@ -39,8 +39,68 @@
         <div class="row">
             <div class="d-flex justify-content-between my-4 align-items-center">
                 <h1>Partidos</h1>
-
-                <form action="actionmatch" method="get" style="margin:0;">
+				<form method="get" action="actionmatch" class="d-flex align-items-center gap-3 ms-auto m-0">
+	          		<label for="clubFilter" class="form-label m-0 fs-5">Filtrar por torneo:</label>
+	          		
+	          			<input type="hidden" name="clubId" value="<%= request.getParameter("clubId") != null ? request.getParameter("clubId") : "" %>">
+	          			<select name="tournamentId" id="tournamentFilter"
+	                  		class="form-select form-select-sm w-auto fancy-select bg-dark text-white"
+	                  		onchange="this.form.submit()">
+	            			<option value="">Todos los torneos</option>
+				            <%
+				            	LinkedList<Tournament> tournaments = (LinkedList<Tournament>) request.getAttribute("tournamentsList");
+				              	
+				            	String selectedTournament = request.getParameter("tournamentId");
+				              	
+				            	int selectedId = -1;
+				              	
+				            	if (selectedTournament != null && !selectedTournament.isEmpty()) {
+				                
+				            		selectedId = Integer.parseInt(selectedTournament);
+				              	}
+				              
+				            	if (tournaments != null) {
+				                	
+				            		for (Tournament t : tournaments) {
+				            %>
+	              						<option value="<%= t.getId() %>" <%= (t.getId() == selectedId) ? "selected" : "" %>><%= t.getName() %></option>
+	            			<%
+					                }
+					            }
+	            			%>
+	          			</select>
+	        	</form>
+	        	<form method="get" action="actionmatch" class="d-flex align-items-center gap-3 ms-auto m-0">
+	          		<label for="clubFilter" class="form-label m-0 fs-5">Filtrar por club:</label>
+	          		<input type="hidden" name="tournamentId" value="<%= request.getParameter("tournamentId") != null ? request.getParameter("tournamentId") : "" %>">
+	          			<select name="clubId" id="clubFilter"
+	                  		class="form-select form-select-sm w-auto fancy-select bg-dark text-white"
+	                  		onchange="this.form.submit()">
+	            			<option value="">Todos los clubes</option>
+				            <%
+				            	LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
+				              	
+				            	String selectedClub = request.getParameter("clubId");
+				              	
+				            	int selectedId_club  = -1;
+				              	
+				            	if (selectedClub != null && !selectedClub.isEmpty()) {
+				                
+				            		selectedId_club = Integer.parseInt(selectedClub);
+				              	}
+				              
+				            	if (clubs != null) {
+				                	
+				            		for (Club c : clubs) {
+				            %>
+	              						<option value="<%= c.getId() %>" <%= (c.getId() == selectedId_club) ? "selected" : "" %>><%= c.getName() %></option>
+	            			<%
+					                }
+					            }
+	            			%>
+	          			</select>
+	        	</form>
+                <form action="actionmatch" method="get" style="margin:0;" class="m-0 ms-5">
                     <input type="hidden" name="action" value="add" />
                     <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
                         <img src="${pageContext.request.contextPath}/assets/add-button2.svg" alt="Agregar" width="40" height="40">
