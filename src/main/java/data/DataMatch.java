@@ -204,14 +204,18 @@ public class DataMatch {
         PreparedStatement stmt = null;
 
         try {
-
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                     "INSERT INTO `match` "
                     + "(home_goals, away_goals, matchday, date, id_away, id_home, id_tournament) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
-            stmt.setObject(1, m.getHomeGoals());
-            stmt.setObject(2, m.getAwayGoals());
+            if (m.getHomeGoals() != null && m.getAwayGoals() != null) {
+                stmt.setInt(1, m.getHomeGoals());
+                stmt.setInt(2, m.getAwayGoals());
+            } else {
+                stmt.setNull(1, java.sql.Types.INTEGER);
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
             stmt.setDouble(3, m.getMatchday());
             stmt.setObject(4, m.getDate());
             stmt.setInt(5, m.getAway().getId());
