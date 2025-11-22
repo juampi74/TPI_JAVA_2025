@@ -22,8 +22,9 @@ public class ImageServer extends HttpServlet {
             response.sendError(400, "Archivo no especificado");
             return;
         }
+        
         String basePath = Config.get("uploads.path").replace("\"", "");
-        System.out.println("BASE PATH: " + basePath);
+        
         File file = new File(basePath + fileName);
 
         if (!file.exists()) {
