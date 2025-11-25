@@ -49,7 +49,8 @@
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
-		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" accept="image/*" required />
+		            <small class="form-text text-white-50">Formatos recomendados: PNG o JPG.</small>
 		        </div>
 		
 		        <div class="button-container mb-3">

@@ -66,10 +66,18 @@
 		            <label for="weight">Peso (kg):</label>
 		            <input type="number" class="form-control" id="weight" name="weight" step="0.01" value="<%=player.getWeight()%>" required />
 		        </div>
-		        
+		               
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
-		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" />
+		            
+		            <% if (player.getPhoto() != null && !player.getPhoto().isEmpty()) { %>
+		                <div class="mb-2">
+		                    <img src="<%=request.getContextPath() + "/images?id=" + player.getPhoto()%>" class="current-photo" alt="Foto actual" height="80">
+		                </div>
+		            <% } %>
+		            
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" accept="image/*" />
+		            <small class="form-text text-white-50">Dejar vacío para mantener la foto actual. Formatos recomendados: PNG o JPG.</small>
 		            <input type="hidden" name="currentPhoto" value="<%= player.getPhoto() %>" />
 		        </div>
 		        

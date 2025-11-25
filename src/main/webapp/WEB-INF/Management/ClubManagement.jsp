@@ -89,7 +89,7 @@
 	                    		%>
 	                    			<tr>
 	                    				<td>
-	                    					<img alt="Escudo" src="<%=c.getBadgeImage()%>" width="40" height="45">
+	                    					<img alt="" src="<%=request.getContextPath() + "/images?id=" + c.getBadgeImage()%>" height="40">
 	                    				</td>
 	                    				<td><%=c.getName()%></td>
 	                    				<td><%=c.getFoundationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>

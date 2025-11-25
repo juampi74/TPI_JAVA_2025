@@ -11,6 +11,7 @@ public abstract class Person {
 	private String address;
 	private PersonRole role;
 	private String photo;
+	private Nationality nationality;
 	
 	public int getId() {
 		
@@ -84,11 +85,23 @@ public abstract class Person {
 	
 	}
 
+	public Nationality getNationality() {
+		
+		return nationality;
+	
+	}
+
+	public void setNationality(Nationality nationality) {
+	
+		this.nationality = nationality;
+	
+	}
+
 	@Override
 	public String toString() {
 
 		return "Person [id=" + id + ", fullname=" + fullname + ", birthdate=" + birthdate + ", address=" + address
-				+ ", role=" + role + "]";
+				+ ", role=" + role + ", nationality=" + nationality + "]";
 	
 	}
 

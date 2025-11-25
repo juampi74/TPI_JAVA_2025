@@ -1,6 +1,7 @@
 package data;
 
-import entities.Association;
+import entities.*;
+import enums.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -9,7 +10,13 @@ import java.util.LinkedList;
 public class DataAssociation {
 
     private static final String SELECT_ALL_ASSOCIATIONS =
-            "SELECT id, name, creation_date FROM association";
+    	"SELECT id, name, creation_date, type, continent FROM association";
+    
+    private static final String SELECT_ALL_ASSOCIATIONS_JOINED =
+		"SELECT a.id, a.name, a.creation_date, a.type, a.continent " +
+		"FROM association a " +
+		"INNER JOIN association_nationality an ON a.id = an.id_association " +
+		"INNER JOIN nationality n ON an.id_nationality = n.id";
 
     public LinkedList<Association> getAll() throws SQLException {
 
@@ -53,7 +60,7 @@ public class DataAssociation {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_ASSOCIATIONS + " WHERE id = ?"
+            	SELECT_ALL_ASSOCIATIONS + " WHERE id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -88,7 +95,7 @@ public class DataAssociation {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_ASSOCIATIONS + " WHERE name = ?"
+            	SELECT_ALL_ASSOCIATIONS + " WHERE name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -115,7 +122,44 @@ public class DataAssociation {
 
     }
 
-    // -------------------- INSERT / UPDATE / DELETE --------------------
+    public LinkedList<Association> getByNationalityId(int id) throws SQLException {
+
+        LinkedList<Association> associations = new LinkedList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	SELECT_ALL_ASSOCIATIONS_JOINED + " WHERE n.id = ?"
+            );
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            if (rs != null) {
+
+                while (rs.next()) {
+
+                    associations.add(mapAssociation(rs));
+
+                }
+                
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return associations;
+        
+    }
 
     public void add(Association a) throws SQLException {
 
@@ -125,11 +169,21 @@ public class DataAssociation {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO association (name, creation_date) VALUES (?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS
+            	"INSERT INTO association (name, creation_date, type, continent) VALUES (?, ?, ?, ?)",
+                PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, a.getName());
             stmt.setObject(2, a.getCreationDate());
+            stmt.setString(3, a.getType().name());
+            if (a.getContinent() != null) {
+                
+            	stmt.setString(4, a.getContinent().name());
+            
+            } else {
+            
+            	stmt.setNull(4, java.sql.Types.VARCHAR);
+            
+            }
             stmt.executeUpdate();
 
             keyResultSet = stmt.getGeneratedKeys();
@@ -169,11 +223,21 @@ public class DataAssociation {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE association SET name = ?, creation_date = ? WHERE id = ?"
+            	"UPDATE association SET name = ?, creation_date = ?, type = ?, continent = ? WHERE id = ?"
             );
             stmt.setString(1, a.getName());
             stmt.setObject(2, a.getCreationDate());
-            stmt.setInt(3, a.getId());
+            stmt.setString(3, a.getType().name());
+            if (a.getContinent() != null) {
+                
+            	stmt.setString(4, a.getContinent().name());
+            
+            } else {
+            
+            	stmt.setNull(4, java.sql.Types.VARCHAR);
+            
+            }
+            stmt.setInt(5, a.getId());
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -188,6 +252,79 @@ public class DataAssociation {
         }
 
     }
+    
+    public void updateNationalities(int idAssociation, LinkedList<Integer> countriesIds) throws SQLException {
+
+        PreparedStatement stmtDelete = null;
+        PreparedStatement stmtInsert = null;
+        Connection conn = null;
+
+        try {
+        	
+            conn = DbConnector.getInstance().getConn();
+            conn.setAutoCommit(false);
+
+            stmtDelete = conn.prepareStatement(
+            	"DELETE FROM association_nationality WHERE id_association = ?"
+            );
+            stmtDelete.setInt(1, idAssociation);
+            stmtDelete.executeUpdate();
+
+            if (countriesIds != null && !countriesIds.isEmpty()) {
+                
+            	stmtInsert = conn.prepareStatement(
+                	"INSERT INTO association_nationality (id_association, id_nationality) VALUES (?, ?)"
+                );
+
+                for (Integer countryId : countriesIds) {
+                    stmtInsert.setInt(1, idAssociation);
+                    stmtInsert.setInt(2, countryId);
+                    stmtInsert.addBatch();
+                }
+                
+                stmtInsert.executeBatch();
+            
+            }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            
+            try {
+              
+            	if (conn != null) conn.rollback();
+            
+            } catch (SQLException ex) {
+            
+            	ex.printStackTrace();
+            
+            }
+            
+            e.printStackTrace();
+            throw new SQLException("Error al actualizar las nacionalidades de la asociación.", e);
+
+        } finally {
+            
+            if (conn != null) {
+                
+            	try {
+                
+            		conn.setAutoCommit(true);
+                
+            	} catch (SQLException ex) {
+                
+            		ex.printStackTrace();
+                
+            	}
+            
+            }
+            
+            closeResources(null, stmtDelete);
+            closeResources(null, stmtInsert);
+            
+        }
+        
+    }
 
     public void delete(int id) throws SQLException {
 
@@ -196,7 +333,7 @@ public class DataAssociation {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM association WHERE id = ?"
+            	"DELETE FROM association WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -216,12 +353,18 @@ public class DataAssociation {
 
     private Association mapAssociation(ResultSet rs) throws SQLException {
 
-        Association association = new Association();
-        association.setId(rs.getInt("id"));
-        association.setName(rs.getString("name"));
-        association.setCreationDate(rs.getObject("creation_date", LocalDate.class));
+        Association a= new Association();
+        a.setId(rs.getInt("id"));
+        a.setName(rs.getString("name"));
+        a.setCreationDate(rs.getObject("creation_date", LocalDate.class));
 
-        return association;
+        String typeStr = rs.getString("type");
+        if (typeStr != null) a.setType(AssociationType.valueOf(typeStr));
+        
+        String contStr = rs.getString("continent");
+        if (contStr != null) a.setContinent(Continent.valueOf(contStr));
+        
+        return a;
     }
 
     private void closeResources(ResultSet rs, Statement stmt) {

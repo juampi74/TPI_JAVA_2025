@@ -49,12 +49,8 @@ public class DataCoach {
 
         try {
 
-            if (rs != null) {
-                rs.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {

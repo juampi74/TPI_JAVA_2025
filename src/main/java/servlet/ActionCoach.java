@@ -28,7 +28,7 @@ public class ActionCoach extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
        
-	private Coach buildCoachFromRequest(HttpServletRequest request) throws IOException, ServletException {
+	private Coach buildCoachFromRequest(HttpServletRequest request, String action) throws IOException, ServletException {
                         
         Coach coach = new Coach();
         coach.setId(Integer.parseInt(request.getParameter("id")));
@@ -40,14 +40,12 @@ public class ActionCoach extends HttpServlet {
         coach.setCoachingLicense(request.getParameter("coachingLicense"));
         coach.setLicenseObtainedDate(LocalDate.parse(request.getParameter("licenseObtainedDate")));
         
-        String action = request.getParameter("action");
         Part photo = request.getPart("photo");
         if (photo != null && photo.getSize() > 0) {
         	String filename = coach.getId() + "_" + photo.getSubmittedFileName();
 
         	String uploadPath = Config.get("uploads.path").replace("\"", "");
 
-        	System.out.println("UPLOAD PATH >>> " + uploadPath);
         	File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
             
@@ -58,12 +56,18 @@ public class ActionCoach extends HttpServlet {
             coach.setPhoto(filename);
             
         } else {
-            if ("edit".equals(action)) {
-                String oldPhoto = request.getParameter("currentPhoto");
+            
+        	if ("edit".equals(action)) {
+            
+        		String oldPhoto = request.getParameter("currentPhoto");
                 coach.setPhoto(oldPhoto);
-            } else {
-                coach.setPhoto("-");
-            }
+            
+        	} else {
+            
+        		coach.setPhoto("-");
+            
+        	}
+        
         }
         
         return coach;
@@ -131,7 +135,7 @@ public class ActionCoach extends HttpServlet {
         	
         	if ("add".equals(action)) {
             	
-            	Coach c = buildCoachFromRequest(request);
+            	Coach c = buildCoachFromRequest(request, action);
             	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
             		ctrl.addCoach(c);
             	} else {
@@ -141,7 +145,7 @@ public class ActionCoach extends HttpServlet {
             	
             } else if ("edit".equals(action)) {
             	
-            	Coach c = buildCoachFromRequest(request);
+            	Coach c = buildCoachFromRequest(request, action);
             	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
                 	ctrl.updateCoach(c);
             	} else {

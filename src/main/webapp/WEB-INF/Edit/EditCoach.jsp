@@ -59,7 +59,16 @@ Coach coach = (Coach) request.getAttribute("coach");
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
-		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
+		            
+		            <% if (coach.getPhoto() != null && !coach.getPhoto().isEmpty()) { %>
+		                <div class="mb-2">
+		                    <img src="<%=request.getContextPath() + "/images?id=" + coach.getPhoto()%>" class="current-photo" alt="Foto actual" height="80">
+		                </div>
+		            <% } %>
+		            
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" accept="image/*" />
+		            <small class="form-text text-white-50">Dejar vacío para mantener la foto actual. Formatos recomendados: PNG o JPG.</small>
+		            <input type="hidden" name="currentPhoto" value="<%= coach.getPhoto() %>" />
 		        </div>
 		        
 		        <div class="button-container mb-3">

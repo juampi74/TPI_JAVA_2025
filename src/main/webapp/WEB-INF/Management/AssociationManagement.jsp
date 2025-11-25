@@ -75,7 +75,8 @@
 	                    				<th>Nombre</th>
 	                    		    	<th>Fecha de Creación</th>
 	                    		    	<th>Editar</th>
-	                        			<th>Eliminar</th>
+	                    		    	<th>Gestionar Miembros</th>
+	                    		    	<th>Eliminar</th>
 	                      			</tr>
 	                      		</thead>
 	                    		<tbody>
@@ -93,8 +94,17 @@
 													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Agregar" width="25" height="25">
 												</button>
 			    							</form>
-	                    				</td>
-	                    				<td>
+			    						</td>
+			    						<td>
+			    							<form method="get" action="actionassociation" style="display:inline;" class="d-flex justify-content-center align-items-center">
+	                    						<input type="hidden" name="action" value="members" />
+			        							<input type="hidden" name="id" value="<%=a.getId()%>" />
+			        							<button type="submit" style="background-color: #8f5300" class="btn btn-sm">
+													<img src="${pageContext.request.contextPath}/assets/globe.svg" style="display: block;" alt="Gestionar Miembros" width="25" height="25">
+												</button>
+			    							</form>
+			    						</td>
+			    						<td>
 	                    					<form method="post" action="actionassociation" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar esta asociación?');">
 												<input type="hidden" name="action" value="delete" />
 												<input type="hidden" name="id" value="<%=a.getId()%>" />

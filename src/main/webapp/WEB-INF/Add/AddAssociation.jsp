@@ -1,3 +1,15 @@
+<%@ page import="enums.*" %>
+<%@ page import="java.util.LinkedList" %>
+<%
+	LinkedList<enums.Continent> availableContinents = (LinkedList<enums.Continent>) request.getAttribute("availableContinents");
+	
+	if (availableContinents == null) {
+	
+		availableContinents = new LinkedList<>();
+		for (enums.Continent c : enums.Continent.values()) availableContinents.add(c);
+	
+	}
+%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -31,6 +43,25 @@
 		            <label for="creationDate">Fecha de Creación:</label>
 		            <input type="date" class="form-control" id="creationDate" name="creationDate" required />
 		        </div>
+		        
+		        <div class="form-group">
+				    <label for="type">Tipo:</label>
+				    <select class="form-control" id="type" name="type" onchange="toggleContinentField()" required>
+				        <option value="NATIONAL">Nacional (Un país)</option>
+				        <option value="CONTINENTAL">Continental (Confederación)</option>
+				        <option value="INTERNATIONAL">Internacional (FIFA)</option>
+				    </select>
+				</div>
+				
+				<div class="form-group" id="continentContainer" style="display: none;">
+				    <label for="continent">Continente:</label>
+				    <select class="form-control" id="continent" name="continent">
+				        <option value="">-- Seleccioná un continente --</option>
+						<% for (enums.Continent c : availableContinents) { %>
+							<option value="<%= c.name() %>"><%= c.getDisplayName() %></option>
+						<% } %>
+				    </select>
+				</div>
 		
 		        <div class="button-container mb-3">
 		            <button type="button" class="btn btn-dark border border-white" onclick="history.back()">Cancelar</button>
@@ -38,5 +69,25 @@
 		        </div>
 		    </form>
 		</div>
+		<script>
+		    function toggleContinentField() {
+		        var typeSelect = document.getElementById("type");
+		        var continentDiv = document.getElementById("continentContainer");
+		        var continentSelect = document.getElementById("continent");
+		        
+		        if (typeSelect.value === "CONTINENTAL") {
+		            continentDiv.style.display = "block";
+		            continentSelect.required = true;
+		        } else {
+		            continentDiv.style.display = "none";
+		            continentSelect.required = false;
+		            continentSelect.value = "";
+		        }
+		    }
+		    
+		    window.onload = function() {
+		        toggleContinentField();
+		    };
+		</script>
 	</body>
 </html>

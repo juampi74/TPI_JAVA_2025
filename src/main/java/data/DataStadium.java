@@ -193,7 +193,7 @@ public class DataStadium {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM stadium WHERE id = ?"
+            	"DELETE FROM stadium WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();

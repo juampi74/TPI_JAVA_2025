@@ -1,25 +1,32 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import entities.*;
 import logic.Logic;
+import utils.Config;
 
+@MultipartConfig
 @WebServlet("/actionclub")
 public class ActionClub extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     
-    private Club buildClubFromRequest(HttpServletRequest request, String action,Logic ctrl) throws SQLException {
+    private Club buildClubFromRequest(HttpServletRequest request, String action,Logic ctrl) throws IOException, ServletException, SQLException {
         
     	Club club = new Club();
     	if ("edit".equals(action)) club.setId(Integer.parseInt(request.getParameter("id")));
@@ -28,6 +35,37 @@ public class ActionClub extends HttpServlet {
     	club.setPhoneNumber(request.getParameter("phoneNumber"));
     	club.setEmail(request.getParameter("email"));
     	club.setBadgeImage(request.getParameter("badgeImage"));
+    	
+    	Part badge = request.getPart("badgeImage");
+        if (badge != null && badge.getSize() > 0) {
+        	String filename = "badge_" + club.getName() + "_" + badge.getSubmittedFileName();
+
+        	String uploadPath = Config.get("uploads.path").replace("\"", "");
+
+        	File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+            
+            File file = new File(uploadDir, filename);
+            
+            Files.copy(badge.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            club.setBadgeImage(filename);
+            
+        } else {
+            
+        	if ("edit".equals(action)) {
+            
+        		String oldBadgeImage = request.getParameter("currentBadgeImage");
+                club.setBadgeImage(oldBadgeImage);
+            
+        	} else {
+            
+        		club.setBadgeImage("-");
+            
+        	}
+        
+        }
+    	
     	club.setBudget(Double.parseDouble(request.getParameter("budget")));
     	club.setStadium(ctrl.getStadiumById(Integer.parseInt(request.getParameter("id_stadium"))));
 		

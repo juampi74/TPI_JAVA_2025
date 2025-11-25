@@ -62,6 +62,9 @@
 	                    <li class="nav-item">
 	                        <a class="nav-link" href="actionmatch">Partidos</a>
 	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" href="actionnationality">Nacionalidades</a>
+	                    </li>
 	                </ul>
 	            </div>
 	        </div>

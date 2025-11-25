@@ -24,7 +24,7 @@
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Agregar Club</h2>
-		    <form action="actionclub" method="post" class="mt-4">
+		    <form action="actionclub" method="post" enctype="multipart/form-data" class="mt-4">
 		    	<input type="hidden" name="action" value="add" />
 		
 		        <div class="form-group">
@@ -46,10 +46,11 @@
 		            <label for="email">Email:</label>
 		            <input type="text" class="form-control" id="email" name="email" required />
 		        </div>
-		        
+		             
 		        <div class="form-group">
 		            <label for="badgeImage">Escudo:</label>
-		            <input type="text" class="form-control" id="badgeImage" name="badgeImage" required />
+		            <input type="file" class="form-control" id="badgeImage" name="badgeImage" maxlength="250" accept="image/*" required />
+		            <small class="form-text text-white-50">Formatos recomendados: PNG o JPG.</small>
 		        </div>
 		        
 		        <div class="form-group">

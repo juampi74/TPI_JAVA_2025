@@ -56,7 +56,7 @@
 	            <div class="d-flex justify-content-center align-items-center col-auto text-dark border border-dark rounded p-3 me-4 border border-white" style="width: 300px; min-height: 200px; background-color: rgba(33,37,41,1);">
 			        <form action="actionclub" method="get" style="margin:0;">
 						<button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
-					    	<img alt="Escudo" src="<%= club != null ? club.getBadgeImage() : src_shield %>" width="85" height="95" style="margin-bottom:10px;">
+					    	<img alt="Escudo" src="<%= club != null ? request.getContextPath() + "/images?id=" + club.getBadgeImage() : src_shield %>" width="85" height="95" style="margin-bottom:10px;">
 					    	<h4 class="text-white m-0">Ver Clubes</h4>
 					  	</button>
 					</form>
@@ -80,7 +80,7 @@
                 		<div class="col-auto text-dark border border-dark rounded p-3 bg-dark border border-white" style="width: 300px; min-height: 200px;">
 	                		<h3 style="color:white;">Extender Contrato</h3>
 	                		<div class="d-flex my-3 align-items-center justify-content-between gap-3">
-	                			<img alt="" src="<%= contract.getPerson().getPhoto() %>" width="70" height="90">
+	                			<img alt="" src="<%=request.getContextPath() + "/images?id=" + contract.getPerson().getPhoto()%>" width="70" height="90">
 		                		<div class="text-left" style="vertical-align: middle !important;">
 		                			<p class="text-white m-0">Nombre: <b><%= contract.getPerson().getFullname() %></b></p>
 		                			<p class="text-white m-0">Fecha Inicio: <b><%= contract.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>

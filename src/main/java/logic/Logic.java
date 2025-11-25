@@ -2,6 +2,7 @@ package logic;
 
 import data.*;
 import entities.*;
+import enums.*;
 import enums.PersonRole;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ public class Logic {
     private DataPosition dpo;
     private DataPlayerPosition dpp;
     private DataMatch dm;
+    private DataNationality dn;
 
     public Logic() {
 
@@ -35,6 +37,7 @@ public class Logic {
         dpo = new DataPosition();
         dpp = new DataPlayerPosition();
         dm = new DataMatch();
+        dn = new DataNationality();
 
     }
 
@@ -43,6 +46,12 @@ public class Logic {
         return dpe.getRoleByPersonId(id);
 
     }
+    
+    public LinkedList<Person> getPeopleByNationalityId(Integer id) throws SQLException {
+        
+    	return dpe.getByNationalityId(id);
+    
+    }
 
     public LinkedList<Player> getAllPlayers() throws SQLException {
 
@@ -50,8 +59,6 @@ public class Logic {
 
     }
     
-    
-
     public LinkedList<Player> getAvailablePlayers() throws SQLException {
 
         return dpl.getAvailable();
@@ -71,7 +78,9 @@ public class Logic {
     }
 
     public LinkedList<Player> getPlayersByClub(int id_club) throws SQLException {
-        return dpl.getByClub(id_club);
+        
+    	return dpl.getByClub(id_club);
+    
     }
 
     public void addPlayer(Player p) throws SQLException {
@@ -277,17 +286,51 @@ public class Logic {
         return das.getByName(name);
 
     }
+    
+    public LinkedList<Association> getAssociationsByNationalityId(Integer id) throws SQLException {
+        
+    	return das.getByNationalityId(id);
+    
+    }
 
     public void addAssociation(Association a) throws SQLException {
-
         das.add(a);
 
     }
 
     public void updateAssociation(Association a) throws SQLException {
-
         das.update(a);
 
+    }
+    
+    public void updateAssociationNationalities(int idAssociation, String[] selectedCountriesIds) throws SQLException {
+        LinkedList<Integer> countriesIds = new LinkedList<>();
+        
+        if (selectedCountriesIds != null) {
+            for (String idStr : selectedCountriesIds) {
+                try {
+                	countriesIds.add(Integer.parseInt(idStr));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        Association currentAssociation = das.getById(idAssociation);
+        if (currentAssociation != null && currentAssociation.getType() == AssociationType.NATIONAL) {
+            for (Integer countryId : countriesIds) {
+                LinkedList<Association> associationsWithCountry = das.getByNationalityId(countryId);
+                if (associationsWithCountry != null) {
+                    for (Association a : associationsWithCountry) {
+                        if (a.getType() == AssociationType.NATIONAL && a.getId() != idAssociation) {
+                            throw new SQLException("La nacionalidad ya está vinculada a la asociación nacional '" + a.getName() + "'.");
+                        }
+                    }
+                }
+            }
+        }
+
+        das.updateNationalities(idAssociation, countriesIds);
     }
 
     public void deleteAssociation(int id) throws SQLException {
@@ -351,7 +394,9 @@ public class Logic {
     }
 
     public Contract getNextExpiringContract() throws SQLException {
-        return dco.getNextExpiringContract();
+        
+    	return dco.getNextExpiringContract();
+    
     }
 
     public LinkedList<Contract> getContractsByPersonId(int id) throws SQLException {
@@ -373,11 +418,14 @@ public class Logic {
     }
 
     public void updateContract(Contract c) throws SQLException {
-        dco.update(c);
+     
+    	dco.update(c);
+    
     }
 
     public void releaseContract(int id) throws SQLException {
-        dco.release(id);
+        
+    	dco.release(id);
 
     }
 
@@ -432,6 +480,7 @@ public class Logic {
     public Integer getPlayerPrincipalPosition(int playerId) throws SQLException {
     	
     	return dpp.getPrincipalPosition(playerId);
+    
     }
     
     
@@ -459,34 +508,99 @@ public class Logic {
     }
     
     public LinkedList<Match> getAllMatches() throws SQLException {
+    
     	return dm.getAll();
+    
     }
     
     public Match getMatchById(Integer id) throws SQLException {
+    
     	return dm.getById(id);
+    
     }
     
     public LinkedList<Match> getMatchesByClubId(Integer id) throws SQLException {
+    
     	return dm.getByClubId(id);
+    
     }
     
     public LinkedList<Match> getMatchesByTournamentId(Integer id) throws SQLException {
+    	
     	return dm.getByTournamentId(id);
+    
     }
     
     public LinkedList<Match> getMatchesByClubAndTournamentId(Integer id_club, Integer id_tournament) throws SQLException {
+    
     	return dm.getByClubAndTournamentId(id_club, id_tournament);
+    
     }
     
     public void addMatch(Match match) throws SQLException {
+    
     	dm.add(match);
+    
     }
     
     public void updateMatch(Match match) throws SQLException {
+    
     	dm.update(match);
+    
     }
     
     public void deleteMatch(Integer id) throws SQLException {
+    
     	dm.delete(id);
+    
     }
+    
+    public LinkedList<Nationality> getAllNationalities() throws SQLException {
+        
+    	return dn.getAll();
+    
+    }
+    
+    public Nationality getNationalityById(Integer id) throws SQLException {
+    
+    	return dn.getById(id);
+    
+    }
+    
+    public Nationality getNationalityByName(String name) throws SQLException {
+        
+    	return dn.getByName(name);
+    
+    }
+    
+    public Nationality getNationalityByIsoCode(String isoCode) throws SQLException {
+        
+    	return dn.getByIsoCode(isoCode);
+    
+    }
+    
+    public LinkedList<Nationality> getAllNationalitiesByAssociationId(int id) throws SQLException {
+        
+    	return dn.getAllByAssociationId(id);
+    
+    }
+        
+    public void addNationality(Nationality nationality) throws SQLException {
+    
+    	dn.add(nationality);
+    
+    }
+    
+    public void updateNationality(Nationality nationality) throws SQLException {
+    
+    	dn.update(nationality);
+    
+    }
+    
+    public void deleteNationality(Integer id) throws SQLException {
+    
+    	dn.delete(id);
+    
+    }
+    
 }

@@ -160,7 +160,7 @@ public class DataPlayer {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_PLAYER_BASE + " AND id = ?"
+            	SELECT_PLAYER_BASE + " AND id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -263,10 +263,10 @@ public class DataPlayer {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO person "
-                    + "(id, fullname, birthdate, address, role, "
-                    + " dominant_foot, jersey_number, height, weight, photo) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            	"INSERT INTO person "
+                + "(id, fullname, birthdate, address, role, "
+                + " dominant_foot, jersey_number, height, weight, photo) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getFullname());
@@ -339,7 +339,7 @@ public class DataPlayer {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM person WHERE id = ?"
+            	"DELETE FROM person WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();

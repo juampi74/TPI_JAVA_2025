@@ -26,7 +26,7 @@
 		<jsp:include page="/WEB-INF/Navbar.jsp"></jsp:include>
 		<div class="container" style="color: white;">
 		    <h2 class="mt-4">Editar Club</h2>
-		    <form action="actionclub" method="post" class="mt-4">
+			<form action="actionclub" method="post" enctype="multipart/form-data" class="mt-4">
 		    	<input type="hidden" name="action" value="edit" />
 		        <input type="hidden" name="id" value="<%=club.getId()%>" />
 		        
@@ -49,10 +49,19 @@
 		            <label for="email">Email:</label>
 		            <input type="text" class="form-control" id="email" name="email" value="<%=club.getEmail()%>" required />
 		        </div>
-		        
+		        	        
 		        <div class="form-group">
 		            <label for="badgeImage">Escudo:</label>
-		            <input type="text" class="form-control" id="badgeImage" name="badgeImage" value="<%=club.getBadgeImage()%>" required />
+		            
+		            <% if (club.getBadgeImage() != null && !club.getBadgeImage().isEmpty()) { %>
+		                <div class="mb-2">
+		                    <img src="<%=request.getContextPath() + "/images?id=" + club.getBadgeImage()%>" class="current-badge" alt="Escudo actual" height="55">
+		                </div>
+		            <% } %>
+		            
+		            <input type="file" class="form-control" id="badgeImage" name="badgeImage" maxlength="250" accept="image/*" />
+		            <small class="form-text text-white-50">Dejar vacío para mantener el escudo actual. Formatos recomendados: PNG o JPG.</small>
+		            <input type="hidden" name="currentBadgeImage" value="<%= club.getBadgeImage() %>" />
 		        </div>
 		        
 		        <div class="form-group">

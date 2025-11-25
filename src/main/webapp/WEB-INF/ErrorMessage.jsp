@@ -6,6 +6,7 @@
 		<title>¡Error!</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <link href="style/signin.css" rel="stylesheet">
+	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 	</head>
 	<body style="background-color: #10442E;">
 		

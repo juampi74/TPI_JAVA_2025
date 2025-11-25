@@ -2,11 +2,15 @@ package entities;
 
 import java.time.LocalDate;
 
+import enums.*;
+
 public class Association {
 	
 	private int id;
 	private String name;
 	private LocalDate creationDate;
+	private AssociationType type;
+	private Continent continent;
 	
 	public int getId() {
 		
@@ -43,12 +47,37 @@ public class Association {
 		this.creationDate = creationDate;
 	
 	}
+	
+	public AssociationType getType() {
+		
+		return type;
+	
+	}
+
+	public void setType(AssociationType type) {
+	
+		this.type = type;
+	
+	}
+	
+	public Continent getContinent() {
+		
+		return continent;
+	
+	}
+
+	public void setContinent(Continent continent) {
+	
+		this.continent = continent;
+	
+	}
 
 	@Override
 	public String toString() {
 		
-		return "Association [id=" + id + ", name=" + name + ", creationDate=" + creationDate + "]";
+		return "Association [id=" + id + ", name=" + name + ", creationDate=" + creationDate + ", type=" + type
+				+ ", continent=" + continent + "]";
 	
 	}
-		
+	
 }

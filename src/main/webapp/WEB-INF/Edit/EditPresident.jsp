@@ -49,7 +49,16 @@
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
-		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" required />
+		            
+		            <% if (president.getPhoto() != null && !president.getPhoto().isEmpty()) { %>
+		                <div class="mb-2">
+		                    <img src="<%=request.getContextPath() + "/images?id=" + president.getPhoto()%>" class="current-photo" alt="Foto actual" height="80">
+		                </div>
+		            <% } %>
+		            
+		            <input type="file" class="form-control" id="photo" name="photo" maxlength="250" accept="image/*" />
+		            <small class="form-text text-white-50">Dejar vacío para mantener la foto actual. Formatos recomendados: PNG o JPG.</small>
+		            <input type="hidden" name="currentPhoto" value="<%= president.getPhoto() %>" />
 		        </div>
 		        
 		        <div class="button-container mb-3">

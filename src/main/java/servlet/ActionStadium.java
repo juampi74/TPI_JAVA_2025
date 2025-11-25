@@ -38,12 +38,10 @@ public class ActionStadium extends HttpServlet {
 	
 	private boolean checkClub(Integer id, Logic ctrl) throws SQLException {
 		
-		Club club = ctrl.getClubByStadiumId(id);
-		return club == null;
+		return ctrl.getClubByStadiumId(id) == null;
 	
 	}
 	
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("action");

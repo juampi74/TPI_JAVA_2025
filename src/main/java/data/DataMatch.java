@@ -62,7 +62,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_MATCHES_JOINED + " WHERE m.id = ?"
+            	SELECT_ALL_MATCHES_JOINED + " WHERE m.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -97,7 +97,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_MATCHES_JOINED + " WHERE m.id_home = ? or m.id_away = ?"
+            	SELECT_ALL_MATCHES_JOINED + " WHERE m.id_home = ? or m.id_away = ?"
             );
             stmt.setInt(1, id);
             stmt.setInt(2, id);
@@ -134,7 +134,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_MATCHES_JOINED + " WHERE m.id_tournament = ?"
+            	SELECT_ALL_MATCHES_JOINED + " WHERE m.id_tournament = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -170,7 +170,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_MATCHES_JOINED + " WHERE (m.id_home = ? or m.id_away = ?) and m.id_tournament = ?"
+            	SELECT_ALL_MATCHES_JOINED + " WHERE (m.id_home = ? or m.id_away = ?) and m.id_tournament = ?"
             );
             stmt.setInt(1, id_club);
             stmt.setInt(2, id_club);
@@ -206,9 +206,9 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO `match` "
-                    + "(home_goals, away_goals, matchday, date, id_away, id_home, id_tournament) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?)"
+            	"INSERT INTO `match` "
+                + "(home_goals, away_goals, matchday, date, id_away, id_home, id_tournament) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setObject(1, m.getHomeGoals());
             stmt.setObject(2, m.getAwayGoals());
@@ -240,7 +240,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE `match` SET home_goals = ?, away_goals = ?, matchday = ?, date = ?, id_away = ?, id_home = ?, id_tournament = ? WHERE id = ?"
+            	"UPDATE `match` SET home_goals = ?, away_goals = ?, matchday = ?, date = ?, id_away = ?, id_home = ?, id_tournament = ? WHERE id = ?"
             );
             stmt.setObject(1, m.getHomeGoals());
             stmt.setObject(2, m.getAwayGoals());
@@ -272,7 +272,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM `match` WHERE id = ?"
+            	"DELETE FROM `match` WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -342,12 +342,8 @@ public class DataMatch {
 
         try {
 
-            if (rs != null) {
-                rs.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {
