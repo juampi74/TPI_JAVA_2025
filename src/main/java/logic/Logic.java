@@ -5,6 +5,7 @@ import entities.*;
 import enums.*;
 import enums.PersonRole;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -428,6 +429,12 @@ public class Logic {
 
         return dco.getByClubId(id);
 
+    }
+    
+    public LinkedList<Contract> getPlayerHistory(int idPlayer, LocalDate from, LocalDate to) throws SQLException {
+    	
+    	return dco.getHistoryByPlayer(idPlayer, from, to);
+    	
     }
 
     public void addContract(Contract c) throws SQLException {

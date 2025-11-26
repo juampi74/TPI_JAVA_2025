@@ -178,6 +178,28 @@ public class ActionPlayer extends HttpServlet {
 
                 }
 			
+			} else if ("history".equals(action)) {
+			    
+			    int idPlayer = Integer.parseInt(request.getParameter("id"));
+			    
+			    Player player = ctrl.getPlayerById(idPlayer);
+			    
+			    LocalDate from = null;
+			    LocalDate to = null;
+			    
+			    String fromStr = request.getParameter("from");
+			    String toStr = request.getParameter("to");
+			    
+			    if (fromStr != null && !fromStr.isEmpty()) from = LocalDate.parse(fromStr);
+			    if (toStr != null && !toStr.isEmpty()) to = LocalDate.parse(toStr);
+			    
+			    LinkedList<Contract> history = ctrl.getPlayerHistory(idPlayer, from, to);
+			    		    
+			    request.setAttribute("player", player);
+			    request.setAttribute("history", history);
+			    
+			    request.getRequestDispatcher("WEB-INF/Management/PlayerHistory.jsp").forward(request, response);
+
 			} else {
 				
 				String clubIdParam = request.getParameter("clubId");

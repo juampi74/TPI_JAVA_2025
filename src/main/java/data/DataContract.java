@@ -19,6 +19,13 @@ public class DataContract {
             + "FROM contract c "
             + "INNER JOIN person p ON c.id_person = p.id "
             + "INNER JOIN club cl ON c.id_club = cl.id";
+    
+    private static final String SELECT_HISTORY_BY_PLAYER 
+    	    = "SELECT c.id, c.start_date, c.end_date, c.release_date, "
+    	    + "       cl.id AS club_id, cl.name AS club_name, cl.badge_image "
+    	    + "FROM contract c "
+    	    + "INNER JOIN club cl ON c.id_club = cl.id "
+    	    + "WHERE c.id_person = ? ";
 
     public LinkedList<Contract> getAll() throws SQLException {
 
@@ -197,6 +204,73 @@ public class DataContract {
 
         return contracts;
 
+    }
+    
+    public LinkedList<Contract> getHistoryByPlayer(int playerId, LocalDate fromDate, LocalDate toDate) throws SQLException {
+        
+    	LinkedList<Contract> history = new LinkedList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            
+        	StringBuilder sql = new StringBuilder(SELECT_HISTORY_BY_PLAYER);
+            
+            if (fromDate != null) {
+                
+            	sql.append(" AND (c.end_date >= ? OR c.end_date IS NULL) ");
+            
+            }
+            
+            if (toDate != null) {
+                
+            	sql.append(" AND c.start_date <= ? ");
+            
+            }
+            
+            sql.append(" ORDER BY c.start_date DESC");
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(sql.toString());
+            
+            int index = 1;
+            stmt.setInt(index++, playerId);
+            
+            if (fromDate != null) stmt.setObject(index++, fromDate);
+            if (toDate != null) stmt.setObject(index++, toDate);
+            
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                
+            	Contract c = new Contract();
+                c.setId(rs.getInt("id"));
+                c.setStartDate(rs.getObject("start_date", LocalDate.class));
+                c.setEndDate(rs.getObject("end_date", LocalDate.class));
+                c.setReleaseDate(rs.getObject("release_date", LocalDate.class));
+                
+                Club club = new Club();
+                club.setId(rs.getInt("club_id"));
+                club.setName(rs.getString("club_name"));
+                club.setBadgeImage(rs.getString("badge_image"));
+                
+                c.setClub(club);
+                history.add(c);
+                
+            }
+            
+        } catch (SQLException e) {
+            
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+        
+        return history;
+    
     }
 
     public void add(Contract c) throws SQLException {

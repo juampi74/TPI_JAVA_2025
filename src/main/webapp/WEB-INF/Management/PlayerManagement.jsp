@@ -20,11 +20,11 @@
   		<link href="style/start.css" rel="stylesheet">
 
   		<style>
-		    .table{
+		    .table {
 		      text-align:center;
 		    }
 		    
-		    .table th, .table td{
+		    .table th, .table td {
 		      vertical-align: middle !important;
 		    }
 
@@ -111,7 +111,7 @@
 			  object-fit: contain; 
 			  object-position: center; 
 			  border-radius: 50%;
-			  background-color: #10442E;
+			  background-color: #e9ecef;
     		  border: 2px solid #2C632D;
 			}
 			
@@ -248,13 +248,21 @@
 									int selectedId = -1;
                       
 									if (selectedClub != null && !selectedClub.isEmpty()) {
+										
 										if (!"free".equals(selectedClub)) {
+										
 											try {
+											
 												selectedId = Integer.parseInt(selectedClub);
+											
 											} catch (NumberFormatException ex) {
+											
 												selectedId = -1;
+											
 											}
+										
 										}
+									
 									}
 					              
 					            	if (clubs != null) {
@@ -292,15 +300,22 @@
 						if (hasFilter) {
 
 							if ("free".equals(clubParam)) {
+							
 								clubName = "Agente Libre";
+							
 							} else {
+							
 								try {
+								
 									int filterId = Integer.parseInt(clubParam);
 									LinkedList<Club> clubsList = (LinkedList<Club>) request.getAttribute("clubsList");
 
 									if (clubsList != null) {
+									
 										for (Club c : clubsList) {
+										
 											if (c.getId() == filterId) {
+											
 												clubName = c.getName();
 												break;
 											}
@@ -369,6 +384,7 @@
 	                        			<th>Pie Dominante</th>
 	                        			<th>Altura</th>
 	                        			<th>Peso</th>
+	                        			<th>Ver Trayectoria</th>
 	                        			<th>Editar</th>
 	                        			<th>Eliminar</th>
 					              	</tr>
@@ -452,25 +468,34 @@
 												%>
 												<span class="foot-badge <%= footClass %>"><%= (footText != null) ? footText : "-" %></span>
 										    </td>
-		                    				<td class="align-middle">
+		                    				<td>
 										        <span class="stat-value">
 											        <%= String.format(java.util.Locale.US, "%.2f", p.getHeight()) %>
 											    </span>
 										        <span class="stat-unit">mts</span>
 										    </td>
 										
-										    <td class="align-middle">
+										    <td>
 										        <span class="stat-value">
 											        <%= Math.round(p.getWeight()) %>
 											    </span>
 										        <span class="stat-unit">kg</span>
 										    </td>
+										    <td>
+											    <form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
+											        <input type="hidden" name="action" value="history" />
+											        <input type="hidden" name="id" value="<%= p.getId() %>" />
+											        <button type="submit" class="btn btn-sm" style="background-color: #8f5300;">
+											            <img src="${pageContext.request.contextPath}/assets/history.svg" alt="" width="25" height="25" style="display:block;">
+											        </button>
+											    </form>    
+											</td>
 							                <td>
 							                  	<form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
 								                    <input type="hidden" name="action" value="edit" />
 								                    <input type="hidden" name="id" value="<%= p.getId() %>" />
 								                    <button type="submit" class="btn btn-sm" style="background-color:#0D47A1;">
-								                    	<img src="${pageContext.request.contextPath}/assets/edit.svg" alt="Edit" width="25" height="25" style="display:block;">
+								                    	<img src="${pageContext.request.contextPath}/assets/edit.svg" alt="" width="25" height="25" style="display:block;">
 								                    </button>
 							                  	</form>
 						                	</td>
@@ -479,7 +504,7 @@
 							                    	<input type="hidden" name="action" value="delete" />
 							                    	<input type="hidden" name="id" value="<%= p.getId() %>" />
 							                    	<button type="button" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= p.getId() %>" style="background-color:#9B1C1C;">
-							                      		<img src="${pageContext.request.contextPath}/assets/delete.svg" alt="Delete" width="25" height="25" style="display:block;">
+							                      		<img src="${pageContext.request.contextPath}/assets/delete.svg" alt="" width="25" height="25" style="display:block;">
 							                    	</button>
 							                  	</form>
 						                	</td>
