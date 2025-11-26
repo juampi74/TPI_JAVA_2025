@@ -56,7 +56,7 @@
 	            <div class="d-flex justify-content-center align-items-center col-auto text-dark border border-dark rounded p-3 me-4 border border-white" style="width: 300px; min-height: 200px; background-color: rgba(33,37,41,1);">
 			        <form action="actionclub" method="get" style="margin:0;">
 						<button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
-					    	<img alt="Escudo" src="<%= club != null ? request.getContextPath() + "/images?id=" + club.getBadgeImage() : src_shield %>" width="85" height="95" style="margin-bottom:10px;">
+					    	<img alt="Escudo" src="<%= club != null ? request.getContextPath() + "/images?id=" + club.getBadgeImage() : src_shield %>" width="95" height="95" style="margin-bottom:10px;">
 					    	<h4 class="text-white m-0">Ver Clubes</h4>
 					  	</button>
 					</form>

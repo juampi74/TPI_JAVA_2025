@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -67,6 +68,7 @@ public class ActionTournament extends HttpServlet {
     			request.setAttribute("tournament", tournament);
                 
                 LinkedList<Association> associations = ctrl.getAllAssociations();
+                associations.sort(Comparator.comparing(Association::getName));
             	request.setAttribute("associationsList", associations);
                 
             	request.getRequestDispatcher("WEB-INF/Edit/EditTournament.jsp").forward(request, response);
@@ -77,12 +79,13 @@ public class ActionTournament extends HttpServlet {
             	
 				if (associations.size() > 0) {
         		
+					associations.sort(Comparator.comparing(Association::getName));
 					request.setAttribute("associationsList", associations);
 					request.getRequestDispatcher("WEB-INF/Add/AddTournament.jsp").forward(request, response);
 				
 				} else {
 					
-					request.setAttribute("errorMessage", "Debe agregar una asociación primero");
+					request.setAttribute("errorMessage", "Debés agregar una asociación primero");
 					request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 					
 				}
@@ -90,6 +93,7 @@ public class ActionTournament extends HttpServlet {
             } else {
             
             	LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+            	tournaments.sort(Comparator.comparing(Tournament::getName));
                 request.setAttribute("tournamentsList", tournaments);
                 
                 LinkedList<Association> associations = ctrl.getAllAssociations();
@@ -124,21 +128,31 @@ public class ActionTournament extends HttpServlet {
         	if ("add".equals(action)) {
                 
             	Tournament tournament = buildTournamentFromRequest(request, action, ctrl);
+            	
             	if (checkDates(tournament.getStartDate(), tournament.getEndDate())) {
+            		
             		ctrl.addTournament(tournament);
+            	
             	} else {
+            		
             		request.setAttribute("errorMessage", "Error en las fechas introducidas (el torneo debe empezar a partir de hoy y durar, al menos, 4 meses)");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            	
             	}
 
             } else if ("edit".equals(action)) {
                 
             	Tournament tournament = buildTournamentFromRequest(request, action, ctrl);
+            	
             	if (checkDates(tournament.getStartDate(), tournament.getEndDate())) {
+            	
             		ctrl.updateTournament(tournament);
+            	
             	} else {
+            	
             		request.setAttribute("errorMessage", "Error en las fechas introducidas (el torneo debe empezar a partir de hoy y durar, al menos, 4 meses)");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            	
             	}
 
             } else if ("delete".equals(action)) {
@@ -148,12 +162,15 @@ public class ActionTournament extends HttpServlet {
             }
 
             LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+            tournaments.sort(Comparator.comparing(Tournament::getName));
             request.setAttribute("tournamentsList", tournaments);
             request.getRequestDispatcher("WEB-INF/Management/TournamentManagement.jsp").forward(request, response);
         	
         } catch(SQLException e) {
+        	
         	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        
         }
     
 	}

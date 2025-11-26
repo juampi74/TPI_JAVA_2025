@@ -123,7 +123,7 @@
                             </div>
                             <h3 class="fw-bold mb-2">Todavía no agregaste partidos</h3>
                             <p style="opacity:.85;">
-                                No hay registros de partidos cargados. Usá el botón <strong>(+)</strong> para agregar uno.
+                                No hay partidos registrados. Usá el botón de <strong>(+)</strong> cuando quieras agregar el primero.
                             </p>
                         </div>
                     </div>

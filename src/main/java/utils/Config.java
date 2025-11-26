@@ -9,13 +9,10 @@ public class Config {
 
     static {
         try {
-            System.out.println(">>> Intentando cargar config.properties...");
 
             InputStream input = Thread.currentThread()
                     .getContextClassLoader()
                     .getResourceAsStream("config.properties");
-
-            System.out.println(">>> input = " + input);
 
             if (input == null) {
                 throw new RuntimeException("No se encontró config.properties en el classpath");

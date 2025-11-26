@@ -1,6 +1,7 @@
 package data;
 
 import entities.*;
+import enums.DominantFoot;
 import enums.PersonRole;
 import java.sql.*;
 import java.time.*;
@@ -336,7 +337,10 @@ public class DataContract {
         if (role.equals(PersonRole.PLAYER)) {
 
             Player player = new Player();
-            player.setDominantFoot(rs.getString("dominant_foot"));
+            
+            String dfStr = rs.getString("dominant_foot");
+            if (dfStr != null) player.setDominantFoot(DominantFoot.valueOf(dfStr));
+            
             player.setJerseyNumber(rs.getInt("jersey_number"));
             player.setHeight(rs.getDouble("height"));
             player.setWeight(rs.getDouble("weight"));
@@ -398,12 +402,8 @@ public class DataContract {
 
         try {
 
-            if (rs != null) {
-                rs.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
             DbConnector.getInstance().releaseConn();
 
         } catch (SQLException e) {

@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -63,6 +64,7 @@ public class ActionStadium extends HttpServlet {
 			} else {
 				
 				LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
+				stadiums.sort(Comparator.comparing(Stadium::getName));
 			    request.setAttribute("stadiumsList", stadiums);
 			    request.getRequestDispatcher("/WEB-INF/Management/StadiumManagement.jsp").forward(request, response);
 			
@@ -100,6 +102,7 @@ public class ActionStadium extends HttpServlet {
         			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
 
         		}
+        		
             } else if ("edit".equals(action)) {
             	
             	Stadium stadium = buildStadiumFromRequest(request, action);
@@ -132,6 +135,7 @@ public class ActionStadium extends HttpServlet {
             }
     	    
     	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
+    	    stadiums.sort(Comparator.comparing(Stadium::getName));
     		request.setAttribute("stadiumsList", stadiums);
     	    request.getRequestDispatcher("WEB-INF/Management/StadiumManagement.jsp").forward(request, response);
         	

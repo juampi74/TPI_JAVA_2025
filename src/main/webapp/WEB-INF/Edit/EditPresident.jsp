@@ -1,7 +1,10 @@
-<%@ page import="entities.President"%>
+<%@ page import="java.util.LinkedList"%>
+<%@ page import="entities.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	President president = (President) request.getAttribute("president");
+
+	LinkedList<Nationality> nationalitiesList = (LinkedList<Nationality>) request.getAttribute("nationalitiesList");
 %>
 <!DOCTYPE html>
 <html>
@@ -28,7 +31,7 @@
 		        <input type="hidden" name="id" value="<%=president.getId()%>" />
 		        
 		        <div class="form-group">
-		            <label for="fullname">Apellido y Nombre:</label>
+		            <label for="fullname">Nombre y Apellido:</label>
 		            <input type="text" class="form-control" id="fullname" name="fullname" value="<%=president.getFullname()%>" required />
 		        </div>
 		        
@@ -46,6 +49,24 @@
 		            <label for="managementPolicy">Política de Gestión:</label>
 		            <input type="text" class="form-control" id="managementPolicy" name="managementPolicy" value="<%=president.getManagementPolicy()%>" required />
 		        </div>
+		        
+		        <div class="form-group">
+				    <label for="id_nationality">Nacionalidad:</label>
+				    <select name="id_nationality" id="id_nationality" class="form-control" required>
+					    <option value="">-- Seleccioná una nacionalidad --</option>
+					    <%
+					        if (nationalitiesList != null && !nationalitiesList.isEmpty()) {
+					            int selectedNationalityId = (president != null && president.getNationality() != null) ? president.getNationality().getId() : -1;
+					            for (Nationality n : nationalitiesList) {
+					                String selected = (n.getId() == selectedNationalityId) ? "selected" : "";
+					                out.print("<option value='" + n.getId() + "' " + selected + ">" + n.getName() + "</option>");
+					            }
+					        } else {
+					            out.print("<option value='' disabled>No hay nacionalidades cargadas</option>");
+					        }
+					    %>
+					</select>
+				</div>
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>

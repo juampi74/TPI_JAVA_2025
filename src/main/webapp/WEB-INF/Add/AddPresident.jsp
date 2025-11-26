@@ -1,3 +1,9 @@
+<%@ page import="java.util.LinkedList"%>
+<%@ page import="entities.Nationality"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	LinkedList<Nationality> nationalitiesList = (LinkedList<Nationality>) request.getAttribute("nationalitiesList");
+%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -28,7 +34,7 @@
 		        </div>
 		
 		        <div class="form-group">
-		            <label for="fullname">Apellido y Nombre:</label>
+		            <label for="fullname">Nombre y Apellido:</label>
 		            <input type="text" class="form-control" id="fullname" name="fullname" required />
 		        </div>
 		
@@ -46,6 +52,22 @@
 		            <label for="managementPolicy">Política de Gestión:</label>
 		            <input type="text" class="form-control" id="managementPolicy" name="managementPolicy" required />
 		        </div>
+		        
+		        <div class="form-group">
+				    <label for="id_nationality">Nacionalidad:</label>
+				    <select name="id_nationality" id="id_nationality" class="form-control" required>
+				        <option value="">-- Seleccioná una nacionalidad --</option>
+				        <%
+				            if (nationalitiesList != null && !nationalitiesList.isEmpty()) {
+				                for (Nationality n : nationalitiesList) {
+				                    out.print("<option value='" + n.getId() + "'>" + n.getName() + "</option>");
+				                }
+				            } else {
+				                out.print("<option value='' disabled>No hay nacionalidades cargadas</option>");
+				            }
+				        %>
+				    </select>
+				</div>
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>

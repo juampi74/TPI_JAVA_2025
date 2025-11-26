@@ -28,6 +28,11 @@
 			table td {
 			  	vertical-align: middle !important;
 			}
+			
+			.badge-cell {
+			    min-width: 100px;
+			    margin: 0 auto;
+			}
 	    
 	    </style>
 		
@@ -72,10 +77,9 @@
 	                    	<table class="table table-dark mb-0">
 	                    		<thead>
 	                    			<tr>
-	                    				<th>Escudo</th>
+	                    				<th></th>
 							            <th>Nombre</th>
-							            <th>Fecha de Fundación</th>
-							            <th>Teléfono</th>
+							            <th>Fundación</th>
 							            <th>Email</th>
 							            <th>Presupuesto</th>
 							            <th>Estadio</th>
@@ -88,12 +92,11 @@
 	                    	    	for (Club c : cl) {
 	                    		%>
 	                    			<tr>
-	                    				<td>
+	                    				<td class="badge-cell">
 	                    					<img alt="" src="<%=request.getContextPath() + "/images?id=" + c.getBadgeImage()%>" height="40">
 	                    				</td>
-	                    				<td><%=c.getName()%></td>
+	                    				<td><b><%=c.getName()%></b></td>
 	                    				<td><%=c.getFoundationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-	                    				<td><%=c.getPhoneNumber()%></td>
 	                    				<td><%=c.getEmail()%></td>
 	                    				<td><%=c.getBudget()%></td>
 	                    				<td><%=c.getStadium().getName()%></td>

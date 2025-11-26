@@ -104,7 +104,7 @@
 		        var continentDiv = document.getElementById("continentContainer");
 		        var continentSelect = document.getElementById("continent");
 		        
-		        if (typeSelect.value === "CONTINENTAL") {
+		        if (typeSelect.value !== "INTERNATIONAL") {
 		            continentDiv.style.display = "block";
 		            continentSelect.required = true;
 		        } else {

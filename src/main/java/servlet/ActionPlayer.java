@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -17,21 +18,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import entities.Club;
-import entities.Contract;
-import entities.Position;
-import entities.Player;
-import enums.PersonRole;
+import entities.*;
+import enums.*;
 import logic.Logic;
 import utils.Config;
 
-@WebServlet("/actionplayer")
 @MultipartConfig
+@WebServlet("/actionplayer")
 public class ActionPlayer extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
        
-	private Player buildPlayerFromRequest(HttpServletRequest request) throws IOException, ServletException {
+	private Player buildPlayerFromRequest(HttpServletRequest request, String action, Logic ctrl) throws IOException, ServletException, SQLException {
         
     	Player player = new Player();
     	player.setId(Integer.parseInt(request.getParameter("id")));
@@ -39,14 +37,15 @@ public class ActionPlayer extends HttpServlet {
     	player.setBirthdate(LocalDate.parse(request.getParameter("birthdate")));
     	player.setAddress(request.getParameter("address"));
     	player.setRole(PersonRole.valueOf("PLAYER"));
-        player.setDominantFoot(request.getParameter("dominantFoot"));
+        player.setDominantFoot(DominantFoot.valueOf(request.getParameter("dominantFoot")));
         player.setJerseyNumber(Integer.parseInt(request.getParameter("jerseyNumber")));
         player.setHeight(Double.parseDouble(request.getParameter("height")));
         player.setWeight(Double.parseDouble(request.getParameter("weight")));
+        player.setNationality(ctrl.getNationalityById(Integer.parseInt(request.getParameter("id_nationality"))));
         
-        String action = request.getParameter("action");
         Part photo = request.getPart("photo");
         if (photo != null && photo.getSize() > 0) {
+        	
         	String filename = player.getId() + "_" + photo.getSubmittedFileName();
 
         	String uploadPath = Config.get("uploads.path").replace("\"", "");
@@ -61,12 +60,18 @@ public class ActionPlayer extends HttpServlet {
             player.setPhoto(filename);
             
         } else {
-            if ("edit".equals(action)) {
-                String oldPhoto = request.getParameter("currentPhoto");
+            
+        	if ("edit".equals(action)) {
+            
+        		String oldPhoto = request.getParameter("currentPhoto");
                 player.setPhoto(oldPhoto);
-            } else {
-                player.setPhoto("-");
-            }
+            
+        	} else {
+            
+        		player.setPhoto("-");
+            
+        	}
+        
         }
         
         return player;
@@ -134,6 +139,9 @@ public class ActionPlayer extends HttpServlet {
 				Player player = ctrl.getPlayerById(id);
 				request.setAttribute("player", player);
 				
+				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+				request.setAttribute("nationalitiesList", nationalities);
+				
 				LinkedList<Position> positions = ctrl.getAllPositions();
             	request.setAttribute("positionsList", positions);
             	
@@ -147,8 +155,8 @@ public class ActionPlayer extends HttpServlet {
 			
 			} else if ("add".equals(action)) {
 				
+				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
 				LinkedList<Position> positions = ctrl.getAllPositions();
-				
 				
 				if (positions.size() > 0) {
 					
@@ -156,7 +164,19 @@ public class ActionPlayer extends HttpServlet {
 				
 				}
 				
-				request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
+				if (nationalities.size() > 0) {
+                	
+					nationalities.sort(Comparator.comparing(Nationality::getName));
+
+					request.setAttribute("nationalitiesList", nationalities);
+                    request.getRequestDispatcher("WEB-INF/Add/AddPlayer.jsp").forward(request, response);
+
+                } else {
+
+                    request.setAttribute("errorMessage", "Debés agregar una nacionalidad primero");
+                    request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+                }
 			
 			} else {
 				
@@ -165,17 +185,31 @@ public class ActionPlayer extends HttpServlet {
 				LinkedList<Player> players;
 				
 				if (clubIdParam != null && !clubIdParam.isEmpty()) {
-			    
-					int clubId = Integer.parseInt(clubIdParam);
-			        players = ctrl.getPlayersByClub(clubId);
-			    
+
+					if ("free".equals(clubIdParam)) {
+						players = ctrl.getAvailablePlayers();
+					} else {
+						try {
+							int clubId = Integer.parseInt(clubIdParam);
+							players = ctrl.getPlayersByClub(clubId);
+						} catch (NumberFormatException nfe) {
+							players = ctrl.getAllPlayers();
+						}
+					}
+
 				} else {
-			    
+
 					players = ctrl.getAllPlayers();
-			    
+
 				}
 
 			    request.setAttribute("playersList", players);
+			    
+			    Map<Integer, String> primaryPositions = ctrl.getAllPrimaryPositions();
+			    request.setAttribute("positionsMap", primaryPositions);
+			    
+			    Map<Integer, Club> currentClubsMap = ctrl.getPlayersCurrentClubs();
+			    request.setAttribute("currentClubsMap", currentClubsMap);
 			    
 			    LinkedList<Club> clubs = ctrl.getAllClubs();
             	clubs.sort(Comparator.comparing(Club::getName));
@@ -207,7 +241,7 @@ public class ActionPlayer extends HttpServlet {
         	
         	if ("add".equals(action)) {
             	
-            	Player player = buildPlayerFromRequest(request);
+            	Player player = buildPlayerFromRequest(request, action, ctrl);
 
             	if (checkBirthdate(player.getBirthdate())) {
 
@@ -218,11 +252,15 @@ public class ActionPlayer extends HttpServlet {
             		Integer mainPosId = getPrimaryPositionFromRequest(request);
 
             	    for (Integer posId : posIds) {
-            	        ctrl.addPlayerPosition(playerId, posId);
+            	        
+            	    	ctrl.addPlayerPosition(playerId, posId);
+            	    
             	    }
             	    
             	    if (mainPosId != null) {
-            	        ctrl.setPlayerPrimaryPosition(playerId, mainPosId);
+            	    
+            	    	ctrl.setPlayerPrimaryPosition(playerId, mainPosId);
+            	    
             	    }
 
             	} else {
@@ -234,7 +272,7 @@ public class ActionPlayer extends HttpServlet {
             	
             } else if ("edit".equals(action)) {
             	
-            	Player player = buildPlayerFromRequest(request);
+            	Player player = buildPlayerFromRequest(request, action, ctrl);
 
             	if (checkBirthdate(player.getBirthdate())) {
 
@@ -252,8 +290,10 @@ public class ActionPlayer extends HttpServlet {
             		}
             		
             		if (mainPosId != null) {
-            	        ctrl.setPlayerPrimaryPosition(playerId, mainPosId);
-            	    }
+            	        
+            			ctrl.setPlayerPrimaryPosition(playerId, mainPosId);
+            	    
+            		}
 
             	} else {
 
@@ -277,15 +317,22 @@ public class ActionPlayer extends HttpServlet {
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 
         	    }
+        	    
             }
     	    
     	    LinkedList<Player> players = ctrl.getAllPlayers();
     		request.setAttribute("playersList", players);
     		
+    		Map<Integer, String> primaryPositions = ctrl.getAllPrimaryPositions();
+			request.setAttribute("positionsMap", primaryPositions);
+			
+			Map<Integer, Club> currentClubsMap = ctrl.getPlayersCurrentClubs();
+		    request.setAttribute("currentClubsMap", currentClubsMap);
+    		
     		LinkedList<Club> clubs = ctrl.getAllClubs();
     		request.setAttribute("clubsList", clubs);
-    		
-    	    request.getRequestDispatcher("WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
+		
+		    request.getRequestDispatcher("WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
     	    
         } catch (SQLException e) {
 

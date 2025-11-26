@@ -1,5 +1,9 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.time.Period"%>
+<%@ page import="java.time.LocalDate"%>
+<%@ page import="enums.DominantFoot"%>
 <%@ page import="entities.Player"%>
 <%@ page import="entities.Club"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -16,10 +20,13 @@
   		<link href="style/start.css" rel="stylesheet">
 
   		<style>
-    		body{ background-color:#10442E; }
-
-		    .table{ text-align:center; }
-		    .table th, .table td{ vertical-align:middle !important; }
+		    .table{
+		      text-align:center;
+		    }
+		    
+		    .table th, .table td{
+		      vertical-align: middle !important;
+		    }
 
 		    .fancy-select{
 		      --bs-form-select-bg: rgba(255,255,255,.07);
@@ -38,17 +45,186 @@
 		      background-position:right .6rem center;
 		      background-size:1rem .8rem;
 		    }
-		    .fancy-select:hover{ border-color:#fff !important; }
+		    
+		    .fancy-select:hover{
+		      border-color:#fff !important;
+		    }
 		
-		    .empty-state{ max-width:840px; }
-		    .text-balance{ text-wrap: balance; }
-		    .empty-state h3{ font-size: clamp(1.25rem, 2vw + 1rem, 1.75rem); }
-		    .empty-state p{ font-size:.95rem; line-height:1.5; }
+		    .empty-state{
+		      max-width:840px;
+		    }
+		    
+		    .text-balance{
+		      text-wrap: balance;
+		    }
+		    
+		    .empty-state h3{
+		      font-size: clamp(1.25rem, 2vw + 1rem, 1.75rem);
+		    }
+		    
+		    .empty-state p{
+		      font-size: .95rem;
+		      line-height: 1.5;
+		    }
+		    
+			.tm-badge {
+			  background-color: #004e7d;
+			  color: white;
+			  font-weight: 700;
+			  font-size: 0.95rem;
+			  width: 36px;
+			  height: 36px;
+			  min-width: 36px;
+			  display: inline-flex;
+			  align-items: center;
+			  justify-content: center;
+			  border-radius: 50%;
+			  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+			}
+
+			.player-position {
+			  font-size: 0.85rem;
+		  	  color: #adb5bd;
+		  	  font-weight: 400;
+		  	  margin-top: 2px;
+		  	  text-align: center;
+			}
+
+			.player-name {
+				font-size: 1.05rem;
+				font-weight: 700;
+				color: #fff;
+			}
+
+			.national-flag {
+			  height: 18px; 
+			  width: auto; 
+			  border-radius: 2px; 
+			  opacity: 0.9; 
+			  margin-left: 8px;
+			  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+			}
+			
+			.profile-pic {
+			  width: 65px;
+			  height: 65px;
+			  object-fit: contain; 
+			  object-position: center; 
+			  border-radius: 50%;
+			  background-color: #10442E;
+    		  border: 2px solid #2C632D;
+			}
+			
+			.fullname-cell {
+			    max-width: 200px;
+			    margin: 0 auto;
+			}
+			
+			.stat-value {
+			    font-weight: 700;
+			    font-size: 1rem;
+			    color: #fff;
+			}
+			
+			.stat-unit {
+			    font-size: 0.75rem;
+			    color: #adb5bd;
+			    font-weight: 400;
+			    margin-left: 2px;
+			}
+			
+			.foot-badge {
+			    padding: 4px 10px;
+			    border-radius: 12px;
+			    font-size: 0.8rem;
+			    font-weight: 600;
+			    text-transform: uppercase;
+			    letter-spacing: 0.5px;
+			}
+			
+			.foot-right {
+			  background-color: rgba(13, 110, 253, 0.2);
+			  color: #6ea8fe;
+			  border: 1px solid rgba(13, 110, 253, 0.3);
+			}
+			
+			.foot-left {
+			  background-color: rgba(25, 135, 84, 0.2);
+			  color: #75b798;
+			  border: 1px solid rgba(25, 135, 84, 0.3);
+			}
+			
+			.foot-ambi {
+			  background-color: rgba(255, 193, 7, 0.2);
+			  color: #ffda6a;
+			  border: 1px solid rgba(255, 193, 7, 0.3);
+			}
+			
+			.age-text {
+			  color: #adb5bd;
+			  font-size: 0.9em;
+			  margin-left: 5px;
+			}
+			
+			.club-badge {
+			  width: 40px;
+			  height: 40px;
+			  object-fit: contain;
+			  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+			  transition: transform 0.2s;
+			  cursor: help;
+			}
+			
+			.club-badge:hover {
+			  transform: scale(1.2);
+			}
+			
+			.free-agent-badge {
+			  width: 40px;
+			  height: 40px;
+			  background-color: rgba(255, 255, 255, 0.05);
+			  border-radius: 50%;
+			  display: flex;
+			  align-items: center;
+			  justify-content: center;
+			  color: #6c757d;
+			  border: 1px dashed #6c757d;
+			  margin: 0 auto;
+			  transition: transform 0.2s;
+			  cursor: help;
+			}
+			
+			.free-agent-badge:hover {
+			  transform: scale(1.2);
+			}
+
+			.select-free {
+				box-shadow: 0 0 0 .15rem rgba(255,193,7,0.12) !important;
+				border-color: rgba(255,193,7,0.45) !important;
+				background-color: rgba(255,193,7,0.06) !important;
+			}
+
+			.free-indicator {
+				display: inline-flex;
+				align-items: center;
+				gap: .4rem;
+				padding: .25rem .55rem;
+				border-radius: .45rem;
+				background: rgba(255,193,7,0.12);
+				color: #ffda6a;
+				border: 1px solid rgba(255,193,7,0.25);
+				font-weight: 600;
+				margin-left: .5rem;
+				white-space: nowrap;
+			}
 		</style>
 
 		<%
 			LinkedList<Player> pll = (LinkedList<Player>) request.getAttribute("playersList");
 		    boolean emptyList = (pll == null || pll.isEmpty());
+		    
+		    Map<Integer, String> positionsMap = (Map<Integer, String>) request.getAttribute("positionsMap");
+		    Map<Integer, Club> currentClubsMap = (Map<Integer, Club>) request.getAttribute("currentClubsMap");
 		%>
 	</head>
 	<body style="background-color: #10442E;">
@@ -59,21 +235,27 @@
 		        	<h1 class="m-0">Jugadores</h1>
 		        	<form method="get" action="actionplayer" class="d-flex align-items-center gap-3 ms-auto m-0">
 		          		<label for="clubFilter" class="form-label m-0 fs-5">Filtrar por club:</label>
-		          			<select name="clubId" id="clubFilter"
-		                  		class="form-select form-select-sm w-auto fancy-select bg-dark text-white"
-		                  		onchange="this.form.submit()">
-		            			<option value="">Todos los clubes</option>
+							<select name="clubId" id="clubFilter"
+								class="form-select form-select-sm w-auto fancy-select bg-dark text-white"
+								onchange="this.form.submit()">
+									<option value="">Todos los clubes</option>
+									<option value="free" <%= "free".equals(request.getParameter("clubId")) ? "selected" : "" %>>🔓 Agente Libre (Sin Club)</option>
 					            <%
-					            	LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
-					              	
-					            	String selectedClub = request.getParameter("clubId");
-					              	
-					            	int selectedId = -1;
-					              	
-					            	if (selectedClub != null && !selectedClub.isEmpty()) {
-					                
-					            		selectedId = Integer.parseInt(selectedClub);
-					              	}
+									LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
+                      
+									String selectedClub = request.getParameter("clubId");
+                      
+									int selectedId = -1;
+                      
+									if (selectedClub != null && !selectedClub.isEmpty()) {
+										if (!"free".equals(selectedClub)) {
+											try {
+												selectedId = Integer.parseInt(selectedClub);
+											} catch (NumberFormatException ex) {
+												selectedId = -1;
+											}
+										}
+									}
 					              
 					            	if (clubs != null) {
 					                	
@@ -84,8 +266,9 @@
 						                }
 						            }
 		            			%>
-		          			</select>
-		        	</form>
+							</select>
+							<span id="freeIndicator" class="free-indicator d-none" title="Filtrando Agente Libre"><i class="fas fa-user-slash"></i>Agente Libre</span>
+					</form>
 		
 			        <form action="actionplayer" method="get" class="m-0 ms-5">
 			        	<input type="hidden" name="action" value="add" />
@@ -101,53 +284,58 @@
 		        <%
 		        	if (emptyList) {
 		
-			            String clubParam = request.getParameter("clubId");
-			            boolean hasFilter = (clubParam != null && !clubParam.trim().isEmpty());
-			
-			            String clubName = null;
-			            
-		            	if (hasFilter) {
-		                
-		            		int filterId = Integer.parseInt(clubParam);
-		                	LinkedList<Club> clubsList = (LinkedList<Club>) request.getAttribute("clubsList");
-		                	
-		                	if (clubsList != null) {
-		                  		
-		                		for (Club c : clubsList) {
-		                    		
-		                			if (c.getId() == filterId) {
-		                      			
-		                				clubName = c.getName();
-		                      			break;
-		                    		
-		                			}
-		                  		
-		                		}
-		               		
-		                	}
-		              	
-		            	}
-			
-			            String title;
-			            String subtitle;
-			
-			            if (hasFilter) {
-			              
-			            	title = (clubName != null)
-			            		? "No hay jugadores con contrato activo en “" + clubName + "”"
-			            		: "No hay jugadores con contrato activo para el club seleccionado";
-			           
-			            	subtitle = "Agregá uno con el botón (+) o creá un contrato en la sección "
-			                         + "<strong>Contratos</strong>.";
-			            
-			            } else {
-			            
-			            	title = "Todavía no agregaste jugadores";
+						String clubParam = request.getParameter("clubId");
+						boolean hasFilter = (clubParam != null && !clubParam.trim().isEmpty());
 
-			                subtitle = "Agregá uno con el botón (+) o creá un contrato en la sección "
-			                         + "<strong>Contratos</strong>.";
-			            
-			            }
+						String clubName = null;
+                
+						if (hasFilter) {
+
+							if ("free".equals(clubParam)) {
+								clubName = "Agente Libre";
+							} else {
+								try {
+									int filterId = Integer.parseInt(clubParam);
+									LinkedList<Club> clubsList = (LinkedList<Club>) request.getAttribute("clubsList");
+
+									if (clubsList != null) {
+										for (Club c : clubsList) {
+											if (c.getId() == filterId) {
+												clubName = c.getName();
+												break;
+											}
+										}
+									}
+								} catch (NumberFormatException nfe) {}
+							}
+
+						}
+
+							String title;
+							String subtitle;
+
+							if (hasFilter) {
+							    
+								if ("free".equals(clubParam)) {
+							        
+									title = "No hay agentes libres";
+							        subtitle = "Todos los jugadores registrados pertenecen a un club actualmente.";
+							    
+								} else {
+							        
+									title = "El club '" + clubName + "' no tiene plantel asignado";
+
+							        subtitle = "Podés registrar un nuevo fichaje desde la sección "
+							                 + "<strong>Contratos</strong>.";
+							    }
+
+							} else {
+							    
+								title = "Todavía no agregaste jugadores";
+
+							    subtitle = "No hay jugadores registrados. Usá el botón de <strong>(+)</strong> cuando quieras agregar el primero.";
+							             
+							}
 		        %>
 		
 		        <div class="d-flex justify-content-center align-items-center" style="min-height:60vh;">
@@ -160,8 +348,8 @@
 		              		</svg>
 		            	</div>
 		
-		            	<h3 class="fw-semibold mb-2 lh-sm text-balance"><%= title %></h3>
-		            	<p class="mb-0 opacity-75"><%= subtitle %></p>
+		            	<h3 class="fw-bold mb-2"><%= title %></h3>
+		            	<p class="mb-0" style="opacity:.85;"><%= subtitle %></p>
 		          	</div>
 		        </div>
 		
@@ -174,13 +362,13 @@
 				            	<thead>
 				              		<tr>
 				              			<th>#</th>
-				                		<th>Jugador</th>
-	                    		    	<th>Apellido y Nombre</th>
-	                        			<th>Fecha Nacimiento</th>
-	                        			<th>Dirección</th>
+				                		<th><i class="fas fa-camera"></i></th>
+				                		<th><i class="fas fa-shield-alt"></i></th>
+	                    		    	<th>Jugador</th>
+	                        			<th>Fecha de Nacimiento</th>
 	                        			<th>Pie Dominante</th>
-	                        			<th>Altura (mts)</th>
-	                        			<th>Peso (kg)</th>
+	                        			<th>Altura</th>
+	                        			<th>Peso</th>
 	                        			<th>Editar</th>
 	                        			<th>Eliminar</th>
 					              	</tr>
@@ -190,16 +378,93 @@
 					            	for (Player p : pll) {
 					            %>
 						            	<tr>
-						            		<td><%=p.getJerseyNumber()%></td>
+						            		<td>
+						            			<div class="tm-badge">
+								                    <%=p.getJerseyNumber()%>
+								                </div>
+						            		</td>
 							                <td>
-							                	<img alt="" src="<%=request.getContextPath() + "/images?id=" + p.getPhoto()%>" width="55" height="70">
-							                </td>
-		                    				<td><%=p.getFullname()%></td>
-		                    				<td><%=p.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-		                    				<td><%=p.getAddress()%></td>
-		                    				<td><%=p.getDominantFoot()%></td>
-		                    				<td><%=p.getHeight()%></td>
-		                    				<td><%=p.getWeight()%></td>
+		                    					<img src="<%=request.getContextPath() + "/images?id=" + p.getPhoto()%>" class="profile-pic" alt="">
+		                    				</td>
+		                    				<td>
+											    <% 
+											       Club currentClub = (currentClubsMap != null) ? currentClubsMap.get(p.getId()) : null;
+											       
+											       if (currentClub != null && currentClub.getBadgeImage() != null) { 
+											    %>
+											        <img src="<%=request.getContextPath() + "/images?id=" + currentClub.getBadgeImage()%>" 
+											             title="<%= currentClub.getName() %>" 
+											             class="club-badge" 
+											             alt="">
+											    <% } else { %>
+											        <div class="free-agent-badge" title="Agente Libre (Sin Club)">
+											            <i class="fas fa-user-slash" style="font-size: 0.7em;"></i>
+											        </div>
+											    <% } %>
+											</td>
+		                    				<td class="fullname-cell pl-3">
+												<div class="d-flex flex-column align-items-center text-center">
+													<div class="d-flex align-items-center justify-content-center">
+														<span class="player-name"><%= p.getFullname() %></span>
+														<% if (p.getNationality() != null && p.getNationality().getFlagImage() != null) { %>
+															<img src="<%=request.getContextPath() + "/images?id=" + p.getNationality().getFlagImage()%>" 
+																 title="<%=p.getNationality().getName()%>"
+																 class="national-flag" alt="">
+														<% } %>
+													</div>
+
+													<div class="player-position mt-1">
+														<% 
+														   String positionDescription = (positionsMap != null) ? positionsMap.get(p.getId()) : null;
+                                               
+														   if (positionDescription != null) { 
+														%>
+															<%= positionDescription %>
+														<% } else { %>
+															<span class="text-warning font-italic" style="font-size: 0.8em;">
+																<i class="fas fa-exclamation-circle"></i> Posición sin asignar
+															</span>
+														<% } %>
+													</div>
+								                    
+												</div>
+								            </td>
+		                    				<td>
+										        <%= p.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %>
+										        <% 
+										           int age = Period.between(p.getBirthdate(), LocalDate.now()).getYears();
+										        %>
+										        <span class="age-text">(<%= age %>)</span>
+										    </td>
+		                    				<td>
+										        <% 
+												   String footClass = "foot-right";
+												   DominantFoot foot = p.getDominantFoot();
+												   String footText = (foot != null) ? foot.getDisplayName() : null;
+                                           
+												   if (foot != null) {
+													   if (foot == DominantFoot.LEFT) {
+														   footClass = "foot-left";
+													   } else if (foot == DominantFoot.AMBIDEXTROUS) {
+														   footClass = "foot-ambi";
+													   }
+												   }
+												%>
+												<span class="foot-badge <%= footClass %>"><%= (footText != null) ? footText : "-" %></span>
+										    </td>
+		                    				<td class="align-middle">
+										        <span class="stat-value">
+											        <%= String.format(java.util.Locale.US, "%.2f", p.getHeight()) %>
+											    </span>
+										        <span class="stat-unit">mts</span>
+										    </td>
+										
+										    <td class="align-middle">
+										        <span class="stat-value">
+											        <%= Math.round(p.getWeight()) %>
+											    </span>
+										        <span class="stat-unit">kg</span>
+										    </td>
 							                <td>
 							                  	<form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
 								                    <input type="hidden" name="action" value="edit" />

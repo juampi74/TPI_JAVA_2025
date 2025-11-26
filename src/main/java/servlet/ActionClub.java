@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -34,24 +35,23 @@ public class ActionClub extends HttpServlet {
     	club.setFoundationDate(LocalDate.parse(request.getParameter("foundationDate")));
     	club.setPhoneNumber(request.getParameter("phoneNumber"));
     	club.setEmail(request.getParameter("email"));
-    	club.setBadgeImage(request.getParameter("badgeImage"));
-    	
-    	Part badge = request.getPart("badgeImage");
-        if (badge != null && badge.getSize() > 0) {
-        	String filename = "badge_" + club.getName() + "_" + badge.getSubmittedFileName();
+    
+		Part badge = request.getPart("badgeImage");
+		if (badge != null && badge.getSize() > 0) {
+		    String filename = "badge_" + club.getName().toUpperCase() + "_" + badge.getSubmittedFileName();
 
-        	String uploadPath = Config.get("uploads.path").replace("\"", "");
+		    String uploadPath = Config.get("uploads.path").replace("\"", "");
 
-        	File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-            
-            File file = new File(uploadDir, filename);
-            
-            Files.copy(badge.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            
-            club.setBadgeImage(filename);
-            
-        } else {
+		    File uploadDir = new File(uploadPath);
+		    if (!uploadDir.exists()) uploadDir.mkdirs();
+
+		    File file = new File(uploadDir, filename);
+
+		    Files.copy(badge.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+		    club.setBadgeImage(filename);
+
+    	} else {
             
         	if ("edit".equals(action)) {
             
@@ -99,6 +99,7 @@ public class ActionClub extends HttpServlet {
     			request.setAttribute("club", club);
                 
                 LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
+                stadiums.sort(Comparator.comparing(Stadium::getName));
             	request.setAttribute("stadiumsList", stadiums);
                 
             	request.getRequestDispatcher("WEB-INF/Edit/EditClub.jsp").forward(request, response);
@@ -109,12 +110,13 @@ public class ActionClub extends HttpServlet {
             	
 				if (stadiums.size() > 0) {
         		
+					stadiums.sort(Comparator.comparing(Stadium::getName));
         			request.setAttribute("stadiumsList", stadiums);        		
         			request.getRequestDispatcher("WEB-INF/Add/AddClub.jsp").forward(request, response);
         	
         		} else {
         		
-        			request.setAttribute("errorMessage", "Debe agregar un estadio primero");
+        			request.setAttribute("errorMessage", "Debés agregar un estadio primero");
         			request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
         		
         		}
@@ -122,10 +124,12 @@ public class ActionClub extends HttpServlet {
             } else {
             
             	LinkedList<Club> clubs = ctrl.getAllClubs();
+            	clubs.sort(Comparator.comparing(Club::getName));
                 request.setAttribute("clubsList", clubs);
                 
                 LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
             	request.setAttribute("stadiumsList", stadiums);
+            	
             	
             	request.getRequestDispatcher("/WEB-INF/Management/ClubManagement.jsp").forward(request, response);
             
@@ -198,6 +202,7 @@ public class ActionClub extends HttpServlet {
             }
 
             LinkedList<Club> clubs = ctrl.getAllClubs();
+        	clubs.sort(Comparator.comparing(Club::getName));
             request.setAttribute("clubsList", clubs);
             request.getRequestDispatcher("WEB-INF/Management/ClubManagement.jsp").forward(request, response);
             

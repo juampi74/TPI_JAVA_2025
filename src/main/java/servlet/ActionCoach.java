@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import entities.Contract;
+import entities.Nationality;
 import entities.Coach;
 import enums.PersonRole;
 import logic.Logic;
@@ -28,7 +30,7 @@ public class ActionCoach extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
        
-	private Coach buildCoachFromRequest(HttpServletRequest request, String action) throws IOException, ServletException {
+	private Coach buildCoachFromRequest(HttpServletRequest request, String action, Logic ctrl) throws IOException, ServletException, SQLException {
                         
         Coach coach = new Coach();
         coach.setId(Integer.parseInt(request.getParameter("id")));
@@ -39,9 +41,11 @@ public class ActionCoach extends HttpServlet {
         coach.setPreferredFormation(request.getParameter("preferredFormation"));
         coach.setCoachingLicense(request.getParameter("coachingLicense"));
         coach.setLicenseObtainedDate(LocalDate.parse(request.getParameter("licenseObtainedDate")));
+        coach.setNationality(ctrl.getNationalityById(Integer.parseInt(request.getParameter("id_nationality"))));
         
         Part photo = request.getPart("photo");
         if (photo != null && photo.getSize() > 0) {
+        	
         	String filename = coach.getId() + "_" + photo.getSubmittedFileName();
 
         	String uploadPath = Config.get("uploads.path").replace("\"", "");
@@ -99,11 +103,29 @@ public class ActionCoach extends HttpServlet {
 				
 				Coach coach = ctrl.getCoachById(Integer.parseInt(request.getParameter("id")));
 				request.setAttribute("coach", coach);
+				
+				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+				request.setAttribute("nationalitiesList", nationalities);
+				
 				request.getRequestDispatcher("WEB-INF/Edit/EditCoach.jsp").forward(request, response);
 			
 			} else if ("add".equals(action)) {
 				
-				request.getRequestDispatcher("WEB-INF/Add/AddCoach.jsp").forward(request, response);
+				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+				
+				if (nationalities.size() > 0) {
+                	
+					nationalities.sort(Comparator.comparing(Nationality::getName));
+
+					request.setAttribute("nationalitiesList", nationalities);
+                    request.getRequestDispatcher("WEB-INF/Add/AddCoach.jsp").forward(request, response);
+
+                } else {
+
+                    request.setAttribute("errorMessage", "Debés agregar una nacionalidad primero");
+                    request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+                }
 			
 			} else {
 				
@@ -135,7 +157,7 @@ public class ActionCoach extends HttpServlet {
         	
         	if ("add".equals(action)) {
             	
-            	Coach c = buildCoachFromRequest(request, action);
+            	Coach c = buildCoachFromRequest(request, action, ctrl);
             	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
             		ctrl.addCoach(c);
             	} else {
@@ -145,7 +167,7 @@ public class ActionCoach extends HttpServlet {
             	
             } else if ("edit".equals(action)) {
             	
-            	Coach c = buildCoachFromRequest(request, action);
+            	Coach c = buildCoachFromRequest(request, action, ctrl);
             	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
                 	ctrl.updateCoach(c);
             	} else {

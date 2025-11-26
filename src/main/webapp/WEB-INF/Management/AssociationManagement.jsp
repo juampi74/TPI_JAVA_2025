@@ -74,6 +74,8 @@
 	                    			<tr>
 	                    				<th>Nombre</th>
 	                    		    	<th>Fecha de Creación</th>
+	                    		    	<th>Tipo</th>
+	                    		    	<th>Continente</th>
 	                    		    	<th>Editar</th>
 	                    		    	<th>Gestionar Miembros</th>
 	                    		    	<th>Eliminar</th>
@@ -86,6 +88,10 @@
 	                    			<tr>
 	                    				<td><%=a.getName()%></td>
 	                    				<td><%=a.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
+	                    				<td><%=a.getType().getDisplayName()%></td>
+	                    				<td>
+										    <%= (a.getContinent() != null) ? a.getContinent().getDisplayName() : "-" %>
+										</td>
 	                    				<td>
 	                    					<form method="get" action="actionassociation" style="display:inline;" class="d-flex justify-content-center align-items-center">
 	                    						<input type="hidden" name="action" value="edit" />

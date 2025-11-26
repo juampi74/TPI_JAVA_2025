@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.HashSet;
 
 import javax.servlet.ServletException;
@@ -32,7 +33,7 @@ public class ActionAssociation extends HttpServlet {
 	        association.setType(AssociationType.valueOf(type));
 	    }
 	    String continent = request.getParameter("continent");
-	    if (association.getType() == AssociationType.CONTINENTAL && continent != null && !continent.isEmpty()) {
+	    if (association.getType() != AssociationType.INTERNATIONAL && continent != null && !continent.isEmpty()) {
 	        association.setContinent(Continent.valueOf(continent));
 	    } else {
 	        association.setContinent(null);
@@ -93,23 +94,51 @@ public class ActionAssociation extends HttpServlet {
 				LinkedList<Nationality> currentMembers = ctrl.getAllNationalitiesByAssociationId(associationId);
 				
 				LinkedList<Nationality> displayedNationalities = new LinkedList<>();
+				
 				for (Nationality n : allNationalitiesList) {
+				
 					boolean include = true;
+					
 					if (association.getType() == AssociationType.CONTINENTAL && association.getContinent() != null) {
+					
 						if (n.getContinent() != association.getContinent()) include = false;
+					
 					} else if (association.getType() == AssociationType.NATIONAL) {
-						LinkedList<Association> assocs = ctrl.getAssociationsByNationalityId(n.getId());
-						if (assocs != null) {
-							for (Association a : assocs) {
-								if (a.getType() == AssociationType.NATIONAL && a.getId() != associationId) {
-									include = false;
-									break;
+
+						if (association.getContinent() != null && n.getContinent() != association.getContinent()) {
+							
+							include = false;
+						
+						} else {
+						
+							LinkedList<Association> assocs = ctrl.getAssociationsByNationalityId(n.getId());
+							
+							if (assocs != null) {
+							
+								for (Association a : assocs) {
+								
+									if (a.getType() == AssociationType.NATIONAL && a.getId() != associationId) {
+									
+										include = false;
+										break;
+									
+									}
+								
 								}
+							
 							}
+						
 						}
+
 					}
+					
 					if (include) displayedNationalities.add(n);
+				
 				}
+				
+				allNationalitiesList.sort(Comparator.comparing(Nationality::getName));
+				currentMembers.sort(Comparator.comparing(Nationality::getName));
+				displayedNationalities.sort(Comparator.comparing(Nationality::getName));
 				
 				request.setAttribute("association", association);
 				request.setAttribute("allNationalitiesList", allNationalitiesList);
@@ -128,7 +157,7 @@ public class ActionAssociation extends HttpServlet {
 						used.add(a.getContinent());
 					}
 				}
-				for (enums.Continent c : enums.Continent.values()) {
+				for (Continent c : Continent.values()) {
 					if (!used.contains(c)) availableContinents.add(c);
 				}
 				

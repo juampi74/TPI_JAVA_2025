@@ -6,6 +6,7 @@ import enums.*;
 import enums.PersonRole;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class Logic {
 
@@ -82,7 +83,19 @@ public class Logic {
     	return dpl.getByClub(id_club);
     
     }
-
+    
+    public Map<Integer, String> getAllPrimaryPositions() throws SQLException {
+        
+    	return dpl.getAllPrimaryPositions();
+    
+    }
+    
+    public Map<Integer, Club> getPlayersCurrentClubs() throws SQLException {
+        
+    	return dpl.getCurrentClubs();
+    
+    }
+    
     public void addPlayer(Player p) throws SQLException {
 
         dpl.add(p);

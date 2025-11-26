@@ -127,7 +127,7 @@ public class ActionContract extends HttpServlet {
 
                 } else {
 
-                    request.setAttribute("errorMessage", "Debe agregar un club y un jugador o un director técnico primero");
+                    request.setAttribute("errorMessage", "Debés agregar un club y un jugador o un director técnico primero");
                     request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 
                 }

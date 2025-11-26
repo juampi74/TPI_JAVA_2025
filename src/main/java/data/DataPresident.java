@@ -1,17 +1,20 @@
 package data;
 
-import entities.President;
-import enums.PersonRole;
+import entities.*;
+import enums.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataPresident {
 
-    private static final String SELECT_PRESIDENT_BASE
-            = "SELECT id, fullname, birthdate, address, role, management_policy, photo "
-            + "FROM person "
-            + "WHERE role = 'PRESIDENT'";
+	private static final String SELECT_PRESIDENT_BASE
+            = "SELECT "
+            + "    p.id, p.fullname, p.birthdate, p.address, p.role, p.management_policy, p.photo, "
+            + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
+            + "FROM person p "
+            + "INNER JOIN nationality n ON p.id_nationality = n.id "
+            + "WHERE p.role = 'PRESIDENT'";
 
     private President mapPresident(ResultSet rs) throws SQLException {
 
@@ -22,157 +25,148 @@ public class DataPresident {
         president.setAddress(rs.getString("address"));
         president.setPhoto(rs.getString("photo"));
 
-        String roleStr = rs.getString("role");
         try {
-
-            president.setRole(PersonRole.valueOf(roleStr.toUpperCase()));
-
+            president.setRole(PersonRole.valueOf(rs.getString("role").toUpperCase()));
         } catch (Exception e) {
-
-            throw new SQLException("Rol inválido en la BD: " + roleStr, e);
-
+            throw new SQLException("Rol inválido en la BD: " + rs.getString("role"), e);
         }
 
         president.setManagementPolicy(rs.getString("management_policy"));
 
-        return president;
+        Nationality nationality = new Nationality();
+        nationality.setId(rs.getInt("nat_id"));
+        nationality.setName(rs.getString("nat_name"));
+        nationality.setIsoCode(rs.getString("iso_code"));
+        nationality.setFlagImage(rs.getString("flag_image"));
 
+        String contStr = rs.getString("continent");
+        if (contStr != null) nationality.setContinent(Continent.valueOf(contStr));
+
+        president.setNationality(nationality);
+
+        return president;
+    
     }
 
     private void closeResources(ResultSet rs, Statement stmt) {
-
-        try {
-
-            if (rs != null) {
-                rs.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
+        
+    	try {
+        
+    		if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
             DbConnector.getInstance().releaseConn();
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
-
+        
+    	} catch (SQLException e) {
+        
+    		e.printStackTrace();
+        
+    	}
+    
     }
 
     public LinkedList<President> getAll() throws SQLException {
-
-        Statement stmt = null;
+        
+    	Statement stmt = null;
         ResultSet rs = null;
         LinkedList<President> presidents = new LinkedList<>();
 
         try {
+        
+        	stmt = DbConnector.getInstance().getConn().createStatement();
+            
+        	rs = stmt.executeQuery(SELECT_PRESIDENT_BASE);
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_PRESIDENT_BASE);
-
-            while (rs.next()) {
-
-                President president = mapPresident(rs);
-                presidents.add(president);
-
-            }
-
+            while (rs.next()) presidents.add(mapPresident(rs));
+            
         } catch (SQLException e) {
-
-            e.printStackTrace();
+        
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(rs, stmt);
-
+        
+        	closeResources(rs, stmt);
+        
         }
-
+        
         return presidents;
-
+    
     }
 
     public President getById(int id) throws SQLException {
-
-        President president = null;
+    
+    	President president = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-
+            
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_PRESIDENT_BASE + " AND id = ?"
+            	SELECT_PRESIDENT_BASE + " AND p.id = ?"
             );
             stmt.setInt(1, id);
+            
             rs = stmt.executeQuery();
 
-            if (rs.next()) {
-
-                president = mapPresident(rs);
-
-            }
-
+            if (rs.next()) president = mapPresident(rs);
+            
         } catch (SQLException e) {
-
-            e.printStackTrace();
+        
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(rs, stmt);
-
+        
+        	closeResources(rs, stmt);
+        
         }
-
+        
         return president;
-
+    
     }
 
     public LinkedList<President> getByFullname(String fullname) throws SQLException {
-
-        PreparedStatement stmt = null;
+    
+    	PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<President> presidents = new LinkedList<>();
 
         try {
-
+            
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_PRESIDENT_BASE + " AND fullname = ?"
+            	SELECT_PRESIDENT_BASE + " AND p.fullname = ?"
             );
             stmt.setString(1, fullname);
+            
             rs = stmt.executeQuery();
 
-            while (rs.next()) {
-
-                President president = mapPresident(rs);
-                presidents.add(president);
-
-            }
-
+            while (rs.next()) presidents.add(mapPresident(rs));
+            
         } catch (SQLException e) {
-
-            e.printStackTrace();
+            
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(rs, stmt);
-
+        
+        	closeResources(rs, stmt);
+        
         }
-
+        
         return presidents;
-
+    
     }
 
     public void add(President p) throws SQLException {
-
-        PreparedStatement stmt = null;
+        
+    	PreparedStatement stmt = null;
 
         try {
-
-            stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO person "
-                    + "(id, fullname, birthdate, address, role, management_policy, photo) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?)"
+            
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        		"INSERT INTO person "
+                + "(id, fullname, birthdate, address, role, management_policy, photo, id_nationality) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
             );
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getFullname());
@@ -181,32 +175,33 @@ public class DataPresident {
             stmt.setString(5, p.getRole().name());
             stmt.setString(6, p.getManagementPolicy());
             stmt.setString(7, p.getPhoto());
+            stmt.setInt(8, p.getNationality().getId());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-
-            e.printStackTrace();
+            
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(null, stmt);
-
+        
+        	closeResources(null, stmt);
+        
         }
-
+    
     }
 
     public void update(President p) throws SQLException {
-
-        PreparedStatement stmt = null;
+        
+    	PreparedStatement stmt = null;
 
         try {
-
-            stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE person "
-                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, management_policy = ?, photo = ?"
-                    + "WHERE id = ?"
+            
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        		"UPDATE person "
+                + "SET fullname = ?, birthdate = ?, address = ?, role = ?, management_policy = ?, photo = ?, id_nationality = ? "
+                + "WHERE id = ?"
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());
@@ -214,47 +209,48 @@ public class DataPresident {
             stmt.setString(4, p.getRole().name());
             stmt.setString(5, p.getManagementPolicy());
             stmt.setString(6, p.getPhoto());
-            stmt.setInt(7, p.getId());
+            stmt.setInt(7, p.getNationality().getId());
             
+            stmt.setInt(8, p.getId());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-
-            e.printStackTrace();
+            
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(null, stmt);
-
+        
+        	closeResources(null, stmt);
+        
         }
-
+    
     }
 
     public void delete(int id) throws SQLException {
-
-        PreparedStatement stmt = null;
+        
+    	PreparedStatement stmt = null;
 
         try {
-
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM person WHERE id = ?"
+            	"DELETE FROM person WHERE id = ?"
             );
             stmt.setInt(1, id);
+            
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-
-            e.printStackTrace();
+            
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(null, stmt);
-
+        
+        	closeResources(null, stmt);
+        
         }
-
+    
     }
 
 }

@@ -261,7 +261,7 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_CLUBS_JOINED + " WHERE cl.name = ?"
+            	SELECT_ALL_CLUBS_JOINED + " WHERE cl.name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -299,9 +299,9 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS
+            	"INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, c.getName());
             stmt.setObject(2, c.getFoundationDate());
@@ -351,9 +351,9 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE club "
-                    + "SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ? "
-                    + "WHERE id = ?"
+            	"UPDATE club "
+                + "SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ? "
+                + "WHERE id = ?"
             );
             stmt.setString(1, c.getName());
             stmt.setObject(2, c.getFoundationDate());

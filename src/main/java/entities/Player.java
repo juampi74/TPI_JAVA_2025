@@ -1,17 +1,19 @@
 package entities;
 
+import enums.DominantFoot;
+
 public class Player extends Person {
 
-	private String dominantFoot;
+	private DominantFoot dominantFoot;
 	private int jerseyNumber;
 	private double height;
 	private double weight;
 	
-	public String getDominantFoot() {
+	public DominantFoot getDominantFoot() {
 		return dominantFoot;
 	}
 	
-	public void setDominantFoot(String dominantFoot) {
+	public void setDominantFoot(DominantFoot dominantFoot) {
 		this.dominantFoot = dominantFoot;
 	}
 	

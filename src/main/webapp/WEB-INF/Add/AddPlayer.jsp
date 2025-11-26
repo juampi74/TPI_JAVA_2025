@@ -1,7 +1,10 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="entities.Nationality"%>
 <%@ page import="entities.Position"%>
+<%@ page import="enums.DominantFoot" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
+	LinkedList<Nationality> nationalitiesList = (LinkedList<Nationality>) request.getAttribute("nationalitiesList");
 	LinkedList<Position> positionsList = (LinkedList<Position>) request.getAttribute("positionsList");
 %>
 <!DOCTYPE html>
@@ -33,7 +36,7 @@
 		        </div>
 		
 		        <div class="form-group">
-		            <label for="fullname">Apellido y Nombre:</label>
+		            <label for="fullname">Nombre y Apellido:</label>
 		            <input type="text" class="form-control" id="fullname" name="fullname" required />
 		        </div>
 		
@@ -46,11 +49,16 @@
 		            <label for="address">Dirección:</label>
 		            <input type="text" class="form-control" id="address" name="address" required />
 		        </div>
-		        
+		        	        
 		        <div class="form-group">
-		            <label for="dominantFoot">Pie Dominante:</label>
-		            <input type="text" class="form-control" id="dominantFoot" name="dominantFoot" required />
-		        </div>
+				    <label for="dominantFoot">Pie Dominante:</label>
+				    <select class="form-control" id="dominantFoot" name="dominantFoot" required>
+				        <option value="">-- Seleccioná una opción --</option>
+				        <% for (DominantFoot df : DominantFoot.values()) { %>
+				            <option value="<%= df.name() %>"><%= df.getDisplayName() %></option>
+				        <% } %>
+				    </select>
+				</div>
 		        
 		        <div class="form-group">
 		            <label for="jerseyNumber">Número de Camiseta:</label>
@@ -66,6 +74,22 @@
 		            <label for="weight">Peso (kg):</label>
 		            <input type="number" class="form-control" id="weight" name="weight" step="0.01" required />
 		        </div>
+		        
+		        <div class="form-group">
+				    <label for="id_nationality">Nacionalidad:</label>
+				    <select name="id_nationality" id="id_nationality" class="form-control" required>
+				        <option value="">-- Seleccioná una nacionalidad --</option>
+				        <%
+				            if (nationalitiesList != null && !nationalitiesList.isEmpty()) {
+				                for (Nationality n : nationalitiesList) {
+				                    out.print("<option value='" + n.getId() + "'>" + n.getName() + "</option>");
+				                }
+				            } else {
+				                out.print("<option value='' disabled>No hay nacionalidades cargadas</option>");
+				            }
+				        %>
+				    </select>
+				</div>
 		        
 		        <div class="form-group">
 		            <label for="photo">Foto:</label>
