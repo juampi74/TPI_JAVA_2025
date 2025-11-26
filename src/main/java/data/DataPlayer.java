@@ -4,9 +4,9 @@ import entities.*;
 import enums.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.HashMap;
 
 public class DataPlayer {
 
@@ -299,7 +299,7 @@ public class DataPlayer {
             		"FROM contract con " +
                     "INNER JOIN club c ON con.id_club = c.id " +
                     "WHERE con.release_date IS NULL " +
-                    "  AND con.end_date >= CURDATE()"
+                    "AND con.end_date >= CURDATE()"
             );
 
             while (rs.next()) {

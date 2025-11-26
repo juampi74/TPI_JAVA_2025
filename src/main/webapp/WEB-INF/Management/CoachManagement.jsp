@@ -1,6 +1,7 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
-<%@ page import="entities.Coach"%>
+<%@ page import="entities.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -52,11 +53,45 @@
 			    min-width: 170px;
 			    margin: 0 auto;
 			}
+			
+			.club-badge {
+			  width: 40px;
+			  height: 40px;
+			  object-fit: contain;
+			  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+			  transition: transform 0.2s;
+			  cursor: help;
+			}
+			
+			.club-badge:hover {
+			  transform: scale(1.2);
+			}
+			
+			.free-agent-badge {
+			  width: 40px;
+			  height: 40px;
+			  background-color: rgba(255, 255, 255, 0.05);
+			  border-radius: 50%;
+			  display: flex;
+			  align-items: center;
+			  justify-content: center;
+			  color: #6c757d;
+			  border: 1px dashed #6c757d;
+			  margin: 0 auto;
+			  transition: transform 0.2s;
+			  cursor: help;
+			}
+			
+			.free-agent-badge:hover {
+			  transform: scale(1.2);
+			}
 	    </style>
 		
 		<%
 			LinkedList<Coach> cl = (LinkedList<Coach>) request.getAttribute("coachesList");
 			boolean emptyList = (cl == null || cl.isEmpty());
+			
+		    Map<Integer, Club> currentClubsMap = (Map<Integer, Club>) request.getAttribute("currentClubsMap");
 		%>
 	</head>
 	<body style="background-color: #10442E;">
@@ -95,8 +130,9 @@
 	                	<div class="table-responsive rounded-3 border overflow-hidden mb-5">
 	                    	<table class="table table-dark mb-0">
 	                    		<thead>
-	                    			<tr class="text-center" style="background-color: rgba(0,0,0,0.2);">
+	                    			<tr>
 										<th><i class="fas fa-camera"></i></th>
+										<th><i class="fas fa-shield-alt"></i></th>
 										<th>Director Técnico</th>
 										<th>Fecha de Nacimiento</th>
 	                        			<th>Formación Preferida</th>
@@ -109,9 +145,25 @@
 	                    		<tbody>
 	                    		<% for (Coach c : cl) { %>
 	                    			<tr>		
-	                    				<td class="profile-pic-cell">
-	                    					<img src="<%=request.getContextPath() + "/images?id=" + c.getPhoto()%>" class="profile-pic" alt="">
-	                    				</td>
+										<td class="profile-pic-cell">
+											<img src="<%=request.getContextPath() + "/images?id=" + c.getPhoto()%>" class="profile-pic" alt="">
+										</td>
+										<td>
+											<% 
+											    Club currentClub = (currentClubsMap != null) ? currentClubsMap.get(c.getId()) : null;
+											    
+												if (currentClub != null && currentClub.getBadgeImage() != null) {
+											%>
+											      <img src="<%=request.getContextPath() + "/images?id=" + currentClub.getBadgeImage()%>" 
+											           title="<%= currentClub.getName() %>" 
+											           class="club-badge" 
+											           alt="">
+											<% } else { %>
+											      <div class="free-agent-badge" title="Agente Libre (Sin Club)">
+										              <i class="fas fa-user-slash" style="font-size: 0.7em;"></i>
+										          </div>
+											<% } %>
+										</td>
 	                    				
 	                    				<td class="pl-3">
 											<div class="d-flex flex-column align-items-center text-center">

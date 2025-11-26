@@ -137,6 +137,12 @@ public class Logic {
         return dc.getByFullname(fullname);
 
     }
+    
+    public Map<Integer, Club> getCoachesCurrentClubs() throws SQLException {
+        
+    	return dc.getCurrentClubs();
+    
+    }
 
     public void addCoach(Coach c) throws SQLException {
 

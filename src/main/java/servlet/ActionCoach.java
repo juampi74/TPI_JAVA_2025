@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -17,10 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import entities.Contract;
-import entities.Nationality;
-import entities.Coach;
-import enums.PersonRole;
+import entities.*;
+import enums.*;
 import logic.Logic;
 import utils.Config;
 
@@ -130,8 +129,12 @@ public class ActionCoach extends HttpServlet {
 			} else {
 				
 				LinkedList<Coach> coaches = ctrl.getAllCoaches();
-			    request.setAttribute("coachesList", coaches);
-			    request.getRequestDispatcher("/WEB-INF/Management/CoachManagement.jsp").forward(request, response);
+				request.setAttribute("coachesList", coaches);
+				
+				Map<Integer, Club> currentClubsMap = ctrl.getCoachesCurrentClubs();
+				request.setAttribute("currentClubsMap", currentClubsMap);
+				
+				request.getRequestDispatcher("/WEB-INF/Management/CoachManagement.jsp").forward(request, response);
 			
 			}
 			
