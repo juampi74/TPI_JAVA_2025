@@ -72,7 +72,7 @@ public class ActionTournament extends HttpServlet {
 	    
 	}
 	
-	private LinkedList<Match> generateCombinations(LinkedList<Club> clubs, LocalDate startDate) {
+	private LinkedList<Match> generateFirstLeg(LinkedList<Club> clubs, LocalDate startDate) {
 		
 		LinkedList<Match> fixture = new LinkedList<>();
 		
@@ -156,9 +156,38 @@ public class ActionTournament extends HttpServlet {
 		    rotated.add(1, rotated.remove(rotated.size() - 1));
 		
 		}
+	    
+	    fixture.sort(Comparator.comparing(Match::getDate));
 		
 		return fixture;
 	
+	}
+	
+	private LinkedList<Match> generateSecondLeg(LinkedList<Match> firstLegMatches, int numberOfClubs) {
+	    
+		LinkedList<Match> secondLegMatches = new LinkedList<>();
+	       
+		int totalMatchdaysFirstLeg = (numberOfClubs % 2 == 0) ? (numberOfClubs - 1) : numberOfClubs;
+		
+	    for (Match m : firstLegMatches) {
+	        
+	    	Match returnMatch = new Match();
+	        
+	        returnMatch.setHome(m.getAway());
+	        returnMatch.setAway(m.getHome());
+	        
+	        returnMatch.setDate(m.getDate().plusWeeks(totalMatchdaysFirstLeg));
+	        
+	        returnMatch.setMatchday(m.getMatchday() + totalMatchdaysFirstLeg);
+	        
+	        secondLegMatches.add(returnMatch);
+	        
+	    }
+	    
+	    secondLegMatches.sort(Comparator.comparing(Match::getDate));
+	    
+	    return secondLegMatches;
+	    
 	}
 	
 	private LinkedList<Match> drawTournamentMatchdays(LinkedList<Club> clubs, Tournament tournament){
@@ -173,30 +202,17 @@ public class ActionTournament extends HttpServlet {
 		
 			case ROUND_ROBIN_ONE_LEG:
 			
-				matches = generateCombinations(clubs, tournament.getStartDate());
+				matches = generateFirstLeg(clubs, tournament.getStartDate());
 				break;
 			
 			case ROUND_ROBIN_TWO_LEGS:
 			
-				LinkedList<Match> matches_leg_one = generateCombinations(clubs, tournament.getStartDate());
-				
-				matches.addAll(matches_leg_one);
-				
-				LocalDateTime start_date = matches_leg_one.getLast().getDate();
-				LocalDateTime end_date = matches_leg_one.getLast().getDate();
-				
-				long days = ChronoUnit.DAYS.between(start_date.toLocalDate(), end_date.toLocalDate());
-				
-				for (Match m : matches_leg_one) {
-					Match match = new Match();
-					match.setAway(m.getHome());
-					match.setHome(m.getAway());
-					match.setDate(m.getDate().plusDays(days + 7));
-					match.setMatchday(m.getMatchday() + (clubs.size() - 1));
-					matches.add(match);
-				}
-				
-				break;
+	            LinkedList<Match> firstLeg = generateFirstLeg(clubs, tournament.getStartDate());
+	            matches.addAll(firstLeg);
+	            
+	            LinkedList<Match> secondLeg = generateSecondLeg(firstLeg, clubs.size());
+	            matches.addAll(secondLeg);
+	            break;
 		
 			case WORLD_CUP:
 				
