@@ -1,6 +1,8 @@
 package data;
 
 import entities.*;
+import enums.TournamentFormat;
+
 import java.sql.*;
 import java.time.*;
 import java.util.LinkedList;
@@ -132,7 +134,7 @@ public class DataMatch {
         LinkedList<Match> matches = new LinkedList<>();
 
         try {
-            // ORDENAMIENTO AGREGADO: Jornada -> Fecha
+
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                 SELECT_ALL_MATCHES_JOINED + " WHERE m.id_tournament = ? ORDER BY m.matchday ASC, m.date ASC"
             );
@@ -168,7 +170,7 @@ public class DataMatch {
         LinkedList<Match> matches = new LinkedList<>();
 
         try {
-            // ORDENAMIENTO AGREGADO: Jornada
+
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                 SELECT_ALL_MATCHES_JOINED + " WHERE (m.id_home = ? or m.id_away = ?) and m.id_tournament = ? ORDER BY m.matchday ASC"
             );
@@ -325,7 +327,7 @@ public class DataMatch {
         tournament.setName(rs.getString("tournament_name"));
         tournament.setStartDate(rs.getObject("tournament_start_date", LocalDate.class));
         tournament.setEndDate(rs.getObject("tournament_end_date", LocalDate.class));
-        tournament.setFormat(rs.getString("tournament_format"));
+        tournament.setFormat(TournamentFormat.valueOf(rs.getString("tournament_format")));
         tournament.setSeason(rs.getString("tournament_season"));
         
         Match match = new Match();

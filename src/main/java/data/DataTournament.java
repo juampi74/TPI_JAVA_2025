@@ -1,6 +1,7 @@
 package data;
 
 import entities.*;
+import enums.TournamentFormat;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -69,7 +70,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.id = ?"
+            	SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -104,7 +105,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_TOURNAMENTS_JOINED + " WHERE a.id = ?"
+            	SELECT_ALL_TOURNAMENTS_JOINED + " WHERE a.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -143,7 +144,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.name = ?"
+            	SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.name = ?"
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -188,7 +189,7 @@ public class DataTournament {
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());
             stmt.setObject(3, t.getEndDate());
-            stmt.setString(4, t.getFormat());
+            stmt.setString(4, t.getFormat().name());
             stmt.setString(5, t.getSeason());
             stmt.setInt(6, t.getAssociation().getId());
             stmt.executeUpdate();
@@ -230,14 +231,14 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE tournament "
-                    + "SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? "
-                    + "WHERE id = ?"
+            	"UPDATE tournament "
+                + "SET name = ?, start_date = ?, end_date = ?, format = ?, season = ?, id_association = ? "
+                + "WHERE id = ?"
             );
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());
             stmt.setObject(3, t.getEndDate());
-            stmt.setString(4, t.getFormat());
+            stmt.setString(4, t.getFormat().name());
             stmt.setString(5, t.getSeason());
             stmt.setInt(6, t.getAssociation().getId());
             stmt.setInt(7, t.getId());
@@ -263,7 +264,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM tournament WHERE id = ?"
+            	"DELETE FROM tournament WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -288,7 +289,7 @@ public class DataTournament {
         tournament.setName(rs.getString("tournament_name"));
         tournament.setStartDate(rs.getObject("tournament_start_date", LocalDate.class));
         tournament.setEndDate(rs.getObject("tournament_end_date", LocalDate.class));
-        tournament.setFormat(rs.getString("tournament_format"));
+        tournament.setFormat(TournamentFormat.valueOf(rs.getString("tournament_format")));
         tournament.setSeason(rs.getString("tournament_season"));
 
         Association association = new Association();

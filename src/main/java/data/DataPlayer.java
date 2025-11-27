@@ -56,12 +56,8 @@ public class DataPlayer {
         player.setAddress(rs.getString("address"));
 
         String roleStr = rs.getString("role");
-        try {
-            player.setRole(PersonRole.valueOf(roleStr.toUpperCase()));
-        } catch (Exception e) {
-            throw new SQLException("Rol inválido en la BD: " + roleStr, e);
-        }
-
+        if(roleStr != null) player.setRole(PersonRole.valueOf(roleStr.toUpperCase()));
+        
         String dfStr = rs.getString("dominant_foot");
         if (dfStr != null) player.setDominantFoot(DominantFoot.valueOf(dfStr));
 
@@ -199,7 +195,7 @@ public class DataPlayer {
         try {
         
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_PLAYER_BASE + " AND p.fullname = ?"
+        		SELECT_PLAYER_BASE + " AND p.fullname = ?"
             );
             stmt.setString(1, fullname);
             
@@ -262,10 +258,10 @@ public class DataPlayer {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
             rs = stmt.executeQuery(
-        		"SELECT pp.id_player, pos.description " +
-        			"FROM player_position pp " +
-                    "INNER JOIN position pos ON pp.id_position = pos.id " +
-                    "WHERE pp.is_primary = 1"
+        		"SELECT pp.id_player, pos.description "
+        		+ "FROM player_position pp "
+                + "INNER JOIN position pos ON pp.id_position = pos.id "
+                + "WHERE pp.is_primary = 1"
             );
 
             while (rs.next()) positionsMap.put(rs.getInt("id_player"), rs.getString("description"));
@@ -295,11 +291,11 @@ public class DataPlayer {
             
             stmt = DbConnector.getInstance().getConn().createStatement();
             rs = stmt.executeQuery(
-            	"SELECT con.id_person, c.id, c.name, c.badge_image " +
-            		"FROM contract con " +
-                    "INNER JOIN club c ON con.id_club = c.id " +
-                    "WHERE con.release_date IS NULL " +
-                    "AND con.end_date >= CURDATE()"
+            	"SELECT con.id_person, c.id, c.name, c.badge_image "
+            	+ "FROM contract con "
+                + "INNER JOIN club c ON con.id_club = c.id "
+                + "WHERE con.release_date IS NULL "
+                + "AND con.end_date >= CURDATE()"
             );
 
             while (rs.next()) {
@@ -374,10 +370,10 @@ public class DataPlayer {
         try {
             
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "UPDATE person "
-                    + "SET fullname = ?, birthdate = ?, address = ?, role = ?, "
-                    + "    dominant_foot = ?, jersey_number = ?, height = ?, weight = ?, photo = ?, id_nationality = ? "
-                    + "WHERE id = ?"
+        		"UPDATE person "
+                + "SET fullname = ?, birthdate = ?, address = ?, role = ?, "
+                + "    dominant_foot = ?, jersey_number = ?, height = ?, weight = ?, photo = ?, id_nationality = ? "
+                + "WHERE id = ?"
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());

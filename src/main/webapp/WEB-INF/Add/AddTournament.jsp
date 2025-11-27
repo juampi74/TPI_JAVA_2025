@@ -1,6 +1,6 @@
 <%@ page import="java.util.LinkedList"%>
-<%@ page import="entities.Association"%>
-<%@ page import="entities.Club"%>
+<%@ page import="entities.*"%>
+<%@ page import="enums.TournamentFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -15,6 +15,7 @@
 	    <title>Agregar Torneo</title>
 	    <link href="style/bootstrap.css" rel="stylesheet">
 	    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
+	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 	    <style>
 	        .button-container {
 	            display: flex;
@@ -31,7 +32,7 @@
 	    <div class="container" style="color: white;">
 	        <h2 class="mt-4">Agregar Torneo</h2>
 	
-	        <form action="actiontournament" method="post" class="mt-4">
+	        <form action="actiontournament" method="post" class="mt-4" onsubmit="return validateClubs()">
 	            <input type="hidden" name="action" value="add" />
 	            <div class="form-group">
 	                <label for="name">Nombre:</label>
@@ -40,19 +41,23 @@
 	            <div class="form-group">
 				    <label for="startDate">Fecha de Inicio (Aproximada):</label>
 				    <input type="date" class="form-control" id="startDate" name="startDate" required />
-				    <small class="form-text text-white-50 d-flex justify-content-start gap-2">
+				    <small class="form-text text-white-50 d-flex justify-content-start gap-2 mt-1">
 				        <span><i class="fas fa-info-circle"></i></span>
-				        <span>Se ajustará automáticamente la fecha al <b>viernes</b> más cercano a la fecha seleccionada para el comienzo del torneo.</span>
+				        <span>Se ajustará automáticamente al <b>viernes</b> de la semana de la fecha seleccionada. Si ese viernes ya pasó, se moverá al de la semana siguiente.</span>
 				    </small>
 				</div>
 	            <div class="form-group">
 	                <label for="format">Formato:</label>
 	                <select name="format" id="format" class="form-control" required>
 	                    <option value="">-- Seleccioná un formato --</option>
-	                    <option value="0">Dividir los equipos en dos zonas + eliminación</option>
-	                    <option value="1">Todos contra todos (solo ida)</option>
-	                    <option value="2">Todos contra todos (ida y vuelta)</option>
-	                    <option value="3">Formato mundial</option>
+	                    
+	                    <% for (TournamentFormat format : TournamentFormat.values()) { %>
+				        
+				            <option value="<%= format.name() %>">
+				                <%= format.getDescription() %>
+				            </option>
+				        
+				        <% } %>
 	                </select>
 	            </div>
 	            <div class="form-group">
@@ -133,6 +138,9 @@
 				
 				    <p class="mt-2 text-white">
 				        <strong>Clubes seleccionados:</strong> <span id="count">0</span>
+                        <span id="error-msg" class="text-warning ms-3" style="display:none; font-size: 0.9em;">
+                            <i class="fas fa-exclamation-triangle"></i> Debés seleccionar al menos 2 equipos.
+                        </span>
 				    </p>
 				</div>
 				
@@ -143,29 +151,53 @@
 	
 	        </form>
 	    </div>
-		<script>
+		
+        <script>
+        
+            function validateClubs() {
+                const total = document.querySelectorAll(".club-checkbox:checked").length;
+                const errorMsg = document.getElementById("error-msg");
+
+                if (total < 2) {
+
+                    errorMsg.style.display = "inline";
+
+                    errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return false;
+                    
+                }
+                
+                errorMsg.style.display = "none";
+                return true;
+            }
 
 		    function updateCount() {
 		        
-		        const total = document.querySelectorAll(".club-checkbox:checked").length;
+		    	const total = document.querySelectorAll(".club-checkbox:checked").length;
 		        document.getElementById("count").textContent = total;
+                
+                
+                if (total >= 2) {
+                
+                	document.getElementById("error-msg").style.display = "none";
+                
+                }
 		    
 		    }
 	
 		    function toggleAllClubs() {
-		        
+		    
 		    	const checkboxes = document.querySelectorAll(".club-checkbox");
-		        
 		        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
 		        
 		        checkboxes.forEach(cb => cb.checked = !allChecked);
 		        
 		        updateCount();
-		        
+		    
 		    }
 		    
 		    window.onload = updateCount;
-			
+		
 		</script>
 	</body>
 </html>

@@ -79,7 +79,6 @@
 							            <th>Formato</th>
 							            <th>Edición</th>
 							            <th>Asociación</th>
-							            <th>Editar</th>
 	                       				<th>Eliminar</th>
 	                      			</tr>
 	                      		</thead>
@@ -91,24 +90,15 @@
 	                    				<td><%=t.getName()%></td>
 	                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-	                    				<td><%= "1".equals(t.getFormat()) ? "Todos contra todos (solo ida)" : t.getFormat() %></td>
+	                    				<td><%=t.getFormat().getDescription()%></td>
 	                    				<td><%=t.getSeason()%></td>
 	                    				<td><%=t.getAssociation().getName()%></td>
-	                    				<td>
-	                    					<form method="get" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center">
-	                    						<input type="hidden" name="action" value="edit" />
-			        							<input type="hidden" name="id" value="<%=t.getId()%>" />
-			        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
-													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
-												</button>
-			    							</form>
-	                    				</td>
 	                    				<td>
 	                    					<form method="post" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">
 												<input type="hidden" name="action" value="delete" />
 												<input type="hidden" name="id" value="<%=t.getId()%>" />
 												<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= t.getId() %>" >
-													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
+													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="" width="25" height="25">
 												</button>
 											</form>
 	                    				</td>

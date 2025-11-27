@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.DayOfWeek;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 import java.util.LinkedList;
 
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import entities.*;
+import enums.*;
 import logic.Logic;
 
 @WebServlet("/actiontournament")
@@ -30,7 +30,7 @@ public class ActionTournament extends HttpServlet {
 		if ("edit".equals(action)) tournament.setId(Integer.parseInt(request.getParameter("id")));
 		tournament.setName(request.getParameter("name"));
 		tournament.setStartDate(LocalDate.parse(request.getParameter("startDate")));
-		tournament.setFormat(request.getParameter("format"));
+		tournament.setFormat(TournamentFormat.valueOf(request.getParameter("format")));
 		tournament.setSeason(request.getParameter("season"));
         tournament.setAssociation(ctrl.getAssociationById(Integer.parseInt(request.getParameter("id_association"))));
 		
@@ -161,18 +161,22 @@ public class ActionTournament extends HttpServlet {
 	
 	}
 	
-	private LinkedList<Match> drawTournamentMatchdays(Integer id_format, LinkedList<Club> clubs, Tournament tournament){
+	private LinkedList<Match> drawTournamentMatchdays(LinkedList<Club> clubs, Tournament tournament){
 		
 		LinkedList<Match> matches = new LinkedList<>();
 		
-		switch (id_format) {
+		switch (tournament.getFormat()) {
 		
-			case 1:
+			case ZONAL_ELIMINATION:
+			
+				break;
+		
+			case ROUND_ROBIN_ONE_LEG:
 			
 				matches = generateCombinations(clubs, tournament.getStartDate());
 				break;
 			
-			case 2:
+			case ROUND_ROBIN_TWO_LEGS:
 			
 				LinkedList<Match> matches_leg_one = generateCombinations(clubs, tournament.getStartDate());
 				
@@ -193,31 +197,14 @@ public class ActionTournament extends HttpServlet {
 				}
 				
 				break;
-		}
 		
-		matches.sort(Comparator.comparing(Match::getDate));
+			case WORLD_CUP:
+				
+				break;
+		
+		}
 		
 		return matches;
-	
-	}
-	
-	private Integer parseId(String param) {
-	    
-		if (param != null && !param.isEmpty()) {
-	    
-			try {
-	        
-				return Integer.parseInt(param);
-	        
-			} catch (NumberFormatException e) {
-	        
-				return null;
-	        
-			}
-	    
-		}
-	    
-		return null;
 	
 	}
 	
@@ -228,18 +215,7 @@ public class ActionTournament extends HttpServlet {
 
 	    try {
 	    
-	    	if ("edit".equals(action)) {
-	        
-	    		Tournament tournament = ctrl.getTournamentById(Integer.parseInt(request.getParameter("id")));
-    			request.setAttribute("tournament", tournament);
-                
-                LinkedList<Association> associations = ctrl.getAllAssociations();
-                associations.sort(Comparator.comparing(Association::getName));
-            	request.setAttribute("associationsList", associations);
-                
-            	request.getRequestDispatcher("WEB-INF/Edit/EditTournament.jsp").forward(request, response);
-	        
-	    	} else if ("add".equals(action)) {
+	    	if ("add".equals(action)) {
 
 	    		LinkedList<Association> associations = ctrl.getAllAssociations();
 				
@@ -313,8 +289,6 @@ public class ActionTournament extends HttpServlet {
             		
 					LinkedList<Match> fixture = new LinkedList<>();
 					
-					Integer id_format = Integer.parseInt(request.getParameter("format"));
-					
 					LinkedList<Club> clubs = new LinkedList<>();
 					String[] selectedClubs = request.getParameterValues("selectedClubs");
 					
@@ -338,7 +312,7 @@ public class ActionTournament extends HttpServlet {
 					
 					}
 					
-					fixture = drawTournamentMatchdays(id_format, clubs, tournament);
+					fixture = drawTournamentMatchdays(clubs, tournament);
 					tournament.setEndDate(fixture.getLast().getDate().toLocalDate());
 
 					ctrl.addTournament(tournament);
@@ -356,21 +330,6 @@ public class ActionTournament extends HttpServlet {
 					request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 					
 	        	}
-
-            } else if ("edit".equals(action)) {
-                
-            	Tournament tournament = buildTournamentFromRequest(request, action, ctrl);
-            	
-            	if (checkStartDate(tournament.getStartDate())) {
-            	
-            		ctrl.updateTournament(tournament);
-            	
-            	} else {
-            	
-            		request.setAttribute("errorMessage", "Error en las fechas introducidas (el torneo debe empezar a partir de hoy y durar, al menos, 4 meses)");
-            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-            	
-            	}
 
             } else if ("delete".equals(action)) {
                 

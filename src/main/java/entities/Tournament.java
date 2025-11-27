@@ -2,13 +2,15 @@ package entities;
 
 import java.time.LocalDate;
 
+import enums.TournamentFormat;
+
 public class Tournament {
 	
 	private int id;
 	private String name;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private String format;
+	private TournamentFormat format;
 	private String season;
 	private Association association;
 	
@@ -60,13 +62,13 @@ public class Tournament {
 	
 	}
 	
-	public String getFormat() {
+	public TournamentFormat getFormat() {
 	
 		return format;
 	
 	}
 	
-	public void setFormat(String format) {
+	public void setFormat(TournamentFormat format) {
 	
 		this.format = format;
 	
@@ -100,7 +102,7 @@ public class Tournament {
 	public String toString() {
 	
 		return "Tournament [id=" + id + ", name=" + name + ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", format=" + format + ", season=" + season + ", association=" + association + "]";
+				+ ", format=" + format.getDescription() + ", season=" + season + ", association=" + association + "]";
 	
 	}
 	
