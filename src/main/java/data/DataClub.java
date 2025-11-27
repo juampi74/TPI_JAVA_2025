@@ -24,7 +24,7 @@ public class DataClub {
             + "INNER JOIN stadium s ON cl.id_stadium = s.id";
     
     private static final String SELECT_ALL_CLUBS_TOURNAMENT =
-            "SELECT "
+            "SELECT DISTINCT "
             + "    cl.id AS club_id, "
             + "    cl.name AS club_name, "
             + "    cl.foundation_date AS club_foundation_date, "
@@ -104,14 +104,15 @@ public class DataClub {
     }
     
     public LinkedList<Club> getAllByTournamentId(int id) throws SQLException {
-        LinkedList<Club> clubs = new LinkedList<>();
+        
+    	LinkedList<Club> clubs = new LinkedList<>();
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
         	if (id != -1) {
 	            stmt = DbConnector.getInstance().getConn().prepareStatement(
-	            		SELECT_ALL_CLUBS_TOURNAMENT + " WHERE m.id_tournament = ?"
+	            	SELECT_ALL_CLUBS_TOURNAMENT + " WHERE m.id_tournament = ?"
 	            );
 	            stmt.setInt(1, id);
 	            rs = stmt.executeQuery();

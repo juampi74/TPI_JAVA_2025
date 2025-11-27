@@ -29,7 +29,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_MATCHES_JOINED);
+            rs = stmt.executeQuery(SELECT_ALL_MATCHES_JOINED + " ORDER BY t.name ASC, m.matchday ASC, m.date ASC");
 
             while (rs.next()) {
 
@@ -62,7 +62,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_MATCHES_JOINED + " WHERE m.id = ?"
+                SELECT_ALL_MATCHES_JOINED + " WHERE m.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -97,7 +97,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_MATCHES_JOINED + " WHERE m.id_home = ? or m.id_away = ?"
+                SELECT_ALL_MATCHES_JOINED + " WHERE m.id_home = ? or m.id_away = ? ORDER BY t.name ASC, m.matchday ASC"
             );
             stmt.setInt(1, id);
             stmt.setInt(2, id);
@@ -132,9 +132,9 @@ public class DataMatch {
         LinkedList<Match> matches = new LinkedList<>();
 
         try {
-
+            // ORDENAMIENTO AGREGADO: Jornada -> Fecha
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_MATCHES_JOINED + " WHERE m.id_tournament = ?"
+                SELECT_ALL_MATCHES_JOINED + " WHERE m.id_tournament = ? ORDER BY m.matchday ASC, m.date ASC"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -168,9 +168,9 @@ public class DataMatch {
         LinkedList<Match> matches = new LinkedList<>();
 
         try {
-
+            // ORDENAMIENTO AGREGADO: Jornada
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_MATCHES_JOINED + " WHERE (m.id_home = ? or m.id_away = ?) and m.id_tournament = ?"
+                SELECT_ALL_MATCHES_JOINED + " WHERE (m.id_home = ? or m.id_away = ?) and m.id_tournament = ? ORDER BY m.matchday ASC"
             );
             stmt.setInt(1, id_club);
             stmt.setInt(2, id_club);
@@ -205,7 +205,7 @@ public class DataMatch {
 
         try {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"INSERT INTO `match` "
+                "INSERT INTO `match` "
                 + "(home_goals, away_goals, matchday, date, id_away, id_home, id_tournament) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
@@ -244,7 +244,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"UPDATE `match` SET home_goals = ?, away_goals = ?, matchday = ?, date = ?, id_away = ?, id_home = ?, id_tournament = ? WHERE id = ?"
+                "UPDATE `match` SET home_goals = ?, away_goals = ?, matchday = ?, date = ?, id_away = ?, id_home = ?, id_tournament = ? WHERE id = ?"
             );
             stmt.setObject(1, m.getHomeGoals());
             stmt.setObject(2, m.getAwayGoals());
@@ -276,7 +276,7 @@ public class DataMatch {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"DELETE FROM `match` WHERE id = ?"
+                "DELETE FROM `match` WHERE id = ?"
             );
             stmt.setInt(1, id);
             stmt.executeUpdate();

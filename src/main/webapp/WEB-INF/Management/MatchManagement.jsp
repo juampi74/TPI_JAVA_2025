@@ -1,4 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Match"%>
 <%@ page import="entities.Club"%>
 <%@ page import="entities.Tournament"%>
@@ -147,7 +148,7 @@
                                     <th>Visitante</th>
                                     <th>Torneo</th>
                                     <th>Jornada</th>
-                                    <th>Fecha</th>
+                                    <th>Fecha y Hora</th>
                                     <th>Editar</th>
                                     <th>Eliminar</th>
                                 </tr>
@@ -157,7 +158,7 @@
                             <% for (Match m : ml) { %>
                                 <tr>
                                     <td>
-                                    	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getHome().getBadgeImage()%>" width="40" height="45" >
+                                    	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getHome().getBadgeImage()%>" height="40" >
                                     </td>
                                     <td>
                                     	<h4>
@@ -167,11 +168,11 @@
                                     	</h4>
                                     </td>
                                     <td>
-                                    	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getAway().getBadgeImage()%>" width="40" height="45" >
+                                    	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getAway().getBadgeImage()%>" height="40" >
                                     </td>
                                     <td><%= m.getTournament().getName() %></td>
                                     <td><%= (m.getMatchday() != null ? m.getMatchday() : "-") %></td>
-                                    <td><%= m.getDate().toString().replace("T", " ") %></td>
+                                    <td><%= m.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) %></td>
                                     
 
                                     <td>

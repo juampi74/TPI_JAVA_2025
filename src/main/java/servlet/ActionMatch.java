@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -53,11 +54,32 @@ public class ActionMatch extends HttpServlet {
 	}
 
 	private Integer parseNullableInteger(String val) {
-	    return (val == null || val.isEmpty()) ? null : Integer.parseInt(val);
+	    
+		return (val == null || val.isEmpty()) ? null : Integer.parseInt(val);
+	
+	}
+	
+	private Integer parseId(String param) {
+	    
+		if (param != null && !param.isEmpty()) {
+	    
+			try {
+	        
+				return Integer.parseInt(param);
+	        
+			} catch (NumberFormatException e) {
+	        
+				return null;
+	        
+			}
+	    
+		}
+	    
+		return null;
+	
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String action = request.getParameter("action");
 		Logic ctrl = new Logic();
@@ -83,45 +105,51 @@ public class ActionMatch extends HttpServlet {
 
 			} else {
 				
-				String clubIdParam = request.getParameter("clubId");
-				String tournamentIdParam = request.getParameter("tournamentId");
-				
-				LinkedList<Match> matches;
+				Integer clubId = parseId(request.getParameter("clubId"));
+	            Integer tournamentId = parseId(request.getParameter("tournamentId"));
+	            
+	            LinkedList<Match> matches;
 
-				if (clubIdParam != null && !clubIdParam.isEmpty() &&
-				    tournamentIdParam != null && !tournamentIdParam.isEmpty()) {
+	            if (clubId != null && tournamentId != null) {
 
-				    int clubId = Integer.parseInt(clubIdParam);
-				    int tournamentId = Integer.parseInt(tournamentIdParam);
+	            	matches = ctrl.getMatchesByClubAndTournamentId(clubId, tournamentId);
+	            
+	            } else if (clubId != null) {
+	            
+	            	matches = ctrl.getMatchesByClubId(clubId);
+	            
+	            } else if (tournamentId != null) {
+	            
+	            	matches = ctrl.getMatchesByTournamentId(tournamentId);
+	            
+	            } else {
+	            
+	            	matches = ctrl.getAllMatches(); 
+	            
+	            }
+	            
+	            LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+	            
+	            LinkedList<Club> clubs;
+	            if (tournamentId != null) {
 
-				    matches = ctrl.getMatchesByClubAndTournamentId(clubId, tournamentId);
+	            	clubs = ctrl.getAllClubsByTournamentId(tournamentId);
+	            
+	            } else {
+	            
+	                clubs = ctrl.getAllClubs(); 
+	            
+	            }
 
-				} else if (clubIdParam != null && !clubIdParam.isEmpty()) {
-
-				    int clubId = Integer.parseInt(clubIdParam);
-				    matches = ctrl.getMatchesByClubId(clubId);
-
-				} else if (tournamentIdParam != null && !tournamentIdParam.isEmpty()) {
-
-				    int tournamentId = Integer.parseInt(tournamentIdParam);
-				    matches = ctrl.getMatchesByTournamentId(tournamentId);
-
-				} else {
-				    matches = ctrl.getAllMatches();
-				}
-				
-				LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-				int tournamentId = -1;
-				if (tournamentIdParam != null && !tournamentIdParam.isEmpty()) {
-					tournamentId = Integer.parseInt(tournamentIdParam);
-				}
-				LinkedList<Club> clubs = ctrl.getAllClubsByTournamentId(tournamentId);
-
-				request.setAttribute("matchList", matches);
-				request.setAttribute("tournamentsList", tournaments);
-				request.setAttribute("clubsList", clubs);
-				
-				request.getRequestDispatcher("/WEB-INF/Management/MatchManagement.jsp").forward(request, response);
+	            request.setAttribute("matchList", matches);
+	            request.setAttribute("tournamentsList", tournaments);
+	            request.setAttribute("clubsList", clubs);
+	            
+	            request.setAttribute("selectedClubId", clubId);
+	            request.setAttribute("selectedTournamentId", tournamentId);
+	            
+	            request.getRequestDispatcher("/WEB-INF/Management/MatchManagement.jsp").forward(request, response);
+			
 			}
 
 		} catch (SQLException e) {

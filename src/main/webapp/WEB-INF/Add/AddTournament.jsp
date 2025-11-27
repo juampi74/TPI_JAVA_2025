@@ -38,9 +38,13 @@
 	                <input type="text" class="form-control" id="name" name="name" required />
 	            </div>
 	            <div class="form-group">
-	                <label for="startDate">Fecha de Inicio:</label>
-	                <input type="date" class="form-control" id="startDate" name="startDate" required />
-	            </div>
+				    <label for="startDate">Fecha de Inicio (Aproximada):</label>
+				    <input type="date" class="form-control" id="startDate" name="startDate" required />
+				    <small class="form-text text-white-50 d-flex justify-content-start gap-2">
+				        <span><i class="fas fa-info-circle"></i></span>
+				        <span>Se ajustará automáticamente la fecha al <b>viernes</b> más cercano a la fecha seleccionada para el comienzo del torneo.</span>
+				    </small>
+				</div>
 	            <div class="form-group">
 	                <label for="format">Formato:</label>
 	                <select name="format" id="format" class="form-control" required>

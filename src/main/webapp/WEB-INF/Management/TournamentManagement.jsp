@@ -91,7 +91,7 @@
 	                    				<td><%=t.getName()%></td>
 	                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-	                    				<td><%=t.getFormat()%></td>
+	                    				<td><%= "1".equals(t.getFormat()) ? "Todos contra todos (solo ida)" : t.getFormat() %></td>
 	                    				<td><%=t.getSeason()%></td>
 	                    				<td><%=t.getAssociation().getName()%></td>
 	                    				<td>

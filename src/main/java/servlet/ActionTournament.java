@@ -1,12 +1,13 @@
 package servlet;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -51,35 +52,56 @@ public class ActionTournament extends HttpServlet {
 		    
 	}
 	
+	private int calculateHour(int matchIndex, int[] allowedHours) {
+
+		return allowedHours[matchIndex % allowedHours.length];
+	
+	}
+	
+	private LocalDate adjustStartDateToFriday(LocalDate inputDate) {
+
+	    LocalDate fridayOfThatWeek = inputDate.with(DayOfWeek.FRIDAY);
+	    
+	    if (fridayOfThatWeek.isBefore(LocalDate.now())) {
+	        
+	    	return fridayOfThatWeek.plusWeeks(1);
+	    
+	    }
+	    
+	    return fridayOfThatWeek;
+	    
+	}
+	
 	private LinkedList<Match> generateCombinations(LinkedList<Club> clubs, LocalDate startDate) {
 		
 		LinkedList<Match> fixture = new LinkedList<>();
+		
+		int[] fridayHours = {22, 20, 18, 16}; 
+	    int[] weekendHours = {22, 20, 18, 16, 14};
 
-		int n = clubs.size();
+		LinkedList<Club> rotated = new LinkedList<>(clubs);
 		
-		boolean addedGhost = false;
-		
+		int n = rotated.size();
+			
 		if (n % 2 != 0) {
 		    
-			clubs.add(null);
+			rotated.add(null);
 		    n++;
-		    addedGhost = true;
 		
 		}
 		
 		int totalMatchdays = n - 1;
 		int matchesPerMatchday = n / 2;
 		
-		LinkedList<Club> rotated = new LinkedList<>(clubs);
-		
-		LocalDateTime dateTime = startDate.atTime(16, 00);
-		
-		Long matchesInDay = Math.round(clubs.size() / 8.0);
-		
-		for (int day = 1; day <= totalMatchdays; day++) {
+	    int quotaFriday = (int) Math.round(matchesPerMatchday * (2.0 / 8.0));
+	    int quotaSaturday = (int) Math.round(matchesPerMatchday * (3.0 / 8.0));
+	    if (quotaFriday == 0 && matchesPerMatchday >= 2) quotaFriday = 1;
 			
-			Integer matchdayDay = 0;
-			Integer round = 0;
+	    for (int day = 1; day <= totalMatchdays; day++) {
+	    	
+	    	LocalDate currentFriday = startDate.plusWeeks(day - 1);
+			
+	    	int matchesScheduledReal = 0;
 			
 		    for (int i = 0; i < matchesPerMatchday; i++) {
 		
@@ -96,36 +118,42 @@ public class ActionTournament extends HttpServlet {
 		        
 		        }
 		        
-		        if (i > (matchesInDay + matchesInDay * matchdayDay)) {
-		        	
-		        	matchdayDay = matchdayDay + 1;
-		        	round = 0;
+		        LocalDateTime matchDateTime;
+		        int assignedHour;
 		        
-		        }
+		        if (matchesScheduledReal < quotaFriday) {
+	                
+		        	assignedHour = calculateHour(matchesScheduledReal, fridayHours);
+		        	matchDateTime = currentFriday.atTime(assignedHour, 0);
+	                
+	            } else if (matchesScheduledReal < (quotaFriday + quotaSaturday)) {
+
+	            	int indexOnSaturday = matchesScheduledReal - quotaFriday;
+	            	assignedHour = calculateHour(indexOnSaturday, weekendHours);
+	                matchDateTime = currentFriday.plusDays(1).atTime(assignedHour, 0);
+	                
+	            } else {
+
+	            	int indexOnSunday = matchesScheduledReal - (quotaFriday + quotaSaturday);
+	                assignedHour = calculateHour(indexOnSunday, weekendHours);
+	                matchDateTime = currentFriday.plusDays(2).atTime(assignedHour, 0);
+	                
+	            }
 		        
 		        Match match = new Match();
 		        
 		        match.setAway(away);
 		        match.setHome(home);
-			    
-		        match.setDate(dateTime
-			    	.plusDays(matchdayDay + 7 * (day - 1))
-			    	.plusHours(2 * round));
-			    
+		        match.setDate(matchDateTime);
 		        match.setMatchday(day);
+		        
 		        fixture.add(match);
 
-		        round = round + 1;
+		        matchesScheduledReal++;
 		    
 		    }
 		
 		    rotated.add(1, rotated.remove(rotated.size() - 1));
-		
-		}
-		
-		if (addedGhost) {
-		  
-			clubs.remove(null);
 		
 		}
 		
@@ -167,21 +195,42 @@ public class ActionTournament extends HttpServlet {
 				break;
 		}
 		
+		matches.sort(Comparator.comparing(Match::getDate));
+		
 		return matches;
 	
 	}
 	
+	private Integer parseId(String param) {
+	    
+		if (param != null && !param.isEmpty()) {
+	    
+			try {
+	        
+				return Integer.parseInt(param);
+	        
+			} catch (NumberFormatException e) {
+	        
+				return null;
+	        
+			}
+	    
+		}
+	    
+		return null;
+	
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	    
 		String action = request.getParameter("action");
+	    Logic ctrl = new Logic();
 
-        Logic ctrl = new Logic();
-        
-        try {
-        	
-        	if ("edit".equals(action)) {
-            	
-            	Tournament tournament = ctrl.getTournamentById(Integer.parseInt(request.getParameter("id")));
+	    try {
+	    
+	    	if ("edit".equals(action)) {
+	        
+	    		Tournament tournament = ctrl.getTournamentById(Integer.parseInt(request.getParameter("id")));
     			request.setAttribute("tournament", tournament);
                 
                 LinkedList<Association> associations = ctrl.getAllAssociations();
@@ -189,10 +238,10 @@ public class ActionTournament extends HttpServlet {
             	request.setAttribute("associationsList", associations);
                 
             	request.getRequestDispatcher("WEB-INF/Edit/EditTournament.jsp").forward(request, response);
-            
-            } else if ("add".equals(action)) {
+	        
+	    	} else if ("add".equals(action)) {
 
-            	LinkedList<Association> associations = ctrl.getAllAssociations();
+	    		LinkedList<Association> associations = ctrl.getAllAssociations();
 				
             	if (associations.size() > 0) {
         		
@@ -219,10 +268,10 @@ public class ActionTournament extends HttpServlet {
 					request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 					
 				}
-            
-            } else {
-            
-            	LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+	    		
+	        } else {
+	            
+	        	LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
             	tournaments.sort(Comparator.comparing(Tournament::getName));
                 request.setAttribute("tournamentsList", tournaments);
                 
@@ -230,17 +279,16 @@ public class ActionTournament extends HttpServlet {
             	request.setAttribute("associationsList", associations);
                 
             	request.getRequestDispatcher("/WEB-INF/Management/TournamentManagement.jsp").forward(request, response);
-            
-            }
-        	
-        } catch(SQLException e) {
+	        
+	        }
 
-        	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
+	    } catch (SQLException e) {
+	        
+	    	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-			
-        }
-
-        
+	    
+	    }
+	
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -259,6 +307,9 @@ public class ActionTournament extends HttpServlet {
             	Tournament tournament = buildTournamentFromRequest(request, action, ctrl);
             	
             	if (checkStartDate(tournament.getStartDate())) {
+            		
+            		LocalDate realStartDate = adjustStartDateToFriday(tournament.getStartDate());
+            		tournament.setStartDate(realStartDate);
             		
 					LinkedList<Match> fixture = new LinkedList<>();
 					
