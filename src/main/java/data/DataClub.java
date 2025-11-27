@@ -75,7 +75,7 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_CLUBS_JOINED);
+            rs = stmt.executeQuery(SELECT_ALL_CLUBS_JOINED + " ORDER BY cl.name");
 
             if (rs != null) {
 
@@ -112,7 +112,7 @@ public class DataClub {
         try {
         	if (id != -1) {
 	            stmt = DbConnector.getInstance().getConn().prepareStatement(
-	            	SELECT_ALL_CLUBS_TOURNAMENT + " WHERE m.id_tournament = ?"
+	            	SELECT_ALL_CLUBS_TOURNAMENT + " WHERE m.id_tournament = ? ORDER BY cl.name"
 	            );
 	            stmt.setInt(1, id);
 	            rs = stmt.executeQuery();

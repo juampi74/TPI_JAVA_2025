@@ -1,4 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
+<%@ page import="java.time.LocalDateTime"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Match"%>
 <%@ page import="entities.Club"%>
@@ -26,7 +27,7 @@
         table th, table td {
             vertical-align: middle !important;
         }
-        
+               
     </style>
 
     <%
@@ -161,12 +162,28 @@
                                     	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getHome().getBadgeImage()%>" height="40" >
                                     </td>
                                     <td>
-                                    	<h4>
-                                    		<%= (m.getHomeGoals() != null ? m.getHomeGoals() : "") %> 
-                                        	- 
-                                        	<%= (m.getAwayGoals() != null ? m.getAwayGoals() : "") %>
-                                    	</h4>
-                                    </td>
+									    <% 
+									       boolean isPending = m.getDate().isAfter(LocalDateTime.now());
+									       
+									       if (isPending) { 
+									    %>
+									    
+									        <div class="d-inline-flex align-items-center justify-content-center rounded px-3 py-1"
+									             style="min-width: 80px; background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+									            <i class="far fa-clock text-secondary" style="font-size: 1.2rem;"></i>
+									        </div>  
+									    
+									    <% } else { %>
+									    
+									        <div class="d-inline-flex align-items-center justify-content-center bg-dark border border-secondary rounded px-3 py-1"
+									             style="min-width: 80px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
+									            <span class="fs-5 fw-bold text-white"><%= m.getHomeGoals() %></span>
+									            <span class="mx-2 text-secondary" style="font-size: 0.8em;">-</span>
+									            <span class="fs-5 fw-bold text-white"><%= m.getAwayGoals() %></span>
+									        </div>
+									        
+									    <% } %>
+									</td>
                                     <td>
                                     	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getAway().getBadgeImage()%>" height="40" >
                                     </td>
@@ -229,7 +246,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
