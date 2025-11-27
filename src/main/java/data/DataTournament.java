@@ -181,9 +181,9 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "INSERT INTO tournament (name, start_date, end_date, format, season, id_association) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS
+                "INSERT INTO tournament (name, start_date, end_date, format, season, id_association) "
+                + "VALUES (?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());

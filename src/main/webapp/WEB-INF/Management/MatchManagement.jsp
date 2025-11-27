@@ -17,10 +17,15 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.png">
 
     <style>
-        .table { text-align: center; }
+        
+        .table {
+        	text-align: center;
+        }
+        
         table th, table td {
             vertical-align: middle !important;
         }
+        
     </style>
 
     <%
@@ -57,7 +62,8 @@
 				            	if (selectedTournament != null && !selectedTournament.isEmpty()) {
 				                
 				            		selectedId = Integer.parseInt(selectedTournament);
-				              	}
+				              	
+				            	}
 				              
 				            	if (tournaments != null) {
 				                	
@@ -151,7 +157,7 @@
                             <% for (Match m : ml) { %>
                                 <tr>
                                     <td>
-                                    	<img alt="<%= m.getHome().getName() %>" src="<%= m.getHome().getBadgeImage() %>" width="40" height="45" >
+                                    	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getHome().getBadgeImage()%>" width="40" height="45" >
                                     </td>
                                     <td>
                                     	<h4>
@@ -161,7 +167,7 @@
                                     	</h4>
                                     </td>
                                     <td>
-                                    	<img alt="<%= m.getAway().getName() %>" src="<%= m.getAway().getBadgeImage() %>" width="40" height="45" >
+                                    	<img alt="" src="<%=request.getContextPath() + "/images?id=" + m.getAway().getBadgeImage()%>" width="40" height="45" >
                                     </td>
                                     <td><%= m.getTournament().getName() %></td>
                                     <td><%= (m.getMatchday() != null ? m.getMatchday() : "-") %></td>
