@@ -1,5 +1,9 @@
 # Propuesta
 
+## Modelo de Dominio
+
+![Modelo de Dominio](../../assets/domain-model/domain-model.jpg)
+
 ## Modelo de Datos
 
 ![Modelo de Datos](../../assets/data-model/data-model.jpg)
