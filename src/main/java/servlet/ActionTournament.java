@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.DayOfWeek;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -50,6 +51,12 @@ public class ActionTournament extends HttpServlet {
 
 		    return true;
 		    
+	}
+	
+	private boolean checkMatches(Integer id, Logic ctrl) throws SQLException {
+			
+		return ctrl.getMatchesByTournamentId(id).isEmpty();
+	
 	}
 	
 	private int calculateHour(int matchIndex, int[] allowedHours) {
@@ -240,11 +247,18 @@ public class ActionTournament extends HttpServlet {
 					associations.sort(Comparator.comparing(Association::getName));
 					request.setAttribute("associationsList", associations);
 					
-					LinkedList<Club> clubs = ctrl.getAllClubs();
+					HashMap<Integer, LinkedList<Club>> clubsMap = new HashMap<>();
 					
-					if (clubs.size() > 0) {
+					for (Association a : associations) {
+
+				        LinkedList<Club> associationClubs = ctrl.getClubsByAssociationId(a.getId());
+				        clubsMap.put(a.getId(), associationClubs);
+				        
+				    }
+					
+					if (clubsMap.size() > 0) {
 		        		
-						request.setAttribute("clubsList", clubs);
+						request.setAttribute("clubsMap", clubsMap);
 						request.getRequestDispatcher("WEB-INF/Add/AddTournament.jsp").forward(request, response);
 					
 					} else {
@@ -349,7 +363,18 @@ public class ActionTournament extends HttpServlet {
 
             } else if ("delete".equals(action)) {
                 
-            	ctrl.deleteTournament(Integer.parseInt(request.getParameter("id")));
+            	Integer id = Integer.parseInt(request.getParameter("id"));
+
+            	if (checkMatches(id, ctrl)) {
+
+            		ctrl.deleteTournament(id);
+
+            	} else {
+
+            		request.setAttribute("errorMessage", "No se puede eliminar un torneo que tiene partidos organizados");
+            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+
+            	}
                 
             }
 

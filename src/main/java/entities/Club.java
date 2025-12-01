@@ -12,6 +12,7 @@ public class Club {
     private String badgeImage;
     private double budget;
     private Stadium stadium;
+    private Nationality nationality;
 
     public int getId() {
 
@@ -104,13 +105,25 @@ public class Club {
 	public void setStadium(Stadium stadium) {
 		this.stadium = stadium;
 	}
+	
+	public Nationality getNationality() {
+	
+		return nationality;
+	
+	}
+
+	public void setNationality(Nationality nationality) {
+	
+		this.nationality = nationality;
+	
+	}
 
 	@Override
 	public String toString() {
 		
 		return "Club [id=" + id + ", name=" + name + ", foundationDate=" + foundationDate + ", phoneNumber="
 				+ phoneNumber + ", email=" + email + ", badgeImage=" + badgeImage + ", budget=" + budget + ", stadium="
-				+ stadium + "]";
+				+ stadium + ", nationality=" + nationality + "]";
 	
 	}
 

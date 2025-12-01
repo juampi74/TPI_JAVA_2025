@@ -68,6 +68,7 @@ public class ActionClub extends HttpServlet {
     	
     	club.setBudget(Double.parseDouble(request.getParameter("budget")));
     	club.setStadium(ctrl.getStadiumById(Integer.parseInt(request.getParameter("id_stadium"))));
+        club.setNationality(ctrl.getNationalityById(Integer.parseInt(request.getParameter("id_nationality"))));
 		
         return club;
     
@@ -101,6 +102,10 @@ public class ActionClub extends HttpServlet {
                 LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
                 stadiums.sort(Comparator.comparing(Stadium::getName));
             	request.setAttribute("stadiumsList", stadiums);
+            	
+            	LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+            	nationalities.sort(Comparator.comparing(Nationality::getName));
+            	request.setAttribute("nationalitiesList", nationalities);
                 
             	request.getRequestDispatcher("WEB-INF/Edit/EditClub.jsp").forward(request, response);
             
@@ -112,7 +117,22 @@ public class ActionClub extends HttpServlet {
         		
 					stadiums.sort(Comparator.comparing(Stadium::getName));
         			request.setAttribute("stadiumsList", stadiums);        		
-        			request.getRequestDispatcher("WEB-INF/Add/AddClub.jsp").forward(request, response);
+        			
+        			LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+        			
+        			if (nationalities.size() > 0) {
+                    	
+    					nationalities.sort(Comparator.comparing(Nationality::getName));
+
+    					request.setAttribute("nationalitiesList", nationalities);
+            			request.getRequestDispatcher("WEB-INF/Add/AddClub.jsp").forward(request, response);
+
+                    } else {
+                    	
+                    	request.setAttribute("errorMessage", "Debés agregar una nacionalidad primero");
+            			request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+                    	
+                    }
         	
         		} else {
         		

@@ -132,6 +132,7 @@ public class ActionStadium extends HttpServlet {
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 
             	}
+            	
             }
     	    
     	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();

@@ -1,8 +1,10 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="entities.Stadium"%>
+<%@ page import="entities.Nationality"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	LinkedList<Stadium> stadiumsList = (LinkedList<Stadium>) request.getAttribute("stadiumsList");
+	LinkedList<Nationality> nationalitiesList = (LinkedList<Nationality>) request.getAttribute("nationalitiesList");
 %>
 <!DOCTYPE html>
 <html>
@@ -70,6 +72,22 @@
 				                }
 				            } else {
 				                out.print("<option value='' disabled>No hay estadios cargados</option>");
+				            }
+				        %>
+				    </select>
+				</div>
+				
+				<div class="form-group">
+				    <label for="id_nationality">Nacionalidad:</label>
+				    <select name="id_nationality" id="id_nationality" class="form-control" required>
+				        <option value="">-- Seleccioná una nacionalidad --</option>
+				        <%
+				            if (nationalitiesList != null && !nationalitiesList.isEmpty()) {
+				                for (Nationality n : nationalitiesList) {
+				                    out.print("<option value='" + n.getId() + "'>" + n.getName() + "</option>");
+				                }
+				            } else {
+				                out.print("<option value='' disabled>No hay nacionalidades cargadas</option>");
 				            }
 				        %>
 				    </select>

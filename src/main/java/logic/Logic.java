@@ -270,6 +270,12 @@ public class Logic {
         return dcl.getByName(name);
 
     }
+    
+    public LinkedList<Club> getClubsByAssociationId(int id) throws SQLException {
+    	
+    	return dcl.getByAssociationId(id);
+    	
+    }
 
     public void addClub(Club c) throws SQLException {
 

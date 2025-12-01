@@ -9,8 +9,8 @@ public abstract class Person {
 	private String fullname;
 	private LocalDate birthdate;
 	private String address;
-	private PersonRole role;
 	private String photo;
+	private PersonRole role;
 	private Nationality nationality;
 	
 	public int getId() {
@@ -61,6 +61,18 @@ public abstract class Person {
 	
 	}
 	
+	public String getPhoto() {
+		
+		return photo;
+		
+	}
+	
+	public void setPhoto(String photo) {
+		
+		this.photo = photo;
+		
+	}
+
 	public PersonRole getRole() {
 	
 		return role;
@@ -73,17 +85,6 @@ public abstract class Person {
 	
 	}
 	
-	public String getPhoto() {
-		
-		return photo;
-	
-	}
-	
-	public void setPhoto(String photo) {
-	
-		this.photo = photo;
-	
-	}
 
 	public Nationality getNationality() {
 		
@@ -101,7 +102,7 @@ public abstract class Person {
 	public String toString() {
 
 		return "Person [id=" + id + ", fullname=" + fullname + ", birthdate=" + birthdate + ", address=" + address
-				+ ", role=" + role + ", nationality=" + nationality + "]";
+				+ ", photo=" + photo  + ", role=" + role + ", nationality=" + nationality + "]";
 	
 	}
 

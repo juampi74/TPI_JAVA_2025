@@ -1,10 +1,11 @@
 <%@ page import="java.util.LinkedList"%>
-<%@ page import="entities.Club"%>
-<%@ page import="entities.Stadium"%>
+<%@ page import="entities.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	Club club = (Club) request.getAttribute("club");
+
 	LinkedList<Stadium> stadiumsList = (LinkedList<Stadium>) request.getAttribute("stadiumsList");
+	LinkedList<Nationality> nationalitiesList = (LinkedList<Nationality>) request.getAttribute("nationalitiesList");	
 %>
 <!DOCTYPE html>
 <html>
@@ -82,6 +83,24 @@
 					            }
 					        } else {
 					            out.print("<option value='' disabled>No hay estadios cargados</option>");
+					        }
+					    %>
+					</select>
+				</div>
+				
+				<div class="form-group">
+				    <label for="id_nationality">Nacionalidad:</label>
+				    <select name="id_nationality" id="id_nationality" class="form-control" required>
+					    <option value="">-- Seleccioná una nacionalidad --</option>
+					    <%
+					        if (nationalitiesList != null && !nationalitiesList.isEmpty()) {
+					            int selectedNationalityId = (club != null && club.getNationality() != null) ? club.getNationality().getId() : -1;
+					            for (Nationality n : nationalitiesList) {
+					                String selected = (n.getId() == selectedNationalityId) ? "selected" : "";
+					                out.print("<option value='" + n.getId() + "' " + selected + ">" + n.getName() + "</option>");
+					            }
+					        } else {
+					            out.print("<option value='' disabled>No hay nacionalidades cargadas</option>");
 					        }
 					    %>
 					</select>

@@ -1,70 +1,96 @@
 package data;
 
 import entities.*;
+import enums.*;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataClub {
 
-    private static final String SELECT_ALL_CLUBS_JOINED =
-            "SELECT "
-            + "    cl.id AS club_id, "
-            + "    cl.name AS club_name, "
-            + "    cl.foundation_date AS club_foundation_date, "
-            + "    cl.phone_number AS club_phone_number, "
-            + "    cl.email AS club_email, "
-            + "    cl.badge_image AS club_badge_image, "
-            + "    cl.budget AS club_budget, "
-            + "    cl.id_stadium, "
-            + "    s.id AS stadium_id, "
-            + "    s.name AS stadium_name, "
-            + "    s.capacity AS stadium_capacity "
-            + "FROM club cl "
-            + "INNER JOIN stadium s ON cl.id_stadium = s.id";
-    
+	private static final String SELECT_ALL_CLUBS_JOINED =
+        "SELECT "
+        + "    cl.id AS club_id, "
+        + "    cl.name AS club_name, "
+        + "    cl.foundation_date AS club_foundation_date, "
+        + "    cl.phone_number AS club_phone_number, "
+        + "    cl.email AS club_email, "
+        + "    cl.badge_image AS club_badge_image, "
+        + "    cl.budget AS club_budget, "
+        + "    cl.id_stadium, "
+        + "    cl.id_nationality, "
+        + "    s.id AS stadium_id, s.name AS stadium_name, s.capacity AS stadium_capacity, "
+        + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
+        + "FROM club cl "
+        + "INNER JOIN stadium s ON cl.id_stadium = s.id "
+        + "INNER JOIN nationality n ON cl.id_nationality = n.id ";
+
     private static final String SELECT_ALL_CLUBS_TOURNAMENT =
-            "SELECT DISTINCT "
-            + "    cl.id AS club_id, "
-            + "    cl.name AS club_name, "
-            + "    cl.foundation_date AS club_foundation_date, "
-            + "    cl.phone_number AS club_phone_number, "
-            + "    cl.email AS club_email, "
-            + "    cl.badge_image AS club_badge_image, "
-            + "    cl.budget AS club_budget, "
-            + "    cl.id_stadium, "
-            + "    s.id AS stadium_id, "
-            + "    s.name AS stadium_name, "
-            + "    s.capacity AS stadium_capacity "
-            + "FROM club cl "
-            + "INNER JOIN stadium s ON cl.id_stadium = s.id "
-            + "INNER JOIN `match` m ON cl.id = m.id_home or cl.id = m.id_away ";            
+        "SELECT DISTINCT "
+        + "    cl.id AS club_id, "
+        + "    cl.name AS club_name, "
+        + "    cl.foundation_date AS club_foundation_date, "
+        + "    cl.phone_number AS club_phone_number, "
+        + "    cl.email AS club_email, "
+        + "    cl.badge_image AS club_badge_image, "
+        + "    cl.budget AS club_budget, "
+        + "    cl.id_stadium, "
+        + "    cl.id_nationality, "
+        + "    s.id AS stadium_id, s.name AS stadium_name, s.capacity AS stadium_capacity, "
+        + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
+        + "FROM club cl "
+        + "INNER JOIN stadium s ON cl.id_stadium = s.id "
+        + "INNER JOIN nationality n ON cl.id_nationality = n.id "
+        + "INNER JOIN `match` m ON cl.id = m.id_home or cl.id = m.id_away ";
 
     private static final String SELECT_CLUB_WITH_MOST_CONTRACTS =
-            "SELECT "
-            + "    cl.id AS club_id, "
-            + "    cl.name AS club_name, "
-            + "    cl.foundation_date AS club_foundation_date, "
-            + "    cl.phone_number AS club_phone_number, "
-            + "    cl.email AS club_email, "
-            + "    cl.badge_image AS club_badge_image, "
-            + "    cl.budget AS club_budget, "
-            + "    cl.id_stadium, "
-            + "    s.id AS stadium_id, "
-            + "    s.name AS stadium_name, "
-            + "    s.capacity AS stadium_capacity, "
-            + "    COUNT(c.id) AS contracts_count "
-            + "FROM club cl "
-            + "INNER JOIN contract c ON c.id_club = cl.id "
-            + "INNER JOIN stadium s ON cl.id_stadium = s.id "
-            + "WHERE c.release_date IS NULL "
-            + "  AND c.end_date > CURDATE() "
-            + "GROUP BY "
-            + "    cl.id, cl.name, cl.foundation_date, cl.phone_number, cl.email, "
-            + "    cl.badge_image, cl.budget, cl.id_stadium, "
-            + "    s.id, s.name, s.capacity "
-            + "ORDER BY contracts_count DESC "
-            + "LIMIT 1";
+        "SELECT "
+        + "    cl.id AS club_id, "
+        + "    cl.name AS club_name, "
+        + "    cl.foundation_date AS club_foundation_date, "
+        + "    cl.phone_number AS club_phone_number, "
+        + "    cl.email AS club_email, "
+        + "    cl.badge_image AS club_badge_image, "
+        + "    cl.budget AS club_budget, "
+        + "    cl.id_stadium, "
+        + "    cl.id_nationality, "
+        + "    s.id AS stadium_id, s.name AS stadium_name, s.capacity AS stadium_capacity, "
+        + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent, "
+        + "    COUNT(c.id) AS contracts_count "
+        + "FROM club cl "
+        + "INNER JOIN stadium s ON cl.id_stadium = s.id "
+        + "INNER JOIN nationality n ON cl.id_nationality = n.id "
+        + "INNER JOIN contract c ON c.id_club = cl.id "
+        + "WHERE c.release_date IS NULL "
+        + "  AND c.end_date > CURDATE() "
+        + "GROUP BY "
+        + "    cl.id, cl.name, cl.foundation_date, cl.phone_number, cl.email, "
+        + "    cl.badge_image, cl.budget, cl.id_stadium, cl.id_nationality, "
+        + "    s.id, s.name, s.capacity, "
+        + "    n.id, n.name, n.iso_code, n.flag_image, n.continent "
+        + "ORDER BY contracts_count DESC "
+        + "LIMIT 1";
+    
+    private static final String SELECT_ALL_CLUBS_FROM_ASSOCIATION =
+        "SELECT "
+        + "    c.id AS club_id, "
+        + "    c.name AS club_name, "
+        + "    c.foundation_date AS club_foundation_date, "
+        + "    c.phone_number AS club_phone_number, "
+        + "    c.email AS club_email, "
+        + "    c.badge_image AS club_badge_image, "
+        + "    c.budget AS club_budget, "
+        + "    c.id_stadium, "
+        + "    c.id_nationality, "
+        + "    s.id AS stadium_id, s.name AS stadium_name, s.capacity AS stadium_capacity, "
+        + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
+        + "FROM club c "
+        + "INNER JOIN stadium s ON c.id_stadium = s.id "
+        + "INNER JOIN nationality n ON c.id_nationality = n.id "
+        + "INNER JOIN association_nationality an ON n.id = an.id_nationality "
+        + "WHERE an.id_association = ? "
+        + "ORDER BY c.name";
 
     public LinkedList<Club> getAll() throws SQLException {
 
@@ -110,22 +136,25 @@ public class DataClub {
         ResultSet rs = null;
 
         try {
+        	
         	if (id != -1) {
 	            stmt = DbConnector.getInstance().getConn().prepareStatement(
 	            	SELECT_ALL_CLUBS_TOURNAMENT + " WHERE m.id_tournament = ? ORDER BY cl.name"
 	            );
 	            stmt.setInt(1, id);
+	            
 	            rs = stmt.executeQuery();
 
         	} else {
+        		
         		stmt = DbConnector.getInstance().getConn().prepareStatement(
-                        SELECT_ALL_CLUBS_JOINED
-                    );
+                    SELECT_ALL_CLUBS_JOINED
+                );
 
-                    rs = stmt.executeQuery();
+                rs = stmt.executeQuery();
+        	
         	}
         	
-            
             if (rs != null) {
 
                 while (rs.next()) {
@@ -161,7 +190,7 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    SELECT_ALL_CLUBS_JOINED + " WHERE cl.id = ?"
+            	SELECT_ALL_CLUBS_JOINED + " WHERE cl.id = ?"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -291,6 +320,36 @@ public class DataClub {
         return clubs;
         
     }
+    
+    public LinkedList<Club> getByAssociationId(int id) throws SQLException {
+        
+    	LinkedList<Club> clubs = new LinkedList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_CLUBS_FROM_ASSOCIATION);
+            stmt.setInt(1, id);
+            
+            rs = stmt.executeQuery();
+
+            while (rs.next()) clubs.add(mapFullClub(rs));
+            
+        } catch (SQLException e) {
+        	
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+        
+        return clubs;
+    
+    }
 
     public void add(Club c) throws SQLException {
 
@@ -300,8 +359,8 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	"INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            	"INSERT INTO club (name, foundation_date, phone_number, email, badge_image, budget, id_stadium, id_nationality) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, c.getName());
@@ -311,6 +370,8 @@ public class DataClub {
             stmt.setString(5, c.getBadgeImage());
             stmt.setDouble(6, c.getBudget());
             stmt.setInt(7, c.getStadium().getId());
+            stmt.setInt(8, c.getNationality().getId());
+            
             stmt.executeUpdate();
 
             keyResultSet = stmt.getGeneratedKeys();
@@ -327,19 +388,7 @@ public class DataClub {
 
         } finally {
 
-            try {
-
-                if (keyResultSet != null) {
-                    keyResultSet.close();
-                }
-
-            } catch (SQLException e) {
-
-                e.printStackTrace();
-
-            }
-
-            closeResources(null, stmt);
+            closeResources(keyResultSet, stmt);
 
         }
 
@@ -353,7 +402,7 @@ public class DataClub {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
             	"UPDATE club "
-                + "SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ? "
+                + "SET name = ?, foundation_date = ?, phone_number = ?, email = ?, badge_image = ?, budget = ?, id_stadium = ?, id_nationality = ? "
                 + "WHERE id = ?"
             );
             stmt.setString(1, c.getName());
@@ -363,7 +412,10 @@ public class DataClub {
             stmt.setString(5, c.getBadgeImage());
             stmt.setDouble(6, c.getBudget());
             stmt.setInt(7, c.getStadium().getId());
-            stmt.setInt(8, c.getId());
+            stmt.setInt(8, c.getNationality().getId());
+            
+            stmt.setInt(9, c.getId());
+            
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -386,9 +438,10 @@ public class DataClub {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-                    "DELETE FROM club WHERE id = ?"
+            	"DELETE FROM club WHERE id = ?"
             );
             stmt.setInt(1, id);
+            
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -419,6 +472,17 @@ public class DataClub {
         stadium.setId(rs.getInt("stadium_id"));
         stadium.setName(rs.getString("stadium_name"));
         stadium.setCapacity(rs.getInt("stadium_capacity"));
+        
+        Nationality nationality = new Nationality();
+        nationality.setId(rs.getInt("nat_id"));
+        nationality.setName(rs.getString("nat_name"));
+        nationality.setIsoCode(rs.getString("iso_code"));
+        nationality.setFlagImage(rs.getString("flag_image"));
+
+        String contStr = rs.getString("continent");
+        if (contStr != null) nationality.setContinent(Continent.valueOf(contStr));
+
+        club.setNationality(nationality);
 
         club.setStadium(stadium);
 

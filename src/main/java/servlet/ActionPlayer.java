@@ -103,13 +103,21 @@ public class ActionPlayer extends HttpServlet {
 		String primaryPos = request.getParameter("primaryPosition");
 	    
 		if (primaryPos != null) {
-	        try {
-	            return Integer.parseInt(primaryPos);
-	        } catch (NumberFormatException e) {
-	            System.err.println("ID posición principal inválida: " + primaryPos);
-	        }
-	    }
-	    return null;
+	        
+			try {
+	        
+				return Integer.parseInt(primaryPos);
+	        
+			} catch (NumberFormatException e) {
+	        
+				System.err.println("ID posición principal inválida: " + primaryPos);
+	        
+			}
+	    
+		}
+	    
+		return null;
+	
 	}
 	
 	private boolean checkBirthdate(LocalDate birthdate) {
