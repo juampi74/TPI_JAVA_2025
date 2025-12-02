@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -148,8 +149,8 @@ public class ActionClub extends HttpServlet {
             	clubs.sort(Comparator.comparing(Club::getName));
                 request.setAttribute("clubsList", clubs);
                 
-                HashSet<Integer> clubsWithClassicRivals = ctrl.getClubsWithClassicRivals();
-                request.setAttribute("clubsWithClassicRivals", clubsWithClassicRivals);
+                HashMap<Integer, Club> classicRivalsMap = ctrl.getClassicRivalsMap();
+                request.setAttribute("classicRivalsMap", classicRivalsMap);
                 
                 LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
             	request.setAttribute("stadiumsList", stadiums);

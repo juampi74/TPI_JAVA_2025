@@ -1,5 +1,5 @@
 <%@ page import="java.util.LinkedList"%>
-<%@ page import="java.util.HashSet" %>
+<%@ page import="java.util.HashMap" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Club"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -8,8 +8,8 @@
 	LinkedList<Club> cl = (LinkedList<Club>) request.getAttribute("clubsList");
 	boolean emptyList = (cl == null || cl.isEmpty());
 	
-    HashSet<Integer> occupied = (HashSet<Integer>) request.getAttribute("clubsWithClassicRivals");
-    if (occupied == null) occupied = new HashSet<>();
+    HashMap<Integer, Club> classicRivalsMap = (HashMap<Integer, Club>) request.getAttribute("classicRivalsMap");
+    if (classicRivalsMap == null) classicRivalsMap = new HashMap<>();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -27,10 +27,10 @@
 	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 	    
 	    <style>
-	    	
+	    
 	    	.table {
 	    		text-align: center;
-			}
+	    	}
 	    	
 	    	table th, table td {
 	    		vertical-align: middle !important;
@@ -41,21 +41,33 @@
 				margin: 0 auto;
 			}
 			
+			.classic-rival-badge {
+			    width: 32px; 
+			    height: 32px;
+			    margin-right: 6px;
+			    object-fit: contain; 
+			    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
+			    transition: transform 0.2s;
+			}
+			
+			.classic-rival-badge:hover {
+				transform: scale(1.2);
+			}
+			
 	    </style>
 	    
 	    <script>
-	        
 	    	const allClubsData = [
 	        <% 
 	           if (cl != null) {
 	               for (Club c : cl) { 
-	                   int nationalityId = c.getNationality().getId();
+	                   int nationalityId = (c.getNationality() != null) ? c.getNationality().getId() : 0;
 	        %>
 	            {
 	                id: <%= c.getId() %>,
 	                name: "<%= c.getName() %>",
 	                nationalityId: <%= nationalityId %>, 
-	                isOccupied: <%= occupied.contains(c.getId()) %>
+	                isOccupied: <%= classicRivalsMap.containsKey(c.getId()) %>
 	            },
 	        <% 
 	               } 
@@ -137,31 +149,41 @@
 	                    				</td>
 	                    				
 	                    				<td>
-						                    <% if (!occupied.contains(c.getId())) { %>
+						                    <% 
+						                       Club classicRival = classicRivalsMap.get(c.getId());
+						                       if (classicRival == null) { 
+						                    %>
 						                        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold shadow-sm"
-						                                data-bs-toggle="modal" data-bs-target="#rivalModal"
-						                                onclick="openRivalModal(<%= c.getId() %>, '<%= c.getName() %>', <%= c.getNationality().getId() %>)"
+						                                data-bs-toggle="modal" data-bs-target="#classicRivalModal"
+						                                onclick="openClassicRivalModal(<%= c.getId() %>, '<%= c.getName() %>', <%= (c.getNationality() != null) ? c.getNationality().getId() : 0 %>)"
 						                                title="Asignar Clásico Rival">
 						                            <img src="${pageContext.request.contextPath}/assets/duel.svg" style="display: block;" alt="Asignar Clásico Rival" width="25" height="25">
 						                        </button>
 						                    <% } else { %>
-						                        <form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;">
-										            <input type="hidden" name="action" value="removeClassicRival">
-										            <input type="hidden" name="id" value="<%= c.getId() %>">
-										            <button type="button"
-										            		class="btn btn-sm btn-secondary shadow-sm btn-open-modal"
-										            		data-action="remove-classic-rival"
-										            		data-id="<%= c.getId() %>"
-										            		data-name="<%= c.getName() %>"
-										            		title="Desvincular Rivalidad">
-										                <img src="${pageContext.request.contextPath}/assets/unlink.svg" style="display: block;" alt="Remover Rivalidad" width="25" height="25">
-										            </button>
-										        </form>
+						                        <div class="d-flex align-items-center justify-content-start">
+						                            <img src="<%=request.getContextPath() + "/images?id=" + classicRival.getBadgeImage()%>" 
+						                                 title="Clásico Rival: <%= classicRival.getName() %>"
+						                                 class="classic-rival-badge" alt="Clásico Rival">
+						                            
+						                            <form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;">
+											            <input type="hidden" name="action" value="removeClassicRival">
+											            <input type="hidden" name="id" value="<%= c.getId() %>">
+											            <button type="button"
+											            		class="btn btn-sm btn-secondary shadow-sm btn-open-modal"
+											            		data-action="remove-classic-rival"
+											            		data-id="<%= c.getId() %>"
+											            		data-name="<%= c.getName() %>"
+											            		data-classic-rival-name="<%= classicRival.getName() %>"
+											            		title="Desvincular Rivalidad">
+											                <img src="${pageContext.request.contextPath}/assets/unlink.svg" style="display: block;" alt="Remover Rivalidad" width="25" height="25">
+											            </button>
+											        </form>
+						                        </div>
 						                    <% } %>
 						                </td>
 	                    				
 	                    				<td>
-	                    					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;">
+	                    					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
 												<input type="hidden" name="action" value="delete" />
 												<input type="hidden" name="id" value="<%=c.getId()%>" />
 												<button type="button"
@@ -203,7 +225,7 @@
 		  </div>
 		</div>
 
-		<div class="modal fade" id="rivalModal" tabindex="-1" aria-hidden="true">
+		<div class="modal fade" id="classicRivalModal" tabindex="-1" aria-hidden="true">
 	        <div class="modal-dialog modal-dialog-centered">
 	            <form action="actionclub" method="post" class="modal-content bg-dark text-white border border-secondary shadow-lg">
 	                <input type="hidden" name="action" value="setClassicRival">
@@ -220,7 +242,7 @@
 	                <div class="modal-body">
 	                    <div class="form-group">
 	                        <label class="mb-2 fw-bold">Seleccioná el rival:</label>
-	                        <select name="idClub2" id="rivalSelect" class="form-select bg-secondary text-white border-0" required>
+	                        <select name="idClub2" id="classicRivalSelect" class="form-select bg-secondary text-white border-0" required>
 	                            <option value="">-- Buscando clubes compatibles... --</option>
 	                        </select>
 	                        
@@ -256,12 +278,13 @@
 			            actionType = this.getAttribute('data-action');
 			            const id = this.getAttribute('data-id');
 			            const name = this.getAttribute('data-name');
+			            const classicRivalName = this.getAttribute('data-classic-rival-name');
 			            currentForm = this.closest('form');
 			            
 			            if (actionType === "delete") {
 			                modalBody.textContent = "¿Estás seguro que querés eliminar este club?";
 			            } else {
-			            	modalBody.innerHTML = "¿Estás seguro que querés desvincular a <b>" + name + "</b> de su clásico rival?";
+			            	modalBody.innerHTML = "¿Estás seguro que querés desvincular la rivalidad entre <b>" + name + "</b> y <b>" + classicRivalName + "</b>?";
 			            }
 			            
 			            modal.show();
@@ -276,12 +299,12 @@
 			    });
 			});
 
-	        function openRivalModal(id, name, nationalityId) {
+	        function openClassicRivalModal(id, name, nationalityId) {
 
 	            document.getElementById("modalClubId").value = id;
 	            document.getElementById("modalClubName").textContent = name;
 	            
-	            const select = document.getElementById("rivalSelect");
+	            const select = document.getElementById("classicRivalSelect");
 	            const btnSave = document.getElementById("btnSaveClassicRival");
 	            
 	            select.innerHTML = '<option value="">-- Seleccioná un rival --</option>';
@@ -303,12 +326,10 @@
 	                    select.appendChild(option);
 	                });
 	            } else {
-	                select.innerHTML = ''; 
-	                
+	            	select.innerHTML = ''; 
 	                const option = document.createElement("option");
+	                option.disabled = true;
 	                option.textContent = "No hay rivales disponibles en este país";
-	                option.value = "";
-	                
 	                select.appendChild(option);
 	                
 	                select.disabled = true;

@@ -6,6 +6,7 @@ import enums.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class DataClub {
@@ -249,23 +250,43 @@ public class DataClub {
         
     }
     
-    public HashSet<Integer> getClubsWithClassicRivals() throws SQLException {
+    public HashMap<Integer, Club> getClassicRivalsMap() throws SQLException {
         
-    	HashSet<Integer> occupiedIds = new HashSet<>();
+    	HashMap<Integer, Club> classicRivalsMap = new HashMap<>();
         Statement stmt = null;
         ResultSet rs = null;
         
         try {
-            
+        
         	stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery("SELECT id_club_1 FROM classic_rivalry UNION SELECT id_club_2 FROM classic_rivalry");
+                               
+        	rs = stmt.executeQuery(
+    		    "SELECT r.id_club_1 AS origin_id, c.id, c.name, c.badge_image "
+    		    + "FROM classic_rivalry r "
+    		    + "INNER JOIN club c ON r.id_club_2 = c.id "
+    		    
+    		    + "UNION "
+    		    
+    		    + "SELECT r.id_club_2 AS origin_id, c.id, c.name, c.badge_image "
+    		    + "FROM classic_rivalry r "
+    		    + "INNER JOIN club c ON r.id_club_1 = c.id"
+    		);
             
-            while (rs.next()) occupiedIds.add(rs.getInt(1));
+            while (rs.next()) {
+
+            	Club classicRival = new Club();
+            	classicRival.setId(rs.getInt("id"));
+            	classicRival.setName(rs.getString("name"));
+            	classicRival.setBadgeImage(rs.getString("badge_image"));
+                
+            	classicRivalsMap.put(rs.getInt("origin_id"), classicRival);
+            
+            }
             
         } catch (SQLException e) {
-        	
+            
         	e.printStackTrace();
-            throw new SQLException("No se pudo conectar a la base de datos.", e);
+            throw new SQLException("Error al recuperar mapa de rivales", e);
         
         } finally {
         
@@ -273,7 +294,7 @@ public class DataClub {
         
         }
         
-        return occupiedIds;
+        return classicRivalsMap;
     
     }
 

@@ -8,7 +8,9 @@ import java.time.temporal.ChronoUnit;
 import java.time.DayOfWeek;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -77,6 +79,85 @@ public class ActionTournament extends HttpServlet {
 	    
 	    return fridayOfThatWeek;
 	    
+	}
+	
+	private LinkedList<Match> generateZonalPhase(LinkedList<Club> allClubs, LocalDate startDate, Logic ctrl) throws SQLException {
+	    
+		LinkedList<Match> allMatches = new LinkedList<>();
+
+	    HashMap<Integer, Club> classicRivalries = ctrl.getClassicRivalsMap();
+	    
+	    LinkedList<Club> zoneA = new LinkedList<>();
+	    LinkedList<Club> zoneB = new LinkedList<>();
+	    
+	    HashMap<Integer, Club> clubsMap = new HashMap<>();
+	    for (Club c : allClubs) clubsMap.put(c.getId(), c);
+	    
+	    HashSet<Integer> assignedIds = new HashSet<>();
+
+	    for (Club c : allClubs) {
+
+	        if (assignedIds.contains(c.getId())) continue;
+
+	        if (classicRivalries.containsKey(c.getId())) {
+	            
+	        	Club classicRivalObj = classicRivalries.get(c.getId());
+	            int classicRivalId = classicRivalObj.getId();
+	        	            
+	            if (clubsMap.containsKey(classicRivalId)) {
+	                
+	            	Club classicRival = clubsMap.get(classicRivalId);
+	                
+	                zoneA.add(c);
+	                zoneB.add(classicRival);
+	                
+	                assignedIds.add(c.getId());
+	                assignedIds.add(classicRivalId);
+	                
+	            }
+	        
+	        }
+	    
+	    }
+	    
+	    LinkedList<Club> remaining = new LinkedList<>();
+	    
+	    for (Club c : allClubs) {
+	        
+	    	if (!assignedIds.contains(c.getId())) {
+	        
+	    		remaining.add(c);
+	        
+	    	}
+	    
+	    }
+	    
+	    Collections.shuffle(remaining);
+	    
+	    for (Club c : remaining) {
+
+	    	if (zoneA.size() <= zoneB.size()) {
+	        
+	    		zoneA.add(c);
+	        
+	    	} else {
+	        
+	    		zoneB.add(c);
+	        
+	    	}
+	    
+	    }
+	        
+	    LinkedList<Match> matchesA = generateFirstLeg(zoneA, startDate);
+	    LinkedList<Match> matchesB = generateFirstLeg(zoneB, startDate);
+	    
+	    allMatches.addAll(matchesA);
+	    allMatches.addAll(matchesB);
+	    
+	    allMatches.sort(Comparator.comparing(Match::getDate));
+
+	    return allMatches;
+	
 	}
 	
 	private LinkedList<Match> generateFirstLeg(LinkedList<Club> clubs, LocalDate startDate) {
@@ -197,7 +278,7 @@ public class ActionTournament extends HttpServlet {
 	    
 	}
 	
-	private LinkedList<Match> drawTournamentMatchdays(LinkedList<Club> clubs, Tournament tournament){
+	private LinkedList<Match> drawTournamentMatchdays(LinkedList<Club> clubs, Tournament tournament, Logic ctrl) throws SQLException {
 		
 		LinkedList<Match> matches = new LinkedList<>();
 		
@@ -205,6 +286,7 @@ public class ActionTournament extends HttpServlet {
 		
 			case ZONAL_ELIMINATION:
 			
+				matches = generateZonalPhase(clubs, tournament.getStartDate(), ctrl);
 				break;
 		
 			case ROUND_ROBIN_ONE_LEG:
@@ -342,8 +424,21 @@ public class ActionTournament extends HttpServlet {
 					
 					}
 					
-					fixture = drawTournamentMatchdays(clubs, tournament);
-					tournament.setEndDate(fixture.getLast().getDate().toLocalDate());
+					fixture = drawTournamentMatchdays(clubs, tournament, ctrl);
+
+					LocalDate endDate;
+
+					if (tournament.getFormat() == TournamentFormat.ZONAL_ELIMINATION) {
+
+                    	endDate = fixture.getLast().getDate().toLocalDate().plusWeeks(4);
+                    
+                    } else {
+
+                    	endDate = fixture.getLast().getDate().toLocalDate();
+                    
+                    }
+					
+					tournament.setEndDate(endDate);
 
 					ctrl.addTournament(tournament);
 					
