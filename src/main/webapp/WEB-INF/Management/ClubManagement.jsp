@@ -261,7 +261,7 @@
 			            if (actionType === "delete") {
 			                modalBody.textContent = "¿Estás seguro que querés eliminar este club?";
 			            } else {
-			            	modalBody.innerHTML = "¿Estás seguro que querés desvincular la rivalidad de <b>" + name + "</b>?";
+			            	modalBody.innerHTML = "¿Estás seguro que querés desvincular a <b>" + name + "</b> de su clásico rival?";
 			            }
 			            
 			            modal.show();
