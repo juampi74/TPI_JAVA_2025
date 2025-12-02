@@ -6,6 +6,7 @@ import enums.*;
 import enums.PersonRole;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -247,10 +248,16 @@ public class Logic {
 
     }
 
-    public Club getClubWithMostContracts() {
+    public Club getClubWithMostContracts() throws SQLException {
     	
         return dcl.getClubWithMostContracts();
     
+    }
+    
+    public HashSet<Integer> getClubsWithClassicRivals() throws SQLException {
+    	
+    	return dcl.getClubsWithClassicRivals();
+    	
     }
 
     public Club getClubById(int id) throws SQLException {
@@ -282,6 +289,12 @@ public class Logic {
         dcl.add(c);
 
     }
+    
+    public void addClassicRival(int id1, int id2) throws SQLException {
+    	
+    	dcl.addClassicRival(id1, id2);
+    	
+    }
 
     public void updateClub(Club c) throws SQLException {
 
@@ -293,6 +306,12 @@ public class Logic {
 
         dcl.delete(id);
 
+    }
+    
+    public void removeClassicRival(int id) throws SQLException {
+    	
+    	dcl.removeClassicRival(id);
+    	
     }
 
     public LinkedList<Association> getAllAssociations() throws SQLException {

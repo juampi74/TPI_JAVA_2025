@@ -71,6 +71,33 @@ INSERT INTO `association_nationality` VALUES (1,1),(3,1),(6,1),(3,4),(4,4),(6,4)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `classic_rivalry`
+--
+
+DROP TABLE IF EXISTS `classic_rivalry`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `classic_rivalry` (
+  `id_club_1` int NOT NULL,
+  `id_club_2` int NOT NULL,
+  PRIMARY KEY (`id_club_1`,`id_club_2`),
+  KEY `fk_rival_2` (`id_club_2`),
+  CONSTRAINT `fk_rival_1` FOREIGN KEY (`id_club_1`) REFERENCES `club` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_rival_2` FOREIGN KEY (`id_club_2`) REFERENCES `club` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `classic_rivalry`
+--
+
+LOCK TABLES `classic_rivalry` WRITE;
+/*!40000 ALTER TABLE `classic_rivalry` DISABLE KEYS */;
+INSERT INTO `classic_rivalry` VALUES (1,5),(27,30),(26,31),(19,34),(9,40);
+/*!40000 ALTER TABLE `classic_rivalry` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `club`
 --
 
@@ -164,7 +191,7 @@ CREATE TABLE `match` (
   CONSTRAINT `fk_match_away` FOREIGN KEY (`id_away`) REFERENCES `club` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_match_home` FOREIGN KEY (`id_home`) REFERENCES `club` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_match_tournament` FOREIGN KEY (`id_tournament`) REFERENCES `tournament` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21954 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -348,7 +375,7 @@ CREATE TABLE `tournament` (
   KEY `idx_tournament_dates` (`start_date`,`end_date`),
   KEY `idx_tournament_season` (`season`),
   CONSTRAINT `fk_tournament_association` FOREIGN KEY (`id_association`) REFERENCES `association` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -370,4 +397,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-01 20:17:31
+-- Dump completed on 2025-12-02  2:18:29

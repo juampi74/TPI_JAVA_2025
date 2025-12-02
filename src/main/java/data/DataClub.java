@@ -6,6 +6,7 @@ import enums.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.LinkedList;
+import java.util.HashSet;
 
 public class DataClub {
 
@@ -74,23 +75,23 @@ public class DataClub {
     
     private static final String SELECT_ALL_CLUBS_FROM_ASSOCIATION =
         "SELECT "
-        + "    c.id AS club_id, "
-        + "    c.name AS club_name, "
-        + "    c.foundation_date AS club_foundation_date, "
-        + "    c.phone_number AS club_phone_number, "
-        + "    c.email AS club_email, "
-        + "    c.badge_image AS club_badge_image, "
-        + "    c.budget AS club_budget, "
-        + "    c.id_stadium, "
-        + "    c.id_nationality, "
+        + "    cl.id AS club_id, "
+        + "    cl.name AS club_name, "
+        + "    cl.foundation_date AS club_foundation_date, "
+        + "    cl.phone_number AS club_phone_number, "
+        + "    cl.email AS club_email, "
+        + "    cl.badge_image AS club_badge_image, "
+        + "    cl.budget AS club_budget, "
+        + "    cl.id_stadium, "
+        + "    cl.id_nationality, "
         + "    s.id AS stadium_id, s.name AS stadium_name, s.capacity AS stadium_capacity, "
         + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
-        + "FROM club c "
-        + "INNER JOIN stadium s ON c.id_stadium = s.id "
-        + "INNER JOIN nationality n ON c.id_nationality = n.id "
+        + "FROM club cl "
+        + "INNER JOIN stadium s ON cl.id_stadium = s.id "
+        + "INNER JOIN nationality n ON cl.id_nationality = n.id "
         + "INNER JOIN association_nationality an ON n.id = an.id_nationality "
         + "WHERE an.id_association = ? "
-        + "ORDER BY c.name";
+        + "ORDER BY cl.name";
 
     public LinkedList<Club> getAll() throws SQLException {
 
@@ -216,7 +217,7 @@ public class DataClub {
         
     }
 
-    public Club getClubWithMostContracts() {
+    public Club getClubWithMostContracts() throws SQLException {
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -235,7 +236,8 @@ public class DataClub {
 
         } catch (SQLException e) {
 
-            e.printStackTrace();
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
 
         } finally {
 
@@ -245,6 +247,34 @@ public class DataClub {
 
         return club;
         
+    }
+    
+    public HashSet<Integer> getClubsWithClassicRivals() throws SQLException {
+        
+    	HashSet<Integer> occupiedIds = new HashSet<>();
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            
+        	stmt = DbConnector.getInstance().getConn().createStatement();
+            rs = stmt.executeQuery("SELECT id_club_1 FROM classic_rivalry UNION SELECT id_club_2 FROM classic_rivalry");
+            
+            while (rs.next()) occupiedIds.add(rs.getInt(1));
+            
+        } catch (SQLException e) {
+        	
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+        
+        return occupiedIds;
+    
     }
 
     public Club getByStadiumId(int id) throws SQLException {
@@ -393,6 +423,36 @@ public class DataClub {
         }
 
     }
+    
+    public void addClassicRival(int id1, int id2) throws SQLException {
+        
+    	PreparedStatement stmt = null;
+        
+    	try {
+            
+            int min = Math.min(id1, id2);
+            int max = Math.max(id1, id2);
+            
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	"INSERT INTO classic_rivalry (id_club_1, id_club_2) VALUES (?, ?)"
+            );
+            stmt.setInt(1, min);
+            stmt.setInt(2, max);
+            
+            stmt.executeUpdate();
+        
+    	} catch (SQLException e) {
+    		
+    		e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+    	} finally {
+        
+    		closeResources(null, stmt);
+        
+    	}
+    
+    }
 
     public void update(Club c) throws SQLException {
 
@@ -455,6 +515,33 @@ public class DataClub {
 
         }
 
+    }
+    
+    public void removeClassicRival(int id) throws SQLException {
+        
+    	PreparedStatement stmt = null;
+        
+    	try {
+    		          
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	"DELETE FROM classic_rivalry WHERE id_club_1 = ? OR id_club_2 = ?"
+            );
+            stmt.setInt(1, id);
+            stmt.setInt(2, id);
+            
+            stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+        	
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+            
+        	closeResources(null, stmt);
+        
+        }
+    
     }
 
     private Club mapFullClub(ResultSet rs) throws SQLException {

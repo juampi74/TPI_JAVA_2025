@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -147,6 +148,9 @@ public class ActionClub extends HttpServlet {
             	clubs.sort(Comparator.comparing(Club::getName));
                 request.setAttribute("clubsList", clubs);
                 
+                HashSet<Integer> clubsWithClassicRivals = ctrl.getClubsWithClassicRivals();
+                request.setAttribute("clubsWithClassicRivals", clubsWithClassicRivals);
+                
                 LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
             	request.setAttribute("stadiumsList", stadiums);
             	
@@ -205,7 +209,24 @@ public class ActionClub extends HttpServlet {
         	
         		}
 
-            } else if ("delete".equals(action)) {
+            } else if ("setClassicRival".equals(action)) {
+            	
+            	int id1 = Integer.parseInt(request.getParameter("idClub1"));
+                int id2 = Integer.parseInt(request.getParameter("idClub2"));               
+                ctrl.addClassicRival(id1, id2);
+                
+                response.sendRedirect("actionclub"); 
+                return;
+        	
+        	} else if ("removeClassicRival".equals(action)) {
+            
+        		int id = Integer.parseInt(request.getParameter("id"));
+        	    ctrl.removeClassicRival(id);
+        	    
+        	    response.sendRedirect("actionclub");
+        	    return;
+            
+        	} else if ("delete".equals(action)) {
                 
             	Integer club_id = Integer.parseInt(request.getParameter("id"));
             	
