@@ -33,7 +33,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_TOURNAMENTS_JOINED);
+            rs = stmt.executeQuery(SELECT_ALL_TOURNAMENTS_JOINED + " ORDER BY t.start_date, t.end_date");
 
             if (rs != null) {
 
