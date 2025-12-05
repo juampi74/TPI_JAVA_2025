@@ -133,7 +133,7 @@
 									</div>
 								<% } else { %>
 								    <div class="alert alert-warning d-flex align-items-center mt-2 py-2" role="alert">
-								        <i class="fas fa-exclamation-circle fs-5 me-3 flex-shrink-0"></i>
+								        <i class="fas fa-exclamation-circle me-2 flex-shrink-0"></i>
 								        <div>
 								            Esta asociación solo tiene <strong>1</strong> club registrado. 
 								            Necesitás al menos <strong>2</strong> para crear un torneo.
@@ -174,12 +174,17 @@
 				                
 				            <% } else { %>
 				            	<p class="text-warning mt-3 p-3 border border-warning rounded" style="background-color: rgba(255, 193, 7, 0.1);">
-				                    <i class="fas fa-exclamation-circle me-1"></i> No hay clubes registrados para <b><%= a.getName() %></b>.
+				                    <i class="fas fa-exclamation-circle me-2"></i> No hay clubes registrados para <b><%= a.getName() %></b>.
 				                </p>
 				            <% } %>
 				            
 				        </div>
 				    <% } %>
+				</div>
+				
+				<div id="globalError" class="alert alert-warning align-items-center mt-3" style="display: none;" role="alert">
+				    <i class="fas fa-exclamation-triangle me-2"></i>
+				    <span id="globalErrorText"></span>
 				</div>
 				
 	            <div class="button-container my-4">
@@ -198,123 +203,228 @@
 		</div>
 		
         <script>
-		    
-        	function validateClubs() {
-		    
-        		var associationId = document.getElementById("id_association").value;
-		        if (!associationId) return true; 
-		
-		        var container = document.getElementById('list_' + associationId);
+
+		    function checkValidity() {
 		        
-		        if (container) {
-
-		        	var checkboxes = container.querySelectorAll(".club-checkbox");
-		        	
-		        	if (checkboxes.length < 2) return false;
-
-		        	const totalMarked = container.querySelectorAll(".club-checkbox:checked").length;
-		            const errorSpan = container.querySelector(".error-msg");
+		    	var associationId = document.getElementById("id_association").value;
+		        var format = document.getElementById("format").value;
+		        var btn = document.getElementById("btnSubmit");
+		        var isValid = false;
+		        var errorMessage = "";
 		
-		            if (totalMarked < 2) {
+		        if (associationId && format) {
+		        
+		        	var container = document.getElementById('list_' + associationId);
+		            
+		            if (container) {
 
-		            	if (errorSpan) {
-		            	
-		            		errorSpan.style.display = "inline";
-		                    errorSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-		            	
-		            	}
+		                var total = container.querySelectorAll(".club-checkbox:checked").length;
 		                
-		            	return false;
+
+		                if (format === "ZONAL_ELIMINATION") {
+		            
+		                	if (total >= 16 && total <= 32 && total % 2 === 0) {
+		                    
+		                		isValid = true;
+		                    
+		                	}
+		                
+		                } else if (format === "ROUND_ROBIN_ONE_LEG" || format === "ROUND_ROBIN_TWO_LEGS") {
+		                
+		                	if (total >= 8 && total <= 32) {
+		                    
+		                		isValid = true;
+		                    
+		                	}
+		                
+		                } else if (format === "WORLD_CUP") {
+		                
+		                	if (total === 32) {
+		                    
+		                		isValid = true;
+		                    
+		                	}
+		                
+		                }
 		            
 		            }
-		            
-		            if (errorSpan) errorSpan.style.display = "none";
+		        
+		        }
+		
+		        if (btn) {
+		        
+		        	btn.disabled = !isValid;
+		            btn.style.opacity = isValid ? "1" : "0.5";
+		            btn.style.cursor = isValid ? "pointer" : "not-allowed";
 		        
 		        }
 		        
-		        document.getElementById("loadingOverlay").style.display = "flex";
-		        
-		        return true;
+		        return isValid;
 		    
-        	}
+		    }
 		
-        	function updateCount() {
-        	    
-        		var associationId = document.getElementById("id_association").value;
-        	    if (!associationId) return;
-
-        	    var container = document.getElementById('list_' + associationId);
-        	    
-        	    if (container) {
-        	        
-        	        var checkboxes = container.querySelectorAll(".club-checkbox");
-        	        
-        	        if (checkboxes.length > 0) {
-        	            
-        	        	const total = container.querySelectorAll(".club-checkbox:checked").length;
-        	            const totalCheckboxes = checkboxes.length;
-        	            
-        	            var counterSpan = container.querySelector(".count-display");
-        	            var errorSpan = container.querySelector(".error-msg");
-
-        	            if (counterSpan) counterSpan.textContent = total;
-
-        	            if (total >= 2 && errorSpan) errorSpan.style.display = "none";
-
-        	            var btn = document.getElementById('btnToggle_' + associationId);
-        	            if (btn) {
-        	                
-        	            	const allAreChecked = (total > 0 && total === totalCheckboxes);
-        	                
-        	                if (allAreChecked) {
-        	                
-        	                	btn.innerHTML = '<i class="fas fa-minus-square me-1"></i> Quitar selección';
-        	                    btn.style.backgroundColor = "#c0392b";
-        	                
-        	                } else {
-        	                
-        	                	btn.innerHTML = '<i class="fas fa-check-square me-1"></i> Seleccionar todos';
-        	                    btn.style.backgroundColor = "#1A6B32";
-        	                
-        	                }
-        	            
-        	            }
-        	        
-        	        }
-        	    
-        	    }
-        	
-        	}
-		
-		    function toggleAllClubs() {
-		    	
+		    function validateClubs() {
+		    
 		    	var associationId = document.getElementById("id_association").value;
-		        if (!associationId) return;
-
+		        var format = document.getElementById("format").value;
+		        
+		        var globalError = document.getElementById("globalError");
+		        var globalErrorText = document.getElementById("globalErrorText");
+		        
+		        if (globalError) globalError.style.display = "none";
+		        
+		        if (!associationId) return false;
+		
 		        var container = document.getElementById('list_' + associationId);
 		        
-		        if (container) {
+		        if (!container || container.querySelectorAll(".club-checkbox").length === 0) {
 		        
-		        	const checkboxes = container.querySelectorAll(".club-checkbox");
-		        	if(checkboxes.length === 0) return;
-
-		            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+		        	globalErrorText.textContent = "La asociación seleccionada no tiene suficientes clubes para crear un torneo.";
+		            globalError.style.display = "flex";
+		            globalError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		            return false;
+		        
+		        }
+		        
+		        const total = container.querySelectorAll(".club-checkbox:checked").length;
+		        const errorSpan = container.querySelector(".error-msg");
+		        let errorMessage = "";
+		        let isValid = true;
+		
+		        if (total < 2) {
+		        
+		        	errorMessage = "Debés seleccionar al menos 2 equipos.";
+		            isValid = false;
+		        
+		        } else if (format === "ZONAL_ELIMINATION") {
+		        
+		        	if (total < 16 || total > 32) {
+		            
+		        		errorMessage = "Para Formato Zonal debés seleccionar entre 16 y 32 equipos (Seleccionados: " + total + ").";
+		                isValid = false;
+		            
+		        	} else if (total % 2 !== 0) {
+		            
+		        		errorMessage = "Para Formato Zonal debés seleccionar una cantidad PAR de equipos.";
+		                isValid = false;
+		            
+		        	}
+		        
+		        } else if ((format === "ROUND_ROBIN_ONE_LEG" || format === "ROUND_ROBIN_TWO_LEGS") && (total < 8 || total > 32)) {
+		        
+		        	errorMessage = "Para Formato Todos contra Todos debés seleccionar entre 8 y 32 equipos.";
+		            isValid = false;
+		        
+		        } else if (format === "WORLD_CUP" && total !== 32) {
+		        
+		        	errorMessage = "Para Formato Mundial debés seleccionar exactamente 32 equipos.";
+		            isValid = false;
+		        
+		        }
+		        
+		        if (!isValid) {
+		        
+		        	if (errorSpan) {
+		            
+		        		errorSpan.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> ' + errorMessage;
+		                errorSpan.style.display = "inline";
+		                errorSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		            
+		        	}
+		            
+		        	return false;
+		        
+		        }
+		
+		        if (errorSpan) errorSpan.style.display = "none";
+		        document.getElementById("loadingOverlay").style.display = "flex";
+		        return true;
+		    
+		    }
+		
+		    function updateCount() {
+		    
+		    	var associationId = document.getElementById("id_association").value;
+		        if (!associationId) return;
+		
+		        var container = document.getElementById('list_' + associationId);
+		        if (container) {
+	             
+		        	var checkboxes = container.querySelectorAll(".club-checkbox");
+		        
+		            if (checkboxes.length > 0) {
+		                
+		           		const total = container.querySelectorAll(".club-checkbox:checked").length;
+		                const totalCheckboxes = checkboxes.length;
+		                
+		                var counterSpan = container.querySelector(".count-display");
+		                var errorSpan = container.querySelector(".error-msg");
+		                if (counterSpan) counterSpan.textContent = total;
+		                
+		                if (total >= 2 && errorSpan) errorSpan.style.display = "none"; 
+		                
+		                var btn = document.getElementById('btnToggle_' + associationId);
+		                
+		                if (btn) {
+		                    
+		                	const allAreChecked = (total > 0 && total === totalCheckboxes);
+		                    
+		                	if (allAreChecked) {
+		                    
+		                		btn.innerHTML = '<i class="fas fa-minus-square me-1"></i> Quitar selección';
+		                        btn.style.backgroundColor = "#c0392b";
+		                    
+		                	} else {
+		                    
+		                		btn.innerHTML = '<i class="fas fa-check-square me-1"></i> Seleccionar todos';
+		                        btn.style.backgroundColor = "#1A6B32";
+		                    
+		                	}
+		                
+		                }
+		             
+		            } 
+		        
+		        }
+		        
+		        checkValidity();
+		    
+		    }
+		
+		    function toggleAllClubs() {
+		    
+		    	var associationId = document.getElementById("id_association").value;
+		        
+		    	if (!associationId) return;
+		        
+		    	var container = document.getElementById('list_' + associationId);
+		        
+		    	if (container) {
+		        
+		    		const checkboxes = container.querySelectorAll(".club-checkbox");
+		            
+		    		if(checkboxes.length === 0) return;
+		            
+		    		const allChecked = Array.from(checkboxes).every(cb => cb.checked);
 		            checkboxes.forEach(cb => cb.checked = !allChecked);
 		            
 		            updateCount();
 		        
-		        }
+		    	}
 		    
 		    }
 		    
 		    function showClubs(associationId) {
 		    	
-		    	var lists = document.querySelectorAll('.clubs-list');
+		    	var globalError = document.getElementById("globalError");
+		        if (globalError) globalError.style.display = "none";
 		    	
-		    	lists.forEach(function(div) {
+		        var lists = document.querySelectorAll('.clubs-list');
+		    
+		        lists.forEach(function(div) {
 		        
-		    		div.style.display = 'none';
-		        	
+		        	div.style.display = 'none';
+		            
 		        	var checkboxes = div.querySelectorAll('input[type="checkbox"]');
 		            checkboxes.forEach(function(cb) { cb.checked = false; });
 		            
@@ -325,14 +435,15 @@
 		            if (errorSpan) errorSpan.style.display = "none";
 		            
 		            var btn = div.querySelector("button[id^='btnToggle_']");
+		            
 		            if (btn) {
 		            
 		            	btn.innerHTML = '<i class="fas fa-check-square me-1"></i> Seleccionar todos';
 		                btn.style.backgroundColor = "#1A6B32";
 		            
 		            }
-		    	
-		    	});
+		        
+		        });
 		
 		        if (associationId) {
 		        
@@ -340,11 +451,18 @@
 		            if (chosenList) chosenList.style.display = 'block';
 		        
 		        }
+		        
+		        checkValidity();
 		    
 		    }
 		        
-		    window.onload = updateCount;
-		
+		    window.onload = function() {
+		    
+		    	updateCount();
+		        checkValidity();
+		    
+		    };
+		    
 		</script>
 		
 	</body>

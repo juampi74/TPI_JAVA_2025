@@ -97,7 +97,7 @@
 	                    					<form method="post" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">
 												<input type="hidden" name="action" value="delete" />
 												<input type="hidden" name="id" value="<%=t.getId()%>" />
-												<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= t.getId() %>" >
+												<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= t.getId() %>" data-name="<%= t.getName() %>" >
 													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="" width="25" height="25">
 												</button>
 											</form>
@@ -117,15 +117,13 @@
 		  <div class="modal-dialog modal-dialog-centered">
 		    <div class="modal-content text-dark">
 		      <div class="modal-header">
-		        <h5 class="modal-title" id="confirmModalLabel">Confirmar acción</h5>
+		        <h5 class="modal-title" id="confirmModalLabel">Eliminar Torneo</h5>
 		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
 		      </div>
-		      <div class="modal-body" id="confirmModalBody">
-		        ¿Estás seguro que querés continuar?
-		      </div>
+		      <div class="modal-body" id="confirmModalBody"></div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-		        <button type="button" class="btn btn-danger" id="confirmModalYes">Aceptar</button>
+		        <button type="button" class="btn btn-danger" id="confirmModalYes">Eliminar</button>
 		      </div>
 		    </div>
 		  </div>
@@ -134,6 +132,7 @@
 		<script>
 			document.addEventListener("DOMContentLoaded", function() {
 			    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+			    const modalLabel = document.getElementById('confirmModalLabel');
 			    const modalBody = document.getElementById('confirmModalBody');
 			    const confirmBtn = document.getElementById('confirmModalYes');
 			
@@ -144,12 +143,23 @@
 			        button.addEventListener('click', function() {
 			            actionType = this.getAttribute('data-action');
 			            const id = this.getAttribute('data-id');
+			            const name = this.getAttribute('data-name');
 		
 			            currentForm = this.closest('form');
+			            
+			            modalLabel.textContent = 'Eliminar "' + name + '"';
 			
-			            modalBody.textContent = "¿Estás seguro que querés eliminar este torneo?";
-			           
-			
+			            modalBody.innerHTML = 
+			                "<p class='mt-1 mb-3 text-center'>¿Estás seguro que querés eliminar el torneo?</p>" +
+			                
+			                "<div class='alert alert-danger border-danger d-flex align-items-center mt-4' role='alert'>" +
+			                    "<i class='fas fa-exclamation-triangle fs-4 me-3 flex-shrink-0'></i>" +
+			                    "<div>" +
+			                        "<strong>¡Atención!</strong> Esta acción es <b><u>irreversible</u></b>.<br>" +
+			                        "Se borrarán permanentemente todos sus partidos y resultados asociados." +
+			                    "</div>" +
+			                "</div>";
+			           			
 			            modal.show();
 			        });
 			    });

@@ -51,7 +51,7 @@
 	    <div class="w-100">
 	        <jsp:include page="/WEB-INF/Navbar.jsp" />
 	    </div>
-		<main class="container text-center mt-5">
+		<main class="container text-center mt-4">
 	        <div class="row justify-content-center mb-4">
 	            <div class="d-flex justify-content-center align-items-center col-auto text-dark border border-dark rounded p-3 me-4 border border-white" style="width: 300px; min-height: 200px; background-color: rgba(33,37,41,1);">
 			        <form action="actionclub" method="get" style="margin:0;">

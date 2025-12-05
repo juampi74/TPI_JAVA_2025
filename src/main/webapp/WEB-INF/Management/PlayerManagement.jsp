@@ -234,48 +234,47 @@
 		    	<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 my-4">
 		        	<h1 class="m-0">Jugadores</h1>
 		        	<form method="get" action="actionplayer" class="d-flex align-items-center gap-3 ms-auto m-0">
-		          		<label for="clubFilter" class="form-label m-0 fs-5">Filtrar por club:</label>
-							<select name="clubId" id="clubFilter"
-								class="form-select form-select-sm w-auto fancy-select bg-dark text-white"
-								onchange="this.form.submit()">
-									<option value="">Todos los clubes</option>
-									<option value="free" <%= "free".equals(request.getParameter("clubId")) ? "selected" : "" %>>🔓 Agente Libre (Sin Club)</option>
-					            <%
-									LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
-                      
-									String selectedClub = request.getParameter("clubId");
-                      
-									int selectedId = -1;
-                      
-									if (selectedClub != null && !selectedClub.isEmpty()) {
+						<select name="clubId" id="clubFilter"
+							class="form-select form-select-sm w-auto fancy-select bg-dark text-white"
+							onchange="this.form.submit()">
+								<option value="">Todos los clubes</option>
+								<option value="free" <%= "free".equals(request.getParameter("clubId")) ? "selected" : "" %>>🔓 Agente Libre (Sin Club)</option>
+				            <%
+								LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
+                     
+								String selectedClub = request.getParameter("clubId");
+                     
+								int selectedId = -1;
+                     
+								if (selectedClub != null && !selectedClub.isEmpty()) {
+									
+									if (!"free".equals(selectedClub)) {
+									
+										try {
 										
-										if (!"free".equals(selectedClub)) {
+											selectedId = Integer.parseInt(selectedClub);
 										
-											try {
-											
-												selectedId = Integer.parseInt(selectedClub);
-											
-											} catch (NumberFormatException ex) {
-											
-												selectedId = -1;
-											
-											}
+										} catch (NumberFormatException ex) {
+										
+											selectedId = -1;
 										
 										}
 									
 									}
-					              
-					            	if (clubs != null) {
-					                	
-					            		for (Club c : clubs) {
-					            %>
-		              						<option value="<%= c.getId() %>" <%= (c.getId() == selectedId) ? "selected" : "" %>><%= c.getName() %></option>
-		            			<%
-						                }
-						            }
-		            			%>
-							</select>
-							<span id="freeIndicator" class="free-indicator d-none" title="Filtrando Agente Libre"><i class="fas fa-user-slash"></i>Agente Libre</span>
+								
+								}
+				              
+				            	if (clubs != null) {
+				                	
+				            		for (Club c : clubs) {
+				            %>
+	              						<option value="<%= c.getId() %>" <%= (c.getId() == selectedId) ? "selected" : "" %>><%= c.getName() %></option>
+	            			<%
+					                }
+					            }
+	            			%>
+						</select>
+						<span id="freeIndicator" class="free-indicator d-none" title="Filtrando Agente Libre"><i class="fas fa-user-slash"></i>Agente Libre</span>
 					</form>
 		
 			        <form action="actionplayer" method="get" class="m-0 ms-5">
@@ -338,8 +337,7 @@
 							    
 								} else {
 							        
-									title = "El club '" + clubName + "' no tiene plantel asignado";
-
+									title = String.format("El club \"%s\" no tiene plantel asignado", clubName);
 							        subtitle = "Podés registrar un nuevo fichaje desde la sección "
 							                 + "<strong>Contratos</strong>.";
 							    }

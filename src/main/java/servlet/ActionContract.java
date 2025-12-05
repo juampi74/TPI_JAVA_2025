@@ -76,7 +76,6 @@ public class ActionContract extends HttpServlet {
         return true;
     }
 
-    // No debería ser necesario porque si la persona tiene un contrato activo no se muestra en el droplist
     private boolean checkContracts(int id, Logic ctrl) throws SQLException {
 
         LinkedList<Contract> contracts = ctrl.getContractsByPersonId(id);

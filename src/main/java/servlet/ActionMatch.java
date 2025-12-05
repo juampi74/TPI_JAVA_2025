@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.ServletException;
@@ -15,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import entities.Club;
 import entities.Match;
-import entities.Player;
 import entities.Tournament;
 import logic.Logic;
 
@@ -28,8 +26,7 @@ public class ActionMatch extends HttpServlet {
 
 	    Match match = new Match();
 	    
-	    if ("edit".equals(action))
-	        match.setId(Integer.parseInt(request.getParameter("id")));
+	    if ("edit".equals(action)) match.setId(Integer.parseInt(request.getParameter("id")));
 
 	    int idHome = Integer.parseInt(request.getParameter("id_home"));
         int idAway = Integer.parseInt(request.getParameter("id_away"));
@@ -51,6 +48,7 @@ public class ActionMatch extends HttpServlet {
 	    match.setDate(LocalDateTime.parse(request.getParameter("date"), fmt));
 
 	    return match;
+	
 	}
 
 	private Integer parseNullableInteger(String val) {
@@ -81,76 +79,54 @@ public class ActionMatch extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String action = request.getParameter("action");
 		Logic ctrl = new Logic();
 
 		try {
 
-			if ("edit".equals(action)) {
+			Integer clubId = parseId(request.getParameter("clubId"));
+	        Integer tournamentId = parseId(request.getParameter("tournamentId"));
+	            
+	        LinkedList<Match> matches;
 
-				Match match = ctrl.getMatchById(Integer.parseInt(request.getParameter("id")));
-				request.setAttribute("match", match);
+            if (clubId != null && tournamentId != null) {
 
-				request.setAttribute("clubs", ctrl.getAllClubs());
-				request.setAttribute("tournaments", ctrl.getAllTournaments());
+            	matches = ctrl.getMatchesByClubAndTournamentId(clubId, tournamentId);
+            
+            } else if (clubId != null) {
+            
+            	matches = ctrl.getMatchesByClubId(clubId);
+            
+            } else if (tournamentId != null) {
+            
+            	matches = ctrl.getMatchesByTournamentId(tournamentId);
+            
+            } else {
+            
+            	matches = ctrl.getAllMatches(); 
+            
+            }
+            
+            LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+            
+            LinkedList<Club> clubs;
+            if (tournamentId != null) {
 
-				request.getRequestDispatcher("WEB-INF/Edit/EditMatch.jsp").forward(request, response);
+            	clubs = ctrl.getAllClubsByTournamentId(tournamentId);
+            
+            } else {
+            
+                clubs = ctrl.getAllClubs(); 
+            
+            }
 
-			} else if ("add".equals(action)) {
-
-				request.setAttribute("clubs", ctrl.getAllClubs());
-				request.setAttribute("tournaments", ctrl.getAllTournaments());
-
-				request.getRequestDispatcher("WEB-INF/Add/AddMatch.jsp").forward(request, response);
-
-			} else {
-				
-				Integer clubId = parseId(request.getParameter("clubId"));
-	            Integer tournamentId = parseId(request.getParameter("tournamentId"));
-	            
-	            LinkedList<Match> matches;
-
-	            if (clubId != null && tournamentId != null) {
-
-	            	matches = ctrl.getMatchesByClubAndTournamentId(clubId, tournamentId);
-	            
-	            } else if (clubId != null) {
-	            
-	            	matches = ctrl.getMatchesByClubId(clubId);
-	            
-	            } else if (tournamentId != null) {
-	            
-	            	matches = ctrl.getMatchesByTournamentId(tournamentId);
-	            
-	            } else {
-	            
-	            	matches = ctrl.getAllMatches(); 
-	            
-	            }
-	            
-	            LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-	            
-	            LinkedList<Club> clubs;
-	            if (tournamentId != null) {
-
-	            	clubs = ctrl.getAllClubsByTournamentId(tournamentId);
-	            
-	            } else {
-	            
-	                clubs = ctrl.getAllClubs(); 
-	            
-	            }
-
-	            request.setAttribute("matchList", matches);
-	            request.setAttribute("tournamentsList", tournaments);
-	            request.setAttribute("clubsList", clubs);
-	            
-	            request.setAttribute("selectedClubId", clubId);
-	            request.setAttribute("selectedTournamentId", tournamentId);
-	            
-	            request.getRequestDispatcher("/WEB-INF/Management/MatchManagement.jsp").forward(request, response);
-			
-			}
+            request.setAttribute("matchList", matches);
+            request.setAttribute("tournamentsList", tournaments);
+            request.setAttribute("clubsList", clubs);
+            
+            request.setAttribute("selectedClubId", clubId);
+            request.setAttribute("selectedTournamentId", tournamentId);
+            
+            request.getRequestDispatcher("/WEB-INF/Management/MatchManagement.jsp").forward(request, response);
 
 		} catch (SQLException e) {
 
@@ -161,8 +137,7 @@ public class ActionMatch extends HttpServlet {
 
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
@@ -181,11 +156,6 @@ public class ActionMatch extends HttpServlet {
 
 				Match match = buildMatchFromRequest(request, action, ctrl);
 				ctrl.updateMatch(match);
-
-			} else if ("delete".equals(action)) {
-
-				Integer id = Integer.parseInt(request.getParameter("id"));
-				ctrl.deleteMatch(id);
 
 			}
 

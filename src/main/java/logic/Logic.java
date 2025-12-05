@@ -7,7 +7,6 @@ import enums.PersonRole;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -341,43 +340,67 @@ public class Logic {
     }
 
     public void addAssociation(Association a) throws SQLException {
-        das.add(a);
+        
+    	das.add(a);
 
     }
 
     public void updateAssociation(Association a) throws SQLException {
-        das.update(a);
+        
+    	das.update(a);
 
     }
     
     public void updateAssociationNationalities(int idAssociation, String[] selectedCountriesIds) throws SQLException {
-        LinkedList<Integer> countriesIds = new LinkedList<>();
+        
+    	LinkedList<Integer> countriesIds = new LinkedList<>();
         
         if (selectedCountriesIds != null) {
-            for (String idStr : selectedCountriesIds) {
-                try {
-                	countriesIds.add(Integer.parseInt(idStr));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
+        
+        	for (String idStr : selectedCountriesIds) {
+            
+        		try {
+                
+        			countriesIds.add(Integer.parseInt(idStr));
+                
+        		} catch (NumberFormatException e) {
+                
+        			e.printStackTrace();
+                
+        		}
+            
+        	}
+        
         }
 
         Association currentAssociation = das.getById(idAssociation);
+        
         if (currentAssociation != null && currentAssociation.getType() == AssociationType.NATIONAL) {
-            for (Integer countryId : countriesIds) {
-                LinkedList<Association> associationsWithCountry = das.getByNationalityId(countryId);
-                if (associationsWithCountry != null) {
-                    for (Association a : associationsWithCountry) {
-                        if (a.getType() == AssociationType.NATIONAL && a.getId() != idAssociation) {
-                            throw new SQLException("La nacionalidad ya está vinculada a la asociación nacional '" + a.getName() + "'.");
-                        }
-                    }
-                }
-            }
+        
+        	for (Integer countryId : countriesIds) {
+            
+        		LinkedList<Association> associationsWithCountry = das.getByNationalityId(countryId);
+                
+        		if (associationsWithCountry != null) {
+                
+        			for (Association a : associationsWithCountry) {
+                    
+        				if (a.getType() == AssociationType.NATIONAL && a.getId() != idAssociation) {
+                        
+        					throw new SQLException("La nacionalidad ya está vinculada a la asociación nacional '" + a.getName() + "'.");
+                        
+        				}
+                    
+        			}
+                
+        		}
+            
+        	}
+        
         }
 
         das.updateNationalities(idAssociation, countriesIds);
+
     }
 
     public void deleteAssociation(int id) throws SQLException {
@@ -584,9 +607,9 @@ public class Logic {
     
     }
     
-    public LinkedList<Match> getMatchesByClubAndTournamentId(Integer id_club, Integer id_tournament) throws SQLException {
+    public LinkedList<Match> getMatchesByClubAndTournamentId(Integer clubId, Integer tournamentId) throws SQLException {
     
-    	return dm.getByClubAndTournamentId(id_club, id_tournament);
+    	return dm.getByClubAndTournamentId(clubId, tournamentId);
     
     }
     
@@ -599,12 +622,6 @@ public class Logic {
     public void updateMatch(Match match) throws SQLException {
     
     	dm.update(match);
-    
-    }
-    
-    public void deleteMatch(Integer id) throws SQLException {
-    
-    	dm.delete(id);
     
     }
     

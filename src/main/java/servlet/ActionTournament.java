@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.DayOfWeek;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.servlet.ServletException;
@@ -55,15 +57,9 @@ public class ActionTournament extends HttpServlet {
 		    
 	}
 	
-	private boolean checkMatches(Integer id, Logic ctrl) throws SQLException {
-			
-		return ctrl.getMatchesByTournamentId(id).isEmpty();
-	
-	}
-	
-	private int calculateHour(int matchIndex, int[] allowedHours) {
+	private int calculateHour(int matchIndex, LinkedList<Integer> allowedHours) {
 
-		return allowedHours[matchIndex % allowedHours.length];
+		return allowedHours.get(matchIndex % allowedHours.size());
 	
 	}
 	
@@ -81,8 +77,175 @@ public class ActionTournament extends HttpServlet {
 	    
 	}
 	
+	private void redistributeMatchesByMatchday(LinkedList<Match> allMatches, LocalDate startDate, boolean isWorldCupFormat) {
+
+	    HashMap<Integer, LinkedList<Match>> matchesByDay = new HashMap<>();
+	    
+	    for (Match m : allMatches) {
+	        
+	    	matchesByDay.computeIfAbsent(m.getMatchday(), k -> new LinkedList<>()).add(m);
+	    
+	    }
+	    
+	    LinkedList<Integer> fridayHours = new LinkedList<Integer>(List.of(22, 20, 18, 16)); 
+	    LinkedList<Integer> weekendHours = new LinkedList<Integer>(List.of(22, 20, 18, 16, 14));
+	    
+	    if (isWorldCupFormat) {
+	        
+	    	Collections.reverse(fridayHours);
+	    	fridayHours.add(22);
+	        
+	    	Collections.reverse(weekendHours);
+	        weekendHours.add(22);
+	    
+	    }
+
+	    for (Map.Entry<Integer, LinkedList<Match>> entry : matchesByDay.entrySet()) {
+	        
+	    	int matchdayNum = entry.getKey();
+	        LinkedList<Match> matchesOfThisDate = entry.getValue();
+	        
+	        if (isWorldCupFormat) {
+
+	        	matchesOfThisDate.sort(Comparator.comparing(Match::getGroupName));
+	        
+	        } else {
+
+	            Collections.shuffle(matchesOfThisDate);
+
+	        }
+	        
+	        int totalMatches = matchesOfThisDate.size();
+	        
+	        int quotaFriday = (int) Math.round(totalMatches * 0.25);
+	        if (quotaFriday == 0 && totalMatches >= 2) quotaFriday = 1;
+	        
+	        int quotaSaturday = (int) Math.round(totalMatches * 0.375);
+	        
+	        LocalDate fridayOfMatchday = startDate.plusWeeks(matchdayNum - 1);
+	        
+	        for (int i = 0; i < totalMatches; i++) {
+	            
+	        	Match m = matchesOfThisDate.get(i);
+	            LocalDateTime finalDate;
+	            
+	            if (i < quotaFriday) {
+
+	                int hour = calculateHour(i, fridayHours);
+	                finalDate = fridayOfMatchday.atTime(hour, 0);
+	                
+	            } else if (i < (quotaFriday + quotaSaturday)) {
+
+	                int idxSat = i - quotaFriday;
+	                int hour = calculateHour(idxSat, weekendHours);
+	                finalDate = fridayOfMatchday.plusDays(1).atTime(hour, 0);
+	                
+	            } else {
+
+	            	int idxSun = i - (quotaFriday + quotaSaturday);
+	                int hour = calculateHour(idxSun, weekendHours);
+	                finalDate = fridayOfMatchday.plusDays(2).atTime(hour, 0);
+	            }
+	            
+	            m.setDate(finalDate);
+	        
+	        }
+	    
+	    }
+	
+	}
+	
+	private LinkedList<Match> generateInterzonalMatches(LinkedList<Club> zoneA, LinkedList<Club> zoneB, int matchday, HashMap<Integer, Club> classicRivalries) {
+		
+		LinkedList<Match> interzonalMatches = new LinkedList<>();
+		
+		HashSet<Integer> assignedA = new HashSet<>();
+		HashSet<Integer> assignedB = new HashSet<>();
+		
+		for (Club cA : zoneA) {
+			
+			if (classicRivalries.containsKey(cA.getId())) {
+				
+				int classicRivalId = classicRivalries.get(cA.getId()).getId();
+				
+				for (Club cB : zoneB) {
+					
+					if (cB.getId() == classicRivalId && !assignedB.contains(cB.getId())) {
+
+						Match m = new Match();
+						
+						if (Math.random() < 0.5) {
+	                        
+							m.setHome(cA);
+	                        m.setAway(cB);
+	                    
+						} else {
+	                    
+							m.setHome(cB);
+	                        m.setAway(cA);
+	                    
+						}
+						
+						m.setMatchday(matchday);
+						
+						m.setStage(TournamentStage.GROUP_STAGE);
+						m.setGroupName("Interzonal");
+						
+						interzonalMatches.add(m);
+						
+						assignedA.add(cA.getId());
+						assignedB.add(cB.getId());
+						
+						break;
+					
+					}
+				
+				}
+			
+			}
+		
+		}
+		
+		LinkedList<Club> remainingA = new LinkedList<>();
+		for (Club c : zoneA) if (!assignedA.contains(c.getId())) remainingA.add(c);
+		
+		LinkedList<Club> remainingB = new LinkedList<>();
+		for (Club c : zoneB) if (!assignedB.contains(c.getId())) remainingB.add(c);
+		
+		Collections.shuffle(remainingA);
+		Collections.shuffle(remainingB);
+		
+		int count = Math.min(remainingA.size(), remainingB.size());
+
+		for (int i = 0; i < count; i++) {
+			
+			Match m = new Match();
+			
+			m.setHome(remainingA.get(i));
+			m.setAway(remainingB.get(i));
+			
+			m.setMatchday(matchday);
+			
+			m.setStage(TournamentStage.GROUP_STAGE);
+			m.setGroupName("Interzonal");
+			
+			interzonalMatches.add(m);
+		
+		}
+		
+		return interzonalMatches;
+	
+	}
+	
 	private LinkedList<Match> generateZonalPhase(LinkedList<Club> allClubs, LocalDate startDate, Logic ctrl) throws SQLException {
 	    
+		if (allClubs.size() < 16 || allClubs.size() > 32 || allClubs.size() % 2 != 0) {
+	        
+			throw new SQLException("El formato ZONAL requiere una cantidad PAR de equipos, entre 16 y 32 en total. (Seleccionados: " + allClubs.size() + ")");
+	    
+		}
+		
+		
 		LinkedList<Match> allMatches = new LinkedList<>();
 
 	    HashMap<Integer, Club> classicRivalries = ctrl.getClassicRivalsMap();
@@ -151,11 +314,42 @@ public class ActionTournament extends HttpServlet {
 	    LinkedList<Match> matchesA = generateFirstLeg(zoneA, startDate);
 	    LinkedList<Match> matchesB = generateFirstLeg(zoneB, startDate);
 	    
+	    int totalZonalDates = matchesA.getLast().getMatchday();
+	    int interzonalDay = (totalZonalDates / 2) + 1;
+	    
+	    for (Match m : matchesA) {
+	    	
+	    	if (m.getMatchday() >= interzonalDay) {
+	    		
+	    		m.setMatchday(m.getMatchday() + 1);
+	    	
+	    	}
+	        
+	    	m.setStage(TournamentStage.GROUP_STAGE);
+	        m.setGroupName("Zona A");
+	        	    
+	    }
+	    
+	    for (Match m : matchesB) {
+	    	
+	    	if (m.getMatchday() >= interzonalDay) {
+	    		
+	    		m.setMatchday(m.getMatchday() + 1);
+	    	
+	    	}
+	    	
+	    	m.setStage(TournamentStage.GROUP_STAGE);
+	        m.setGroupName("Zona B");
+	            
+	    }
+	    
+	    LinkedList<Match> interzonalMatches = generateInterzonalMatches(zoneA, zoneB, interzonalDay, classicRivalries);
+	    
 	    allMatches.addAll(matchesA);
 	    allMatches.addAll(matchesB);
 	    
-	    allMatches.sort(Comparator.comparing(Match::getDate));
-
+	    allMatches.addAll(interzonalMatches);
+	    	    
 	    return allMatches;
 	
 	}
@@ -163,9 +357,6 @@ public class ActionTournament extends HttpServlet {
 	private LinkedList<Match> generateFirstLeg(LinkedList<Club> clubs, LocalDate startDate) {
 		
 		LinkedList<Match> fixture = new LinkedList<>();
-		
-		int[] fridayHours = {22, 20, 18, 16}; 
-	    int[] weekendHours = {22, 20, 18, 16, 14};
 
 		LinkedList<Club> rotated = new LinkedList<>(clubs);
 		
@@ -181,15 +372,9 @@ public class ActionTournament extends HttpServlet {
 		int totalMatchdays = n - 1;
 		int matchesPerMatchday = n / 2;
 		
-	    int quotaFriday = (int) Math.round(matchesPerMatchday * (2.0 / 8.0));
-	    int quotaSaturday = (int) Math.round(matchesPerMatchday * (3.0 / 8.0));
-	    if (quotaFriday == 0 && matchesPerMatchday >= 2) quotaFriday = 1;
-			
 	    for (int day = 1; day <= totalMatchdays; day++) {
 	    	
-	    	LocalDate currentFriday = startDate.plusWeeks(day - 1);
-			
-	    	int matchesScheduledReal = 0;
+	    	LocalDate baseDate = startDate.plusWeeks(day - 1);
 			
 		    for (int i = 0; i < matchesPerMatchday; i++) {
 		
@@ -206,46 +391,23 @@ public class ActionTournament extends HttpServlet {
 		        
 		        }
 		        
-		        LocalDateTime matchDateTime;
-		        int assignedHour;
-		        
-		        if (matchesScheduledReal < quotaFriday) {
-	                
-		        	assignedHour = calculateHour(matchesScheduledReal, fridayHours);
-		        	matchDateTime = currentFriday.atTime(assignedHour, 0);
-	                
-	            } else if (matchesScheduledReal < (quotaFriday + quotaSaturday)) {
-
-	            	int indexOnSaturday = matchesScheduledReal - quotaFriday;
-	            	assignedHour = calculateHour(indexOnSaturday, weekendHours);
-	                matchDateTime = currentFriday.plusDays(1).atTime(assignedHour, 0);
-	                
-	            } else {
-
-	            	int indexOnSunday = matchesScheduledReal - (quotaFriday + quotaSaturday);
-	                assignedHour = calculateHour(indexOnSunday, weekendHours);
-	                matchDateTime = currentFriday.plusDays(2).atTime(assignedHour, 0);
-	                
-	            }
-		        
 		        Match match = new Match();
 		        
-		        match.setAway(away);
 		        match.setHome(home);
-		        match.setDate(matchDateTime);
+		        match.setAway(away);
+		        
+		        match.setStage(TournamentStage.GROUP_STAGE);
 		        match.setMatchday(day);
 		        
+		        match.setDate(baseDate.atStartOfDay());
+		        
 		        fixture.add(match);
-
-		        matchesScheduledReal++;
-		    
+	    
 		    }
 		
 		    rotated.add(1, rotated.remove(rotated.size() - 1));
 		
 		}
-	    
-	    fixture.sort(Comparator.comparing(Match::getDate));
 		
 		return fixture;
 	
@@ -261,53 +423,183 @@ public class ActionTournament extends HttpServlet {
 	        
 	    	Match returnMatch = new Match();
 	        
-	        returnMatch.setHome(m.getAway());
-	        returnMatch.setAway(m.getHome());
-	        
-	        returnMatch.setDate(m.getDate().plusWeeks(totalMatchdaysFirstLeg));
-	        
-	        returnMatch.setMatchday(m.getMatchday() + totalMatchdaysFirstLeg);
-	        
+	    	returnMatch.setHome(m.getAway());
+	    	returnMatch.setAway(m.getHome());
+
+	    	returnMatch.setStage(TournamentStage.GROUP_STAGE);
+	    	returnMatch.setMatchday(m.getMatchday() + totalMatchdaysFirstLeg);
+
+	    	returnMatch.setDate(m.getDate().plusWeeks(totalMatchdaysFirstLeg));
+                   
 	        secondLegMatches.add(returnMatch);
 	        
 	    }
-	    
-	    secondLegMatches.sort(Comparator.comparing(Match::getDate));
-	    
+	    	    
 	    return secondLegMatches;
 	    
+	}
+	
+	private LinkedList<Match> generateWorldCupFixture(LinkedList<Club> allClubs, LocalDate startDate, Logic ctrl) throws SQLException {
+	    
+		if (allClubs.size() != 32) {
+	        
+			throw new SQLException("El formato MUNDIAL requiere exactamente 32 equipos seleccionados. (Seleccionados: " + allClubs.size() + ")");
+	    
+		}
+		
+		LinkedList<Match> allMatches = new LinkedList<>();
+	    
+	    List<LinkedList<Club>> groups = new ArrayList<>();
+	    
+	    for (int i = 0; i < 8; i++) groups.add(new LinkedList<>());
+
+	    HashMap<Integer, Club> classicRivalries = ctrl.getClassicRivalsMap();
+	    
+	    Collections.shuffle(allClubs);
+
+	    for (Club c : allClubs) {
+	    	
+	        boolean assigned = false;
+	        
+	        List<Integer> groupIndexes = new ArrayList<>();
+	        
+	        for (int i = 0; i < 8; i++) groupIndexes.add(i);
+	        
+	        groupIndexes.sort(Comparator.comparingInt(i -> groups.get(i).size()));
+
+	        for (int i : groupIndexes) {
+	            
+	        	LinkedList<Club> currentGroup = groups.get(i);
+	            
+	            if (currentGroup.size() >= 4) continue;
+	            
+	            boolean conflict = false;
+
+	            if (classicRivalries.containsKey(c.getId())) {
+	                
+	            	Club classicRivalObj = classicRivalries.get(c.getId());
+	                int classicRivalId = classicRivalObj.getId();
+	                
+	                for (Club member : currentGroup) {
+	                    
+	                	if (member.getId() == classicRivalId) {
+	                        
+	                		conflict = true;
+	                        break;
+	                    
+	                	}
+	                
+	                }
+	            
+	            }
+	            
+	            if (!conflict) {
+
+	            	currentGroup.add(c);
+	                assigned = true;
+	                break;
+	            
+	            }
+	        
+	        }
+	        
+	        if (!assigned) {
+
+	        	groups.get(groupIndexes.get(0)).add(c);
+	        
+	        }
+	    
+	    }
+	    
+	    char groupChar = 'A';
+
+	    for (LinkedList<Club> group : groups) {
+	        
+	    	if (group.size() < 2) {
+	    		
+	    		groupChar++;
+	    		continue;
+	    	
+	    	}
+	        
+	        LinkedList<Match> groupMatches = generateFirstLeg(group, startDate);
+	        
+	        String groupName = "Grupo " + groupChar;
+	        
+	        for (Match m : groupMatches) {
+	        
+	        	m.setStage(TournamentStage.GROUP_STAGE);
+	            m.setGroupName(groupName);
+	        
+	        }
+	        
+	        allMatches.addAll(groupMatches);
+	        groupChar++;
+	    
+	    }
+	        
+	    return allMatches;
+	
 	}
 	
 	private LinkedList<Match> drawTournamentMatchdays(LinkedList<Club> clubs, Tournament tournament, Logic ctrl) throws SQLException {
 		
 		LinkedList<Match> matches = new LinkedList<>();
 		
+		LinkedList<Club> shuffledClubs = new LinkedList<>(clubs);
+	    Collections.shuffle(shuffledClubs);
+
+	    boolean isWorldCup = false;
+		
 		switch (tournament.getFormat()) {
 		
 			case ZONAL_ELIMINATION:
 			
-				matches = generateZonalPhase(clubs, tournament.getStartDate(), ctrl);
+				matches = generateZonalPhase(shuffledClubs, tournament.getStartDate(), ctrl);
+				
 				break;
 		
 			case ROUND_ROBIN_ONE_LEG:
-			
-				matches = generateFirstLeg(clubs, tournament.getStartDate());
+			    
+				if (shuffledClubs.size() < 8 || shuffledClubs.size() < 32) {
+					
+					throw new SQLException("El formato TODOS CONTRA TODOS requiere entre 8 y 32 equipos seleccionados. (Seleccionados: " + shuffledClubs.size() + ")");
+					
+				}
+				
+				matches = generateFirstLeg(shuffledClubs, tournament.getStartDate());
+				
 				break;
 			
 			case ROUND_ROBIN_TWO_LEGS:
-			
-	            LinkedList<Match> firstLeg = generateFirstLeg(clubs, tournament.getStartDate());
+				
+				if (shuffledClubs.size() < 8 || shuffledClubs.size() < 32) {
+					
+					throw new SQLException("El formato TODOS CONTRA TODOS requiere entre 8 y 32 equipos seleccionados. (Seleccionados: " + shuffledClubs.size() + ")");
+					
+				}
+					
+	            LinkedList<Match> firstLeg = generateFirstLeg(shuffledClubs, tournament.getStartDate());
 	            matches.addAll(firstLeg);
 	            
-	            LinkedList<Match> secondLeg = generateSecondLeg(firstLeg, clubs.size());
+	            LinkedList<Match> secondLeg = generateSecondLeg(firstLeg, shuffledClubs.size());
 	            matches.addAll(secondLeg);
+	            
 	            break;
 		
 			case WORLD_CUP:
 				
+				matches = generateWorldCupFixture(shuffledClubs, tournament.getStartDate(), ctrl);
+				
+				isWorldCup = true;
+				
 				break;
 		
 		}
+		
+		redistributeMatchesByMatchday(matches, tournament.getStartDate(), isWorldCup);
+	    
+	    matches.sort(Comparator.comparing(Match::getDate));
 		
 		return matches;
 	
@@ -360,7 +652,6 @@ public class ActionTournament extends HttpServlet {
 	        } else {
 	            
 	        	LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-            	tournaments.sort(Comparator.comparing(Tournament::getName));
                 request.setAttribute("tournamentsList", tournaments);
                 
                 LinkedList<Association> associations = ctrl.getAllAssociations();
@@ -404,6 +695,12 @@ public class ActionTournament extends HttpServlet {
 					LinkedList<Club> clubs = new LinkedList<>();
 					String[] selectedClubs = request.getParameterValues("selectedClubs");
 					
+					if (selectedClubs == null || selectedClubs.length < 2) {
+				        
+						throw new SQLException("Todos los torneos requieren de al menos 2 equipos.");
+				    
+					}
+					
 					if (selectedClubs != null) {
 						
 						for (String clubIdStr : selectedClubs) {
@@ -426,13 +723,14 @@ public class ActionTournament extends HttpServlet {
 					
 					fixture = drawTournamentMatchdays(clubs, tournament, ctrl);
 
+					TournamentFormat format = tournament.getFormat();
 					LocalDate endDate;
 
-					if (tournament.getFormat() == TournamentFormat.ZONAL_ELIMINATION) {
+					if (format == TournamentFormat.ZONAL_ELIMINATION || format == TournamentFormat.WORLD_CUP) {
 
-                    	endDate = fixture.getLast().getDate().toLocalDate().plusWeeks(4);
-                    
-                    } else {
+						endDate = fixture.getLast().getDate().toLocalDate().plusWeeks(4);
+					    
+					} else {
 
                     	endDate = fixture.getLast().getDate().toLocalDate();
                     
@@ -460,21 +758,11 @@ public class ActionTournament extends HttpServlet {
                 
             	Integer id = Integer.parseInt(request.getParameter("id"));
 
-            	if (checkMatches(id, ctrl)) {
-
-            		ctrl.deleteTournament(id);
-
-            	} else {
-
-            		request.setAttribute("errorMessage", "No se puede eliminar un torneo que tiene partidos organizados");
-            		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-
-            	}
+            	ctrl.deleteTournament(id);
                 
             }
 
             LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-            tournaments.sort(Comparator.comparing(Tournament::getName));
             request.setAttribute("tournamentsList", tournaments);
             request.getRequestDispatcher("WEB-INF/Management/TournamentManagement.jsp").forward(request, response);
         	
