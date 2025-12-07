@@ -51,9 +51,9 @@ public class ActionMatch extends HttpServlet {
 	
 	}
 
-	private Integer parseNullableInteger(String val) {
+	private Integer parseNullableInteger(String value) {
 	    
-		return (val == null || val.isEmpty()) ? null : Integer.parseInt(val);
+		return (value == null || value.trim().isEmpty()) ? null : Integer.parseInt(value);
 	
 	}
 	
@@ -119,7 +119,7 @@ public class ActionMatch extends HttpServlet {
             
             }
 
-            request.setAttribute("matchList", matches);
+            request.setAttribute("matchList", matches);           
             request.setAttribute("tournamentsList", tournaments);
             request.setAttribute("clubsList", clubs);
             
@@ -152,10 +152,25 @@ public class ActionMatch extends HttpServlet {
 				Match match = buildMatchFromRequest(request, action, ctrl);
 				ctrl.addMatch(match);
 
-			} else if ("edit".equals(action)) {
+			} else if ("setResult".equals(action)) {
 
-				Match match = buildMatchFromRequest(request, action, ctrl);
-				ctrl.updateMatch(match);
+				Match match = new Match();
+				
+				match.setId(Integer.parseInt(request.getParameter("id")));
+				match.setHomeGoals(Integer.parseInt(request.getParameter("home_goals")));
+				match.setAwayGoals(Integer.parseInt(request.getParameter("away_goals")));         
+				
+				ctrl.setMatchResult(match);
+						    
+			    StringBuilder redirectUrl = new StringBuilder("actionmatch");		    
+		        
+		    	redirectUrl.append("?tournamentId=")
+		    			   .append(request.getParameter("tournamentId"))
+		    			   .append("&clubId=")
+		    			   .append(request.getParameter("clubId"));
+	            
+	            response.sendRedirect(redirectUrl.toString());
+	            return;
 
 			}
 

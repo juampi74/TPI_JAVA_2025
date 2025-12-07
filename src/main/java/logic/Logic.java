@@ -619,9 +619,9 @@ public class Logic {
     
     }
     
-    public void updateMatch(Match match) throws SQLException {
-    
-    	dm.update(match);
+    public void setMatchResult(Match match) throws SQLException {
+        
+    	dm.setResult(match);
     
     }
     

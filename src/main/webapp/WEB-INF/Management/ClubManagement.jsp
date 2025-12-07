@@ -266,37 +266,54 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 		
 		<script>
+			
 			document.addEventListener("DOMContentLoaded", function() {
-			    const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+		
+				const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
 			    const modalBody = document.getElementById('confirmModalBody');
 			    const confirmBtn = document.getElementById('confirmModalYes');
+			    
 			    let currentForm = null;
 			    let actionType = "";
 			
 			    document.querySelectorAll('.btn-open-modal').forEach(button => {
-			        button.addEventListener('click', function() {
-			            actionType = this.getAttribute('data-action');
+			        
+			    	button.addEventListener('click', function() {
+			            
+			    		actionType = this.getAttribute('data-action');
 			            const id = this.getAttribute('data-id');
 			            const name = this.getAttribute('data-name');
 			            const classicRivalName = this.getAttribute('data-classic-rival-name');
 			            currentForm = this.closest('form');
 			            
 			            if (actionType === "delete") {
-			                modalBody.textContent = "¿Estás seguro que querés eliminar este club?";
+			            
+			            	modalBody.textContent = "¿Estás seguro que querés eliminar este club?";
+			            
 			            } else {
+			            
 			            	modalBody.innerHTML = "¿Estás seguro que querés desvincular la rivalidad entre <b>" + name + "</b> y <b>" + classicRivalName + "</b>?";
+			            
 			            }
 			            
 			            modal.show();
-			        });
+			        
+			    	});
+			    
 			    });
 				
 			    confirmBtn.addEventListener('click', function() {
-			        if (currentForm) {
-			            currentForm.submit();
-			        }
-			        modal.hide();
+			    
+			    	if (currentForm) {
+			        
+			    		currentForm.submit();
+			        
+			    	}
+			        
+			    	modal.hide();
+			    
 			    });
+			
 			});
 
 	        function openClassicRivalModal(id, name, nationalityId) {
@@ -313,19 +330,26 @@
 	            btnSave.disabled = false;
 	            
 	            const candidates = allClubsData.filter(c => {
-	                return c.id !== id && 
+	                
+	            	return c.id !== id && 
 	                       c.nationalityId === nationalityId && 
 	                       !c.isOccupied;
+	            
 	            });
 	            
 	            if (candidates.length > 0) {
-	                candidates.forEach(c => {
-	                    const option = document.createElement("option");
+	            
+	            	candidates.forEach(c => {
+	                
+	            		const option = document.createElement("option");
 	                    option.value = c.id;
 	                    option.textContent = c.name;
 	                    select.appendChild(option);
-	                });
+	                
+	            	});
+	            
 	            } else {
+	            
 	            	select.innerHTML = ''; 
 	                const option = document.createElement("option");
 	                option.disabled = true;
@@ -334,8 +358,12 @@
 	                
 	                select.disabled = true;
 	                btnSave.disabled = true;
+	            
 	            }
+	        
 	        }
+	        
 		</script>
+
 	</body>
 </html>

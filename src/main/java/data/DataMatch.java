@@ -252,40 +252,33 @@ public class DataMatch {
 
     }
 
-    public void update(Match m) throws SQLException {
-
-        PreparedStatement stmt = null;
-
-        try {
-
-            stmt = DbConnector.getInstance().getConn().prepareStatement(
-                "UPDATE `match` SET date = ?, stage = ?, group_name = ?, matchday = ?, home_goals = ?, away_goals = ?, id_tournament = ?, id_home = ?, id_away = ? WHERE id = ?"
-            );
-            stmt.setObject(1, m.getDate());
-            stmt.setString(2, m.getStage().name());
-            stmt.setString(3, m.getGroupName());
-            stmt.setInt(4, m.getMatchday());
-            stmt.setObject(5, m.getHomeGoals());
-            stmt.setObject(6, m.getAwayGoals());
-            stmt.setInt(7, m.getTournament().getId());
-            stmt.setInt(8, m.getHome().getId());
-            stmt.setInt(9, m.getAway().getId());
+    public void setResult(Match m) throws SQLException {
+        
+    	PreparedStatement stmt = null;
+        
+    	try {
             
-            stmt.setInt(10, m.getId());
+    		stmt = DbConnector.getInstance().getConn().prepareStatement(
+                "UPDATE `match` SET home_goals = ?, away_goals = ? WHERE id = ?"
+            );
+            
+            stmt.setInt(1, m.getHomeGoals());
+            stmt.setInt(2, m.getAwayGoals());
+            stmt.setInt(3, m.getId());
             
             stmt.executeUpdate();
-
+            
         } catch (SQLException e) {
-
-            e.printStackTrace();
+            
+        	e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
-
+        
         } finally {
-
-            closeResources(null, stmt);
-
+        
+        	closeResources(null, stmt);
+        
         }
-
+    
     }
 
     private Match mapFullMatch(ResultSet rs) throws SQLException {
@@ -330,8 +323,8 @@ public class DataMatch {
         match.setStage(TournamentStage.valueOf(rs.getString("match_stage")));
         match.setGroupName(rs.getString("match_group_name"));
         match.setMatchday(rs.getInt("match_matchday"));
-        match.setHomeGoals(rs.getInt("match_home_goals"));
-        match.setAwayGoals(rs.getInt("match_away_goals"));
+        match.setHomeGoals(rs.getObject("match_home_goals", Integer.class));
+        match.setAwayGoals(rs.getObject("match_away_goals", Integer.class));
         match.setTournament(tournament);
         match.setHome(home);
         match.setAway(away);

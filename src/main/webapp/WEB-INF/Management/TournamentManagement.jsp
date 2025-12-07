@@ -74,11 +74,12 @@
 	                    		<thead>
 	                    			<tr>
 							            <th>Nombre</th>
+							            <th>Edición</th>
 							            <th>Fecha de Inicio</th>
 							            <th>Fecha de Fin</th>
 							            <th>Formato</th>
-							            <th>Edición</th>
 							            <th>Asociación</th>
+							            <th>Fixture</th>
 	                       				<th>Eliminar</th>
 	                      			</tr>
 	                      		</thead>
@@ -88,11 +89,19 @@
 	                    		%>
 	                    			<tr>
 	                    				<td><%=t.getName()%></td>
+	                    				<td><%=t.getSeason()%></td>
 	                    				<td><%=t.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=t.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				<td><%=t.getFormat().getDescription()%></td>
-	                    				<td><%=t.getSeason()%></td>
 	                    				<td><%=t.getAssociation().getName()%></td>
+	                    				<td>
+										    <a href="actionmatch?tournamentId=<%= t.getId() %>" 
+										       class="btn btn-sm" 
+										       style="background-color: #192A56;">
+										        <img src="${pageContext.request.contextPath}/assets/football-pitch.svg" 
+										             alt="Fixture" width="25" height="25">
+										    </a>
+										</td>
 	                    				<td>
 	                    					<form method="post" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">
 												<input type="hidden" name="action" value="delete" />
