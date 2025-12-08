@@ -222,30 +222,28 @@
 								            <td><%= m.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) %></td>
 								            
 								            <td>
-								                <span class="d-inline-block" tabindex="0" 
-								                      title="<%= disableButton ? "El partido todavía no se jugó" : "Registrar Resultado" %>">
-								                      
-									                <button type="button" 
-									                        class="btn btn-sm text-dark shadow-sm"
-									                        style="background-color: #1D442E; <%= disableButton ? "opacity: 0.5; pointer-events: none;" : "" %>"
-									                        <%= disableButton ? "disabled" : "" %>
-									                        data-bs-toggle="modal" data-bs-target="#resultModal"
-									                        onclick="openResultModal(
-									                            <%= m.getId() %>, 
-									                            '<%= m.getHome().getName() %>', 
-									                            '<%= m.getHome().getBadgeImage() %>',
-									                            <%= m.getHomeGoals() %>,
-									                            '<%= m.getAway().getName() %>', 
-									                            '<%= m.getAway().getBadgeImage() %>',
-									                            <%= m.getAwayGoals() %>
-									                        )">
-									                    
-									                    <img src="${pageContext.request.contextPath}/assets/scoreboard.svg" 
-									                         style="display: block; <%= disableButton ? "filter: grayscale(100%);" : "" %>"
-									                         alt="Registrar Resultado" width="25" height="25">
-									                </button>
-								                </span>
-								            </td>                               
+											    <span class="d-inline-block" tabindex="0" 
+											          title="<%= disableButton ? "El partido todavía no se jugó" : "Registrar Resultado" %>">
+											          
+											        <button type="button" 
+											                class="btn btn-sm text-dark shadow-sm"
+											                style="background-color: #1D442E; <%= disableButton ? "opacity: 0.5; pointer-events: none;" : "" %>"
+											                <%= disableButton ? "disabled" : "" %>
+											                data-bs-toggle="modal" data-bs-target="#resultModal"										                
+											                data-id="<%= m.getId() %>"
+											                data-home-name="<%= m.getHome().getName() %>"
+											                data-home-badge="<%= m.getHome().getBadgeImage() %>"
+											                data-home-goals="<%= m.getHomeGoals() != null ? m.getHomeGoals() : "" %>"
+											                data-away-name="<%= m.getAway().getName() %>"
+											                data-away-badge="<%= m.getAway().getBadgeImage() %>"
+											                data-away-goals="<%= m.getAwayGoals() != null ? m.getAwayGoals() : "" %>"										                
+											                onclick="openResultModal(this)">
+											            <img src="${pageContext.request.contextPath}/assets/scoreboard.svg" 
+											                 style="display: block; <%= disableButton ? "filter: grayscale(100%);" : "" %>"
+											                 alt="Registrar Resultado" width="25" height="25">
+											        </button>
+											    </span>
+											</td>                               
 								        </tr>
 								    <% } %>
 								</tbody>
@@ -322,8 +320,17 @@
 	
 	    <script>
 		    
-	    	function openResultModal(matchId, homeName, homeBadge, homeGoals, awayName, awayBadge, awayGoals) {
+	    	function openResultModal(btn) {
 		        
+		        var matchId = btn.getAttribute("data-id");
+		        var homeName = btn.getAttribute("data-home-name");
+		        var homeBadge = btn.getAttribute("data-home-badge");
+		        var awayName = btn.getAttribute("data-away-name");
+		        var awayBadge = btn.getAttribute("data-away-badge");
+		        
+		        var homeGoals = btn.getAttribute("data-home-goals");
+		        var awayGoals = btn.getAttribute("data-away-goals");
+		
 		        document.getElementById("resultMatchId").value = matchId;
 		        
 		        var imgBase = "images?id="; 
@@ -331,7 +338,6 @@
 		        document.getElementById("imgAway").src = imgBase + awayBadge;
 		
 		        const limit = 15;
-		
 		        const displayHome = homeName.length > limit ? homeName.substring(0, limit) + "..." : homeName;
 		        const displayAway = awayName.length > limit ? awayName.substring(0, limit) + "..." : awayName;
 		
@@ -340,18 +346,23 @@
 		        
 		        lblHome.textContent = displayHome;
 		        lblAway.textContent = displayAway;
-		        
 		        lblHome.title = homeName; 
 		        lblAway.title = awayName;
 		        
-		        document.querySelector("input[name='home_goals']").value = 0;
-		        document.querySelector("input[name='away_goals']").value = 0;
+		        var inputHome = document.querySelector("input[name='home_goals']");
+		        var inputAway = document.querySelector("input[name='away_goals']");
+		        
+		        inputHome.value = 0;
+		        inputAway.value = 0;
 		
-		        if (homeGoals !== null && awayGoals !== null) {
-		            document.querySelector("input[name='home_goals']").value = homeGoals;
-		            document.querySelector("input[name='away_goals']").value = awayGoals;
+		        if (homeGoals !== "" && awayGoals !== "") {
+
+		        	inputHome.value = homeGoals;
+		            inputAway.value = awayGoals;
+		        
 		        }
-		    }
+		    
+	    	}
 	    	
 		</script>
 	
