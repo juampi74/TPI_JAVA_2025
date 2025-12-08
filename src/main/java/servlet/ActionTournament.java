@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -612,12 +613,23 @@ public class ActionTournament extends HttpServlet {
 
 	    try {
 	    
-	    	if ("add".equals(action)) {
+	    	if ("standings".equals(action)) {
+	    		
+	    		int id = Integer.parseInt(request.getParameter("id"));
+	    		
+	    		Tournament tournament = ctrl.getTournamentById(id);
+	    		TreeMap<String, LinkedList<TeamStats>> tables = ctrl.calculateTables(id);
+	    		
+	    		request.setAttribute("tournament", tournament);
+	    		request.setAttribute("tablesMap", tables);
+	    		request.getRequestDispatcher("WEB-INF/Management/Standings.jsp").forward(request, response);
+	    		
+	    	} else if ("add".equals(action)) {
 
 	    		LinkedList<Association> associations = ctrl.getAllAssociations();
 				
             	if (associations.size() > 0) {
-        		
+        	
 					associations.sort(Comparator.comparing(Association::getName));
 					request.setAttribute("associationsList", associations);
 					
@@ -625,13 +637,13 @@ public class ActionTournament extends HttpServlet {
 					
 					for (Association a : associations) {
 
-				        LinkedList<Club> associationClubs = ctrl.getClubsByAssociationId(a.getId());
-				        clubsMap.put(a.getId(), associationClubs);
-				        
-				    }
+			        	LinkedList<Club> associationClubs = ctrl.getClubsByAssociationId(a.getId());
+			        	clubsMap.put(a.getId(), associationClubs);
+			        	
+			    	}
 					
 					if (clubsMap.size() > 0) {
-		        		
+	        	
 						request.setAttribute("clubsMap", clubsMap);
 						request.getRequestDispatcher("WEB-INF/Add/AddTournament.jsp").forward(request, response);
 					
@@ -642,7 +654,7 @@ public class ActionTournament extends HttpServlet {
 						
 					}
 					
-				} else {
+	            } else {
 					
 					request.setAttribute("errorMessage", "Debés agregar una asociación primero");
 					request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);

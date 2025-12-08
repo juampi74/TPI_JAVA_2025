@@ -80,6 +80,7 @@
 							            <th>Formato</th>
 							            <th>Asociación</th>
 							            <th>Fixture</th>
+							            <th>Tabla de Posiciones</th>
 	                       				<th>Eliminar</th>
 	                      			</tr>
 	                      		</thead>
@@ -101,6 +102,15 @@
 										        <img src="${pageContext.request.contextPath}/assets/football-pitch.svg" 
 										             alt="Fixture" width="25" height="25">
 										    </a>
+										</td>
+										<td>
+											<form method="get" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center">
+	                    						<input type="hidden" name="action" value="standings" />
+			        							<input type="hidden" name="id" value="<%=t.getId()%>" />
+			        							<button type="submit" style="background-color: #B35900" class="btn btn-sm">
+													<img src="${pageContext.request.contextPath}/assets/ranking.svg" style="display: block;" alt="Posiciones" width="25" height="25">
+												</button>
+			    							</form>
 										</td>
 	                    				<td>
 	                    					<form method="post" action="actiontournament" style="display:inline;" class="d-flex justify-content-center align-items-center" onsubmit="return confirm('¿Estás seguro que querés eliminar este torneo?');">

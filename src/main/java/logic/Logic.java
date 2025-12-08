@@ -6,9 +6,11 @@ import enums.*;
 import enums.PersonRole;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Logic {
 
@@ -670,6 +672,84 @@ public class Logic {
     public void deleteNationality(Integer id) throws SQLException {
     
     	dn.delete(id);
+    
+    }
+    
+    public TreeMap<String, LinkedList<TeamStats>> calculateTables(int tournamentId) throws SQLException {
+        
+    	LinkedList<Match> matches = dm.getByTournamentId(tournamentId);
+        
+        HashMap<Integer, String> teamToGroupMap = new HashMap<>();
+        
+        for (Match m : matches) {
+            
+        	String gName = m.getGroupName();
+
+            if (gName != null && !gName.isEmpty() && !"Interzonal".equalsIgnoreCase(gName)) {
+                
+            	teamToGroupMap.put(m.getHome().getId(), gName);
+                teamToGroupMap.put(m.getAway().getId(), gName);
+            
+            }
+        
+        }
+        
+        TreeMap<String, HashMap<Integer, TeamStats>> tempTables = new TreeMap<>();
+        
+        for (Match m : matches) {
+            
+            String homeTargetGroup = teamToGroupMap.get(m.getHome().getId());
+            String awayTargetGroup = teamToGroupMap.get(m.getAway().getId());
+            
+            if (homeTargetGroup == null) homeTargetGroup = "Tabla General";
+            if (awayTargetGroup == null) awayTargetGroup = "Tabla General";
+
+            tempTables.putIfAbsent(homeTargetGroup, new HashMap<>());
+            tempTables.putIfAbsent(awayTargetGroup, new HashMap<>());
+
+            HashMap<Integer, TeamStats> homeTable = tempTables.get(homeTargetGroup);
+            HashMap<Integer, TeamStats> awayTable = tempTables.get(awayTargetGroup);
+
+            homeTable.putIfAbsent(m.getHome().getId(), new TeamStats(m.getHome()));
+            awayTable.putIfAbsent(m.getAway().getId(), new TeamStats(m.getAway()));
+
+            if (m.getHomeGoals() != null && m.getAwayGoals() != null) {
+                
+                TeamStats homeStats = homeTable.get(m.getHome().getId());
+                TeamStats awayStats = awayTable.get(m.getAway().getId());
+
+                if (m.getHomeGoals() > m.getAwayGoals()) {
+                    
+                	homeStats.addWin(m.getHomeGoals(), m.getAwayGoals());
+                    awayStats.addLoss(m.getAwayGoals(), m.getHomeGoals());
+                
+                } else if (m.getHomeGoals() < m.getAwayGoals()) {
+                
+                	homeStats.addLoss(m.getHomeGoals(), m.getAwayGoals());
+                    awayStats.addWin(m.getAwayGoals(), m.getHomeGoals());
+                
+                } else {
+                    
+                	homeStats.addDraw(m.getHomeGoals(), m.getAwayGoals());
+                    awayStats.addDraw(m.getAwayGoals(), m.getHomeGoals());
+                
+                }
+            
+            }
+        
+        }
+
+        TreeMap<String, LinkedList<TeamStats>> finalTables = new TreeMap<>();
+        
+        for (Map.Entry<String, HashMap<Integer, TeamStats>> entry : tempTables.entrySet()) {
+            
+        	LinkedList<TeamStats> sortedList = new LinkedList<>(entry.getValue().values());
+            Collections.sort(sortedList);
+            finalTables.put(entry.getKey(), sortedList);
+        
+        }
+        
+        return finalTables;
     
     }
     

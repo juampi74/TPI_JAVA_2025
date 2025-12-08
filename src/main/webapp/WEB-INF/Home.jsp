@@ -33,7 +33,10 @@
 		      background-position:right .6rem center;
 		      background-size:1rem .8rem;
 		    }
-		    .fancy-select:hover{ border-color:#fff !important; }
+		    
+		    .fancy-select:hover{
+		    	border-color: #fff !important;
+		    }
 	    
 	    </style>
 	    
