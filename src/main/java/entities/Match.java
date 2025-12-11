@@ -8,10 +8,13 @@ public class Match {
 	private Integer id;
 	private LocalDateTime date;
 	private TournamentStage stage;
-	private String groupName;	
+	private String groupName;
 	private Integer matchday;
+	private String bracketCode;
 	private Integer homeGoals;
 	private Integer awayGoals;
+	private Integer homePenalties;
+    private Integer awayPenalties;
 	private Tournament tournament;
 	private Club home;
 	private Club away;
@@ -63,7 +66,7 @@ public class Match {
 		this.groupName = groupName;
 	
 	}
-
+	
 	public Integer getMatchday() {
 		
 		return matchday;
@@ -73,6 +76,18 @@ public class Match {
 	public void setMatchday(Integer matchday) {
 		
 		this.matchday = matchday;
+		
+	}
+	
+	public String getBracketCode() {
+		
+		return bracketCode;
+		
+	}
+	
+	public void setBracketCode(String bracketCode) {
+		
+		this.bracketCode = bracketCode;
 		
 	}
 	
@@ -100,6 +115,30 @@ public class Match {
 		
 	}
 	
+	public Integer getHomePenalties() {
+	
+		return homePenalties;
+	
+	}
+
+	public void setHomePenalties(Integer homePenalties) {
+	
+		this.homePenalties = homePenalties;
+	
+	}
+
+	public Integer getAwayPenalties() {
+	
+		return awayPenalties;
+	
+	}
+
+	public void setAwayPenalties(Integer awayPenalties) {
+	
+		this.awayPenalties = awayPenalties;
+	
+	}
+
 	public Tournament getTournament() {
 		
 		return tournament;
@@ -138,9 +177,10 @@ public class Match {
 
 	@Override
 	public String toString() {
-		
+	
 		return "Match [id=" + id + ", date=" + date + ", stage=" + stage + ", groupName=" + groupName + ", matchday="
-				+ matchday + ", homeGoals=" + homeGoals + ", awayGoals=" + awayGoals + ", tournament=" + tournament
+				+ matchday + ", bracketCode=" + bracketCode + ", homeGoals=" + homeGoals + ", awayGoals=" + awayGoals
+				+ ", homePenalties=" + homePenalties + ", awayPenalties=" + awayPenalties + ", tournament=" + tournament
 				+ ", home=" + home + ", away=" + away + "]";
 	
 	}

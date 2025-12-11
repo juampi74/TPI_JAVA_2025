@@ -47,7 +47,6 @@ public class ActionPresident extends HttpServlet {
         	
         	String uploadPath = Config.get("uploads.path").replace("\"", "");
 
-        	System.out.println("UPLOAD PATH >>> " + uploadPath);
         	File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
             

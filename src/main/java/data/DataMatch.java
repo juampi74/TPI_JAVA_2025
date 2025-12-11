@@ -14,10 +14,11 @@ public class DataMatch {
 
     private static final String SELECT_ALL_MATCHES_JOINED
             = "SELECT "
-            + "    m.id AS match_id, m.date AS match_date, m.stage AS match_stage, m.group_name AS match_group_name, m.matchday AS match_matchday, m.home_goals AS match_home_goals, m.away_goals AS match_away_goals, "
+            + "    m.id AS match_id, m.date AS match_date, m.stage AS match_stage, m.group_name AS match_group_name, m.matchday AS match_matchday, m.bracket_code AS match_bracket_code, m.home_goals AS match_home_goals, "
+            + "	   m.away_goals AS match_away_goals, m.home_penalties AS match_home_penalties, m.away_penalties AS match_away_penalties, "
             + "    h.id AS home_id, h.name AS home_name, h.foundation_date AS home_foundation_date, h.phone_number AS home_phone_number, h.email AS home_email, h.badge_image AS home_badge_image, h.budget AS home_budget, "
             + "    a.id AS away_id, a.name AS away_name, a.foundation_date AS away_foundation_date, a.phone_number AS away_phone_number, a.email AS away_email, a.badge_image AS away_badge_image, a.budget AS away_budget, "
-            + "    t.id AS tournament_id, t.name AS tournament_name, t.start_date AS tournament_start_date, t.end_date AS tournament_end_date, t.format AS tournament_format, t.season AS tournament_season, "
+            + "    t.id AS tournament_id, t.name AS tournament_name, t.start_date AS tournament_start_date, t.end_date AS tournament_end_date, t.format AS tournament_format, t.season AS tournament_season, t.finished as tournament_finished, "
             + "    ass.id AS association_id, ass.name AS association_name, ass.creation_date AS association_creation_date, ass.type AS association_type, ass.continent AS association_continent "
             + "FROM `match` m "
             + "INNER JOIN club h ON m.id_home = h.id "
@@ -203,6 +204,89 @@ public class DataMatch {
         return matches;
 
     }
+    
+    private LinkedList<Match> getMatchesByFilter(int tournamentId, String stageCondition) throws SQLException {
+        
+    	PreparedStatement stmt = null;
+        ResultSet rs = null;
+        LinkedList<Match> matches = new LinkedList<>();
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+        		SELECT_ALL_MATCHES_JOINED 
+                + " WHERE m.id_tournament = ? " 
+                + stageCondition
+                + " ORDER BY m.date ASC"
+            );
+            stmt.setInt(1, tournamentId);
+            
+            rs = stmt.executeQuery();
+
+            while (rs.next()) matches.add(mapFullMatch(rs));
+
+        } catch (SQLException e) {
+            
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+
+        return matches;
+    
+    }
+    
+    public LinkedList<Match> getGroupStageMatchesByTournamentId(int tournamentId) throws SQLException {
+
+    	return getMatchesByFilter(tournamentId, " AND m.stage = 'GROUP_STAGE' ");
+    
+    }
+
+    public LinkedList<Match> getPlayoffMatchesByTournamentId(int tournamentId) throws SQLException {
+
+    	return getMatchesByFilter(tournamentId, " AND m.stage != 'GROUP_STAGE' ");
+    
+    }
+    
+    public TournamentStage getHighestStageByTournamentId(int tournamentId) throws SQLException {
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        TournamentStage highestStage = null;
+        
+        try {
+
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+	    		"SELECT stage FROM `match` "
+	    		+ "WHERE id_tournament = ? "
+	            + "ORDER BY date DESC "
+	    		+ "LIMIT 1"
+            );
+            stmt.setInt(1, tournamentId);
+            
+            rs = stmt.executeQuery();
+
+            if (rs.next()) highestStage = TournamentStage.valueOf(rs.getString("stage"));
+            
+        
+        } catch (Exception e) {
+        	
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+        
+        return highestStage;
+    
+    }
 
     public void add(Match m) throws SQLException {
 
@@ -212,30 +296,22 @@ public class DataMatch {
             
         	stmt = DbConnector.getInstance().getConn().prepareStatement(
                 "INSERT INTO `match` "
-                + "(date, stage, group_name, matchday, home_goals, away_goals, id_tournament, id_home, id_away) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                + "(date, stage, group_name, matchday, bracket_code, home_goals, away_goals, home_penalties, away_penalties, id_tournament, id_home, id_away) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             
         	stmt.setObject(1, m.getDate());
         	stmt.setString(2, m.getStage().name());
         	stmt.setString(3, m.getGroupName());
-        	stmt.setInt(4, m.getMatchday());
-        	
-        	if (m.getHomeGoals() != null && m.getAwayGoals() != null) {
-            
-        		stmt.setInt(5, m.getHomeGoals());
-                stmt.setInt(6, m.getAwayGoals());
-            
-        	} else {
-            
-        		stmt.setNull(5, java.sql.Types.INTEGER);
-                stmt.setNull(6, java.sql.Types.INTEGER);
-            
-        	}
-            
-        	stmt.setInt(7, m.getTournament().getId());
-        	stmt.setInt(8, m.getHome().getId());
-            stmt.setInt(9, m.getAway().getId());
+        	stmt.setObject(4, m.getMatchday(), java.sql.Types.INTEGER);
+        	stmt.setString(5, m.getBracketCode());
+        	stmt.setObject(6, m.getHomeGoals(), java.sql.Types.INTEGER);
+            stmt.setObject(7, m.getAwayGoals(), java.sql.Types.INTEGER);
+            stmt.setObject(8, m.getHomePenalties(), java.sql.Types.INTEGER);
+            stmt.setObject(9, m.getAwayPenalties(), java.sql.Types.INTEGER);
+        	stmt.setInt(10, m.getTournament().getId());
+        	stmt.setInt(11, m.getHome().getId());
+            stmt.setInt(12, m.getAway().getId());
             
             stmt.executeUpdate();
 
@@ -259,12 +335,14 @@ public class DataMatch {
     	try {
             
     		stmt = DbConnector.getInstance().getConn().prepareStatement(
-                "UPDATE `match` SET home_goals = ?, away_goals = ? WHERE id = ?"
+                "UPDATE `match` SET home_goals = ?, away_goals = ?, home_penalties = ?, away_penalties = ? WHERE id = ?"
             );
             
-            stmt.setInt(1, m.getHomeGoals());
-            stmt.setInt(2, m.getAwayGoals());
-            stmt.setInt(3, m.getId());
+    		stmt.setObject(1, m.getHomeGoals(), java.sql.Types.INTEGER);
+            stmt.setObject(2, m.getAwayGoals(), java.sql.Types.INTEGER);
+            stmt.setObject(3, m.getHomePenalties(), java.sql.Types.INTEGER);
+            stmt.setObject(4, m.getAwayPenalties(), java.sql.Types.INTEGER);
+            stmt.setInt(5, m.getId());
             
             stmt.executeUpdate();
             
@@ -315,6 +393,7 @@ public class DataMatch {
         tournament.setEndDate(rs.getObject("tournament_end_date", LocalDate.class));
         tournament.setFormat(TournamentFormat.valueOf(rs.getString("tournament_format")));
         tournament.setSeason(rs.getString("tournament_season"));
+        tournament.setFinished(rs.getBoolean("tournament_finished"));
         tournament.setAssociation(association);
         
         Match match = new Match();
@@ -322,9 +401,12 @@ public class DataMatch {
         match.setDate(rs.getObject("match_date", LocalDateTime.class));
         match.setStage(TournamentStage.valueOf(rs.getString("match_stage")));
         match.setGroupName(rs.getString("match_group_name"));
-        match.setMatchday(rs.getInt("match_matchday"));
+        match.setMatchday(rs.getObject("match_matchday", Integer.class));
+        match.setBracketCode(rs.getString("match_bracket_code"));
         match.setHomeGoals(rs.getObject("match_home_goals", Integer.class));
         match.setAwayGoals(rs.getObject("match_away_goals", Integer.class));
+        match.setHomePenalties(rs.getObject("match_home_penalties", Integer.class));
+        match.setAwayPenalties(rs.getObject("match_away_penalties", Integer.class));
         match.setTournament(tournament);
         match.setHome(home);
         match.setAway(away);

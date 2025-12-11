@@ -3,6 +3,7 @@ package entities;
 import java.time.LocalDate;
 
 import enums.TournamentFormat;
+import enums.TournamentStage;
 
 public class Tournament {
 	
@@ -12,7 +13,20 @@ public class Tournament {
 	private LocalDate endDate;
 	private TournamentFormat format;
 	private String season;
+	private boolean finished;
 	private Association association;
+	
+	private boolean allGroupMatchesPlayed;
+    private boolean playoffsAlreadyGenerated;
+    
+    private String nextStageLabel;
+    private boolean canGenerateNextStage;
+    
+    private String currentStatusLabel;
+    
+    private TournamentStage highestStage;
+    
+    private boolean hasMatchesPlayed;
 	
 	public int getId() {
 	
@@ -85,6 +99,18 @@ public class Tournament {
 		this.season = season;
 	
 	}
+	
+	public boolean isFinished() {
+	    
+		return finished;
+	
+	}
+
+	public void setFinished(boolean finished) {
+	
+		this.finished = finished;
+	
+	}
 
 	public Association getAssociation() {
 	
@@ -97,12 +123,100 @@ public class Tournament {
 		this.association = association;
 	
 	}
+	
+	public boolean isAllGroupMatchesPlayed() {
+		
+		return allGroupMatchesPlayed;
+	
+	}
+    
+	public void setAllGroupMatchesPlayed(boolean allGroupMatchesPlayed) {
+		
+		this.allGroupMatchesPlayed = allGroupMatchesPlayed;
+	
+	}
+
+    public boolean isPlayoffsAlreadyGenerated() {
+    	
+    	return playoffsAlreadyGenerated;
+    
+    }
+    
+    public void setPlayoffsAlreadyGenerated(boolean playoffsAlreadyGenerated) {
+    	
+    	this.playoffsAlreadyGenerated = playoffsAlreadyGenerated;
+    
+    }
+    
+    public String getNextStageLabel() {
+	
+    	return nextStageLabel;
+	
+    }
+
+	public void setNextStageLabel(String nextStageLabel) {
+	
+		this.nextStageLabel = nextStageLabel;
+	
+	}
+
+	public boolean isCanGenerateNextStage() {
+	
+		return canGenerateNextStage;
+	
+	}
+
+	public void setCanGenerateNextStage(boolean canGenerateNextStage) {
+	
+		this.canGenerateNextStage = canGenerateNextStage;
+	
+	}
+	
+	public String getCurrentStatusLabel() {
+	
+		return currentStatusLabel;
+	
+	}
+
+	public void setCurrentStatusLabel(String currentStatusLabel) {
+	
+		this.currentStatusLabel = currentStatusLabel;
+	
+	}
+	
+	public TournamentStage getHighestStage() {
+	
+		return highestStage;
+	
+	}
+
+	public void setHighestStage(TournamentStage highestStage) {
+	
+		this.highestStage = highestStage;
+	
+	}
+	
+	public boolean isHasMatchesPlayed() {
+	
+		return hasMatchesPlayed;
+	
+	}
+
+	public void setHasMatchesPlayed(boolean hasMatchesPlayed) {
+	
+		this.hasMatchesPlayed = hasMatchesPlayed;
+	
+	}
 
 	@Override
 	public String toString() {
 	
 		return "Tournament [id=" + id + ", name=" + name + ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", format=" + format.getDescription() + ", season=" + season + ", association=" + association + "]";
+				+ ", format=" + format + ", season=" + season + ", finished=" + finished + ", association="
+				+ association + ", allGroupMatchesPlayed=" + allGroupMatchesPlayed + ", playoffsAlreadyGenerated="
+				+ playoffsAlreadyGenerated + ", nextStageLabel=" + nextStageLabel + ", canGenerateNextStage="
+				+ canGenerateNextStage + ", currentStatusLabel=" + currentStatusLabel + ", highestStage=" + highestStage
+				+ ", hasMatchesPlayed=" + hasMatchesPlayed + "]";
 	
 	}
 	

@@ -123,10 +123,8 @@
 				        if (positionsList != null && !positionsList.isEmpty()) {
 				            for (Position p : positionsList) {
 				
-				                // si el jugador tiene esta posición
 				                boolean checked = (playerPositionsList != null && playerPositionsList.contains(p.getId()));
 				
-				                // si es la principal
 				                boolean isPrimary = (primary != null && primary == p.getId());
 				    %>
 				        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">

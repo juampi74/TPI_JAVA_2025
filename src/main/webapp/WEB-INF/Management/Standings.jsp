@@ -1,5 +1,6 @@
 <%@ page import="java.util.*"%>
 <%@ page import="entities.*"%>
+<%@ page import="enums.TournamentFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -112,7 +113,17 @@
 	                    LinkedList<TeamStats> statsList = entry.getValue();
 	                    String showClass = (j == 0) ? "show active" : "";
 	                    
-	                    int qualificationLimit = statsList.size() / 2;
+	                    int qualificationLimit = 0;
+
+	                    if (t.getFormat() == TournamentFormat.ZONAL_ELIMINATION) {
+
+	                    	qualificationLimit = (statsList.size() >= 12) ? 8 : 4;
+	                        
+	                    } else if (t.getFormat() == TournamentFormat.WORLD_CUP) {
+
+	                    	qualificationLimit = 2;
+	                    
+	                    }
 	            %>
 	                <div class="tab-pane fade <%= showClass %>" id="content-<%= j %>" role="tabpanel">
 	                    

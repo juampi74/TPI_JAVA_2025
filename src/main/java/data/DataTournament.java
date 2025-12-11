@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class DataTournament {
-
-    private static final String SELECT_ALL_TOURNAMENTS_JOINED =
+  
+    private static final String BASE_QUERY =
             "SELECT "
             + "    t.id AS tournament_id, "
             + "    t.name AS tournament_name, "
@@ -17,12 +17,22 @@ public class DataTournament {
             + "    t.end_date AS tournament_end_date, "
             + "    t.format AS tournament_format, "
             + "    t.season AS tournament_season, "
+            + "	   t.finished AS tournament_finished, "
             + "    t.id_association, "
             + "    a.id AS association_id, "
             + "    a.name AS association_name, "
-            + "    a.creation_date AS association_creation_date "
+            + "    a.creation_date AS association_creation_date, "
+            + "    SUM(CASE WHEN m.stage = 'GROUP_STAGE' AND (m.home_goals IS NULL OR m.away_goals IS NULL) THEN 1 ELSE 0 END) as pending_group_matches, "
+            + "    SUM(CASE WHEN m.stage = 'GROUP_STAGE' THEN 1 ELSE 0 END) as total_group_matches, "
+            + "    SUM(CASE WHEN m.stage != 'GROUP_STAGE' THEN 1 ELSE 0 END) as playoff_matches_count, "
+            + "    SUM(CASE WHEN m.home_goals IS NOT NULL THEN 1 ELSE 0 END) as matches_played_count "
             + "FROM tournament t "
-            + "INNER JOIN association a ON t.id_association = a.id";
+            + "INNER JOIN association a ON t.id_association = a.id "
+            + "LEFT JOIN `match` m ON t.id = m.id_tournament ";
+    
+    private static final String GROUP_BY_CLAUSE =
+            " GROUP BY t.id, t.name, t.start_date, t.end_date, t.format, t.season, "
+            + "        t.finished, t.id_association, a.id, a.name, a.creation_date ";
 
     public LinkedList<Tournament> getAll() throws SQLException {
 
@@ -33,7 +43,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_TOURNAMENTS_JOINED + " ORDER BY t.start_date, t.end_date");
+            rs = stmt.executeQuery(BASE_QUERY + GROUP_BY_CLAUSE + " ORDER BY t.start_date, t.end_date");
 
             if (rs != null) {
 
@@ -70,7 +80,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.id = ?"
+            	BASE_QUERY + "WHERE t.id = ?" + GROUP_BY_CLAUSE
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -105,7 +115,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_TOURNAMENTS_JOINED + " WHERE a.id = ?"
+            	BASE_QUERY + "WHERE a.id = ?" + GROUP_BY_CLAUSE
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -144,7 +154,7 @@ public class DataTournament {
         try {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
-            	SELECT_ALL_TOURNAMENTS_JOINED + " WHERE t.name = ?"
+            	BASE_QUERY + " WHERE t.name = ?" + GROUP_BY_CLAUSE
             );
             stmt.setString(1, name);
             rs = stmt.executeQuery();
@@ -256,6 +266,31 @@ public class DataTournament {
         }
 
     }
+    
+    public void finishTournament(int id) throws SQLException {
+        
+    	PreparedStatement stmt = null;
+        
+    	try {
+        
+    		stmt = DbConnector.getInstance().getConn().prepareStatement(
+                "UPDATE tournament SET finished = 1 WHERE id = ?"
+            );
+            stmt.setInt(1, id);
+            
+            stmt.executeUpdate();
+        
+    	} catch (SQLException e) {
+        
+    		e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+            
+        } finally {
+            
+        	closeResources(null, stmt);
+        	
+        }
+    }
 
     public void delete(int id) throws SQLException {
 
@@ -291,7 +326,19 @@ public class DataTournament {
         tournament.setEndDate(rs.getObject("tournament_end_date", LocalDate.class));
         tournament.setFormat(TournamentFormat.valueOf(rs.getString("tournament_format")));
         tournament.setSeason(rs.getString("tournament_season"));
-
+        tournament.setFinished(rs.getBoolean("tournament_finished"));;
+        
+        int pending = rs.getInt("pending_group_matches");
+        int totalGroup = rs.getInt("total_group_matches");
+        int playoffCount = rs.getInt("playoff_matches_count");
+        int playedCount = rs.getInt("matches_played_count");
+        
+        boolean allGroupMatchesPlayed = (totalGroup > 0) && (pending == 0);
+        tournament.setAllGroupMatchesPlayed(allGroupMatchesPlayed);
+        
+        tournament.setPlayoffsAlreadyGenerated(playoffCount > 0);
+        tournament.setHasMatchesPlayed(playedCount > 0);
+        
         Association association = new Association();
         association.setId(rs.getInt("association_id"));
         association.setName(rs.getString("association_name"));
@@ -300,6 +347,7 @@ public class DataTournament {
         tournament.setAssociation(association);
 
         return tournament;
+    
     }
 
     private void closeResources(ResultSet rs, Statement stmt) {

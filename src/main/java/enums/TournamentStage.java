@@ -6,8 +6,8 @@ public enum TournamentStage {
     ROUND_OF_16("Octavos de Final"),
     QUARTER_FINAL("Cuartos de Final"),
     SEMI_FINAL("Semifinales"),
-    FINAL("Final"),
-    THIRD_PLACE("Tercer Puesto");
+    THIRD_PLACE("Tercer Puesto"),
+    FINAL("Final");
 
     private final String displayName;
 

@@ -5,10 +5,16 @@ import entities.*;
 import enums.*;
 import enums.PersonRole;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -583,6 +589,7 @@ public class Logic {
     public int getNumberPlayersWithPosition(int idPosition) throws SQLException {
     	
     	return dpp.getNumberPlayersWithPosition(idPosition);
+    
     }
     
     public LinkedList<Match> getAllMatches() throws SQLException {
@@ -613,6 +620,12 @@ public class Logic {
     
     	return dm.getByClubAndTournamentId(clubId, tournamentId);
     
+    }
+    
+    public TournamentStage getHighestStageByTournamentId(Integer id) throws SQLException {
+    	
+    	return dm.getHighestStageByTournamentId(id);
+    	
     }
     
     public void addMatch(Match match) throws SQLException {
@@ -677,7 +690,7 @@ public class Logic {
     
     public TreeMap<String, LinkedList<TeamStats>> calculateTables(int tournamentId) throws SQLException {
         
-    	LinkedList<Match> matches = dm.getByTournamentId(tournamentId);
+    	LinkedList<Match> matches = dm.getGroupStageMatchesByTournamentId(tournamentId);
         
         HashMap<Integer, String> teamToGroupMap = new HashMap<>();
         
@@ -753,4 +766,525 @@ public class Logic {
     
     }
     
+    public void generatePlayoffs(int tournamentId) throws SQLException {
+        
+    	Tournament t = dto.getById(tournamentId);
+        
+        TreeMap<String, LinkedList<TeamStats>> tables = calculateTables(tournamentId);
+        
+        LinkedList<Match> playoffMatches = new LinkedList<>();
+
+        if (t.getFormat() == TournamentFormat.WORLD_CUP) {
+
+            String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H"};
+            
+            int matchCounter = 1;
+            
+            for (int i = 0; i < letters.length; i += 2) {
+                
+            	String group1 = "Grupo " + letters[i];
+                String group2 = "Grupo " + letters[i + 1];
+                
+                List<TeamStats> list1 = tables.get(group1);
+                List<TeamStats> list2 = tables.get(group2);
+                
+                if (list1 != null && list2 != null && list1.size() >= 2 && list2.size() >= 2) {
+
+                    String code1 = "O" + matchCounter; 
+                    playoffMatches.add(createPlayoffMatch(t, list1.get(0).getClub(), list2.get(1).getClub(), TournamentStage.ROUND_OF_16, code1));
+                    matchCounter++;
+                    
+                    String code2 = "O" + matchCounter;
+                    playoffMatches.add(createPlayoffMatch(t, list2.get(0).getClub(), list1.get(1).getClub(), TournamentStage.ROUND_OF_16, code2));
+                    matchCounter++;
+                    
+                }
+            
+            }
+        
+        } else if (t.getFormat() == TournamentFormat.ZONAL_ELIMINATION) {
+
+            List<TeamStats> zoneA = new ArrayList<>(tables.get("Zona A"));
+            List<TeamStats> zoneB = new ArrayList<>(tables.get("Zona B"));
+            
+            int totalTeams = zoneA.size() + zoneB.size();
+            
+            if (totalTeams >= 24) {
+                                
+                playoffMatches.add(createPlayoffMatch(t, zoneA.get(0).getClub(), zoneB.get(7).getClub(), TournamentStage.ROUND_OF_16, "O1"));
+                playoffMatches.add(createPlayoffMatch(t, zoneA.get(1).getClub(), zoneB.get(6).getClub(), TournamentStage.ROUND_OF_16, "O2"));
+                playoffMatches.add(createPlayoffMatch(t, zoneA.get(2).getClub(), zoneB.get(5).getClub(), TournamentStage.ROUND_OF_16, "O3"));
+                playoffMatches.add(createPlayoffMatch(t, zoneA.get(3).getClub(), zoneB.get(4).getClub(), TournamentStage.ROUND_OF_16, "O4"));
+                
+                playoffMatches.add(createPlayoffMatch(t, zoneB.get(0).getClub(), zoneA.get(7).getClub(), TournamentStage.ROUND_OF_16, "O5"));
+                playoffMatches.add(createPlayoffMatch(t, zoneB.get(1).getClub(), zoneA.get(6).getClub(), TournamentStage.ROUND_OF_16, "O6"));
+                playoffMatches.add(createPlayoffMatch(t, zoneB.get(2).getClub(), zoneA.get(5).getClub(), TournamentStage.ROUND_OF_16, "O7"));
+                playoffMatches.add(createPlayoffMatch(t, zoneB.get(3).getClub(), zoneA.get(4).getClub(), TournamentStage.ROUND_OF_16, "O8"));
+                
+            } else {
+                
+                playoffMatches.add(createPlayoffMatch(t, zoneA.get(0).getClub(), zoneB.get(3).getClub(), TournamentStage.QUARTER_FINAL, "C1"));
+                playoffMatches.add(createPlayoffMatch(t, zoneA.get(1).getClub(), zoneB.get(2).getClub(), TournamentStage.QUARTER_FINAL, "C2"));
+                playoffMatches.add(createPlayoffMatch(t, zoneB.get(0).getClub(), zoneA.get(3).getClub(), TournamentStage.QUARTER_FINAL, "C3"));
+                playoffMatches.add(createPlayoffMatch(t, zoneB.get(1).getClub(), zoneA.get(2).getClub(), TournamentStage.QUARTER_FINAL, "C4"));
+
+            }
+            
+        }
+               
+        LocalDateTime lastGroupDate = getLastGroupStageMatchDate(tournamentId);
+
+        LocalDate nextFriday = lastGroupDate.toLocalDate().with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        
+        boolean isWorldCupFormat = (t.getFormat() == TournamentFormat.WORLD_CUP);
+
+        assignWeekendSchedule(playoffMatches, nextFriday, isWorldCupFormat);
+        
+        playoffMatches.sort(Comparator.comparing(Match::getDate));
+
+        for (Match m : playoffMatches) {
+            
+        	dm.add(m); 
+        
+        }
+    
+    }
+    
+    public void generateNextStage(int tournamentId) throws SQLException {
+        
+        LinkedList<Match> allPlayoffs = dm.getPlayoffMatchesByTournamentId(tournamentId);
+        
+        LinkedList<Match> playedPlayoffs = new LinkedList<>();
+        
+        for (Match m : allPlayoffs) {
+        
+        	if (m.getHomeGoals() != null) {
+            
+        		playedPlayoffs.add(m);
+            
+        	}
+        
+        }
+        
+        if (playedPlayoffs.isEmpty()) return;
+       
+        TournamentStage currentMaxStage = playedPlayoffs.getLast().getStage();
+        
+        LinkedList<Match> currentStageMatches = new LinkedList<>();
+
+        for (Match m : playedPlayoffs) {
+        
+        	if (m.getStage() == currentMaxStage) {
+            
+        		currentStageMatches.add(m);
+            
+        	}
+        
+        }
+
+        int requiredMatches = 0;
+        TournamentStage nextStage = null;
+
+        switch (currentMaxStage) {
+            
+        	case ROUND_OF_16: 
+                requiredMatches = 8; 
+                nextStage = TournamentStage.QUARTER_FINAL;
+                break;
+                
+            case QUARTER_FINAL: 
+                requiredMatches = 4; 
+                nextStage = TournamentStage.SEMI_FINAL;
+                break;
+                
+            case SEMI_FINAL: 
+                requiredMatches = 2; 
+                nextStage = TournamentStage.FINAL;
+                break;
+                
+            default: return;
+        
+        }
+
+        if (currentStageMatches.size() < requiredMatches) return;
+
+        Map<String, Club> winners = new HashMap<>();
+        
+        Map<String, Club> losers = null;
+        
+        if (currentMaxStage == TournamentStage.SEMI_FINAL) losers = new HashMap<>();
+        
+        for (Match m : currentStageMatches) {
+        
+        	Club winner = null;
+
+        	if (m.getHomeGoals() > m.getAwayGoals()) {
+
+        		winner = m.getHome();
+        	
+        	} else if (m.getAwayGoals() > m.getHomeGoals()) {
+        	
+        		winner = m.getAway();
+        	
+        	} else {
+
+        	    if (m.getHomePenalties() != null && m.getAwayPenalties() != null) {
+        	        
+        	    	if (m.getHomePenalties() > m.getAwayPenalties()) {
+        	        
+        	    		winner = m.getHome();
+        	        
+        	    	} else {
+        	        
+        	    		winner = m.getAway();
+        	        
+        	    	}
+        	    
+        	    } else {
+
+        	        winner = (Math.random() < 0.5) ? m.getHome() : m.getAway(); 
+
+        	    }
+        	
+        	}
+
+        	winners.put(m.getBracketCode(), winner);
+        	
+        	if (losers != null) {
+                
+        		Club loser = (winner == m.getHome()) ? m.getAway() : m.getHome();
+                losers.put(m.getBracketCode(), loser);
+            
+        	}
+        
+        }
+
+        LinkedList<Match> nextMatches = new LinkedList<>();
+        Tournament t = dto.getById(tournamentId);
+
+        if (nextStage == TournamentStage.QUARTER_FINAL) {
+
+            nextMatches.add(createPlayoffMatch(t, winners.get("O1"), winners.get("O2"), nextStage, "C1"));
+            nextMatches.add(createPlayoffMatch(t, winners.get("O3"), winners.get("O4"), nextStage, "C2"));
+            nextMatches.add(createPlayoffMatch(t, winners.get("O5"), winners.get("O6"), nextStage, "C3"));
+            nextMatches.add(createPlayoffMatch(t, winners.get("O7"), winners.get("O8"), nextStage, "C4"));
+            
+        } else if (nextStage == TournamentStage.SEMI_FINAL) {
+
+            nextMatches.add(createPlayoffMatch(t, winners.get("C1"), winners.get("C2"), nextStage, "S1"));
+            nextMatches.add(createPlayoffMatch(t, winners.get("C3"), winners.get("C4"), nextStage, "S2"));
+            
+        } else if (nextStage == TournamentStage.FINAL) {
+
+        	nextMatches.add(createPlayoffMatch(t, losers.get("S1"), losers.get("S2"), TournamentStage.THIRD_PLACE, "T1"));
+            nextMatches.add(createPlayoffMatch(t, winners.get("S1"), winners.get("S2"), nextStage, "F1"));
+
+        }
+
+        LocalDateTime lastDate = LocalDateTime.MIN;
+
+        for (Match m : currentStageMatches) {
+        
+        	if (m.getDate().isAfter(lastDate)) lastDate = m.getDate();
+        
+        }
+        
+        LocalDate nextFriday = lastDate.toLocalDate().with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        
+        boolean isWorldCup = (t.getFormat() == TournamentFormat.WORLD_CUP);
+        
+        assignWeekendSchedule(nextMatches, nextFriday, isWorldCup);
+        
+        for (Match m : nextMatches) {
+
+        	dm.add(m);
+        
+        }
+    
+    }
+
+    private Match createPlayoffMatch(Tournament t, Club home, Club away, TournamentStage stage, String code) {
+
+    	Match m = new Match();
+        
+        m.setStage(stage);
+        m.setBracketCode(code);
+        m.setTournament(t);
+        m.setHome(home);
+        m.setAway(away);
+        
+        return m;
+    
+    }
+   
+    public void assignWeekendSchedule(List<Match> matches, LocalDate fridayDate, boolean isWorldCupFormat) {
+        
+        int totalMatches = matches.size();
+        if (totalMatches == 0) return;
+
+        int quotaFriday = (int) Math.round(totalMatches * 0.25);
+        int quotaSaturday = (int) Math.round(totalMatches * 0.375);
+        
+        if (totalMatches == 2) quotaFriday = 0;
+        
+        if (quotaFriday == 0 && totalMatches >= 3) quotaFriday = 1;
+       
+        LinkedList<Integer> fridayHours;
+        LinkedList<Integer> weekendHours;
+        
+        TournamentStage stage = matches.get(0).getStage();   
+        boolean isGroupStage = stage == TournamentStage.GROUP_STAGE;
+
+        if (isGroupStage && !isWorldCupFormat) {
+            
+            fridayHours = new LinkedList<>(List.of(22, 20, 18, 16)); 
+            weekendHours = new LinkedList<>(List.of(22, 20, 18, 16, 14));
+            
+        } else {
+            
+            fridayHours = new LinkedList<>(List.of(16, 18, 20, 22));
+            weekendHours = new LinkedList<>(List.of(14, 16, 18, 20, 22));
+            
+            if (isGroupStage) {
+
+                fridayHours.add(22);
+                weekendHours.add(22);
+                
+            } else {
+
+            	int hoursToRemove = 2;
+            	
+            	if (stage == TournamentStage.SEMI_FINAL || 
+            		stage == TournamentStage.THIRD_PLACE ||
+                    stage == TournamentStage.FINAL) {
+                    
+                    hoursToRemove = 3;
+                
+            	}
+            	
+            	if (fridayHours.size() >= hoursToRemove) fridayHours.subList(0, hoursToRemove).clear();                
+                if (weekendHours.size() >= hoursToRemove) weekendHours.subList(0, hoursToRemove).clear();
+            
+            }
+        
+        }
+
+        for (int i = 0; i < totalMatches; i++) {
+
+        	Match m = matches.get(i);
+            
+        	LocalDateTime finalDate;
+            
+            if (i < quotaFriday) {
+                
+            	int hour = calculateHour(i, fridayHours);
+                finalDate = fridayDate.atTime(hour, 0);
+            
+            } else if (i < (quotaFriday + quotaSaturday)) {
+            
+            	int idxSat = i - quotaFriday;
+                int hour = calculateHour(idxSat, weekendHours);
+                finalDate = fridayDate.plusDays(1).atTime(hour, 0);
+            
+            } else {
+            
+            	int idxSun = i - (quotaFriday + quotaSaturday);
+                int hour = calculateHour(idxSun, weekendHours);
+                finalDate = fridayDate.plusDays(2).atTime(hour, 0);
+            
+            }
+            
+            m.setDate(finalDate);
+        
+        }
+    
+    }
+    
+	private int calculateHour(int matchIndex, LinkedList<Integer> allowedHours) {
+
+		return allowedHours.get(matchIndex % allowedHours.size());
+	
+	}
+	
+	private LocalDateTime getLastGroupStageMatchDate(int tournamentId) throws SQLException {
+	    
+		LinkedList<Match> allMatches = dm.getByTournamentId(tournamentId);
+	    
+	    LocalDateTime maxDate = LocalDateTime.MIN;
+	    boolean found = false;
+
+	    for (Match m : allMatches) {
+
+	        if (m.getStage() == TournamentStage.GROUP_STAGE && m.getDate() != null) {
+	            
+	        	if (m.getDate().isAfter(maxDate)) {
+	                
+	        		maxDate = m.getDate();
+	                found = true;
+	            
+	        	}
+	        
+	        }
+	    
+	    }
+	    
+	    return found ? maxDate : LocalDateTime.now();
+	
+	}
+	
+	public void analyzeTournamentStatus(Tournament t) throws SQLException {
+	    
+	    t.setCanGenerateNextStage(false);
+	    t.setNextStageLabel("");
+	    t.setCurrentStatusLabel("Fase en disputa");
+
+	    TournamentFormat format = t.getFormat();
+	    
+	    boolean isLeague = (format == TournamentFormat.ROUND_ROBIN_ONE_LEG || 
+	                        format == TournamentFormat.ROUND_ROBIN_TWO_LEGS);
+
+	    if (isLeague) {
+	        
+	    	LinkedList<Match> allMatches = dm.getByTournamentId(t.getId());
+	        
+	        if (allMatches.isEmpty()) return;
+
+	        boolean allPlayed = true;
+	        
+	        for (Match m : allMatches) {
+	        
+	        	if (m.getHomeGoals() == null) {
+	            
+	        		allPlayed = false;
+	                break;
+	            
+	        	}
+	        
+	        }
+
+	        if (allPlayed) {
+	            
+	        	t.setCanGenerateNextStage(true);
+	            t.setNextStageLabel("Finalizar Torneo");
+	            t.setCurrentStatusLabel("Torneo Finalizado (Pendiente de cierre)");
+	        
+	        }
+	        
+	        return; 
+
+	    }
+
+	    if (!t.isPlayoffsAlreadyGenerated()) return;
+
+	    LinkedList<Match> playoffMatches = dm.getPlayoffMatchesByTournamentId(t.getId());
+	        
+	    if (playoffMatches.isEmpty()) return;
+
+	    TournamentStage currentMaxStage = playoffMatches.getLast().getStage();
+	       
+	    t.setCurrentStatusLabel(currentMaxStage.getDisplayName() + " en disputa");
+
+	    int matchesTotal = 0;
+	    int matchesPlayed = 0;
+	    
+	    boolean isFinalsPhase = (currentMaxStage == TournamentStage.FINAL || 
+	                             currentMaxStage == TournamentStage.THIRD_PLACE);
+	    
+	    for (Match m : playoffMatches) {
+	        
+	    	boolean shouldCount = false;
+	        
+	        if (isFinalsPhase) {
+
+	            if (m.getStage() == TournamentStage.FINAL || m.getStage() == TournamentStage.THIRD_PLACE) {
+
+	            	shouldCount = true;
+	            
+	            }
+	        
+	        } else {
+	        
+	        	if (m.getStage() == currentMaxStage) {
+	            
+	        		shouldCount = true;
+	            
+	        	}
+	        
+	        }
+
+	        if (shouldCount) {
+	        
+	        	matchesTotal++;
+	            
+	        	if (m.getHomeGoals() != null) {
+	            
+	        		matchesPlayed++;
+	            
+	        	}
+	        
+	        }
+	    
+	    }
+
+	    int requiredMatches = 0;
+	    String nextLabel = "";
+	    boolean readyToAdvance = false;
+	    
+	    switch (currentMaxStage) {
+	        
+	        case ROUND_OF_16: 
+	    
+	        	requiredMatches = 8; 
+	            nextLabel = "Generar Cuartos de Final";
+	            readyToAdvance = (matchesTotal == requiredMatches && matchesPlayed == requiredMatches);
+	            break;
+	        
+	        case QUARTER_FINAL: 
+	            
+	        	requiredMatches = 4; 
+	            nextLabel = "Generar Semifinales";
+	            readyToAdvance = (matchesTotal == requiredMatches && matchesPlayed == requiredMatches);
+	            break;
+	        
+	        case SEMI_FINAL: 
+	            
+	        	requiredMatches = 2; 
+	            nextLabel = "Generar Final y 3° Puesto";
+	            readyToAdvance = (matchesTotal == requiredMatches && matchesPlayed == requiredMatches);
+	            break;
+	        
+	        case FINAL: 
+	        case THIRD_PLACE:
+	            
+	        	requiredMatches = 2;
+	            nextLabel = "Finalizar Torneo";
+	            
+	            if (matchesTotal == requiredMatches && matchesPlayed == requiredMatches) {
+	                
+	            	readyToAdvance = true;
+	                t.setCurrentStatusLabel("Definición concluida");
+	            
+	            }
+	            break;
+	            
+	        default: 
+	            return;
+	    
+	    }
+	    
+	    if (readyToAdvance) {
+	    
+	    	t.setCanGenerateNextStage(true);
+	        t.setNextStageLabel(nextLabel);
+	    
+	    }
+	
+	}
+	
+	public void finishTournament(int id) throws SQLException {
+	 
+		dto.finishTournament(id);
+	
+	}
+
 }

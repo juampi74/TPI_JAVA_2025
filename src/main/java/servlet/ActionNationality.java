@@ -79,8 +79,7 @@ public class ActionNationality extends HttpServlet {
     	
     	LinkedList<Person> people = ctrl.getPeopleByNationalityId(id);
     	LinkedList<Association> associations = ctrl.getAssociationsByNationalityId(id);
-    	System.out.println("PeopleList Size: " + people);
-    	System.out.println("AssociationsList Size: " + associations);
+
     	return people.size() == 0 && associations.size() == 0;
     
     }

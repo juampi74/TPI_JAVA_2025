@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import entities.Club;
 import entities.Match;
 import entities.Tournament;
+import enums.TournamentStage;
 import logic.Logic;
 
 @WebServlet("/actionmatch")
@@ -118,6 +121,43 @@ public class ActionMatch extends HttpServlet {
                 clubs = ctrl.getAllClubs(); 
             
             }
+            
+            Map<Integer, TournamentStage> maxStageMap = new HashMap<>();
+
+            if (tournamentId != null) {
+            
+            	TournamentStage realMaxStage = ctrl.getHighestStageByTournamentId(tournamentId);
+                maxStageMap.put(tournamentId, realMaxStage);
+            
+            } else {
+                
+            	for (Match m : matches) {
+                
+            		int tId = m.getTournament().getId();
+                    
+            		TournamentStage currentStage = m.getStage();
+                    
+            		if (!maxStageMap.containsKey(tId) || currentStage.ordinal() > maxStageMap.get(tId).ordinal()) {
+                    
+            			maxStageMap.put(tId, currentStage);
+                    
+            		}
+                
+            	}
+            
+            }
+            
+            for (Match m : matches) {
+                
+            	int tId = m.getTournament().getId();
+                
+            	if (maxStageMap.containsKey(tId)) {
+                
+            		m.getTournament().setHighestStage(maxStageMap.get(tId));
+                
+            	}
+            
+            }
 
             request.setAttribute("matchList", matches);           
             request.setAttribute("tournamentsList", tournaments);
@@ -157,17 +197,36 @@ public class ActionMatch extends HttpServlet {
 				Match match = new Match();
 				
 				match.setId(Integer.parseInt(request.getParameter("id")));
-				match.setHomeGoals(Integer.parseInt(request.getParameter("home_goals")));
-				match.setAwayGoals(Integer.parseInt(request.getParameter("away_goals")));         
+				match.setHomeGoals(Integer.parseInt(request.getParameter("homeGoals")));
+				match.setAwayGoals(Integer.parseInt(request.getParameter("awayGoals")));
+				
+				String hpParam = request.getParameter("homePenalties");
+			    String apParam = request.getParameter("awayPenalties");
+			    
+			    if (hpParam != null && !hpParam.isEmpty() && apParam != null && !apParam.isEmpty()) {
+			        
+			    	match.setHomePenalties(Integer.parseInt(hpParam));
+			        match.setAwayPenalties(Integer.parseInt(apParam));
+			    
+			    } else {
+
+			    	match.setHomePenalties(null);
+			        match.setAwayPenalties(null);
+			    
+			    }
 				
 				ctrl.setMatchResult(match);
 						    
 			    StringBuilder redirectUrl = new StringBuilder("actionmatch");		    
 		        
-		    	redirectUrl.append("?tournamentId=")
-		    			   .append(request.getParameter("tournamentId"))
-		    			   .append("&clubId=")
-		    			   .append(request.getParameter("clubId"));
+			    String tId = request.getParameter("tournamentId");
+			    String cId = request.getParameter("clubId");
+			    
+			    if (tId == null) tId = "";
+			    if (cId == null) cId = "";
+			    
+		    	redirectUrl.append("?tournamentId=").append(tId)
+		    			   .append("&clubId=").append(cId);
 	            
 	            response.sendRedirect(redirectUrl.toString());
 	            return;
