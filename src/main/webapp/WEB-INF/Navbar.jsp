@@ -1,95 +1,129 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="entities.User" %>
+
+<%
+    User userLogged = (User) session.getAttribute("user");
+    String path = request.getContextPath();
+%>
+
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Navbar</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <style>
-      .navbar-nav .nav-link {
-        transition: color 0.3s, background-color 0.3s;
-        border-radius: 5px;
-        padding: 8px 15px;
-      }
+	<head>
+		<meta charset="UTF-8" />
+	  	<title>Navbar</title>
+	  	<link
+	   		rel="stylesheet"
+	    	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	  	/>
+	  	<link
+	    	rel="stylesheet"
+	    	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	  	/>
+	  	<style>
+	    	.navbar-nav .nav-link {
+	      		transition: color 0.3s, background-color 0.3s;
+	      		border-radius: 5px;
+	      		padding: 8px 15px;
+	    	}
+	
+	    	.navbar-nav .nav-link:hover {
+	      		color: #1a6b32 !important;
+	    	}
+	
+	    	.navbar-nav .nav-link.active {
+	      		color: #1a6b32 !important;
+	      		font-weight: bold;
+	    	}
+	    
+	    	.user-greeting {
+	      		font-size: 0.9rem;
+	      		color: white;
+	      		margin-right: 15px;
+	    	}
+	  	</style>
+	</head>
+  	<body>
+    	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	      	
+	      	<div class="container-fluid">
+	        
+	        	<a class="navbar-brand" href="<%=path%>/Home">
+	          		<img
+	            		src="<%=path%>/assets/TeamUp_LogoNavbar.png"
+	            		alt="TeamUp Logo"
+	            		width="80"
+	            		height="50"
+	          		/>
+	        	</a>
+	
+	        	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+	            	<span class="navbar-toggler-icon"></span>
+	        	</button>
+	
+		        <div class="collapse navbar-collapse" id="navbarContent">
+		        	<ul class="navbar-nav me-auto">
+		            	
+		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actiontournament">Torneos</a></li>
+		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionmatch">Partidos</a></li>
+		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionclub">Clubes</a></li>
+		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionplayer">Jugadores</a></li>
+		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actioncoach">Directores Técnicos</a></li>
+		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionpresident">Presidentes</a></li>
+		            	
+		            	<% if (userLogged != null) { %>
+			            	
+			            	<li class="nav-item border-start ms-2 ps-2 border-secondary d-none d-lg-block"></li>
+			            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actioncontract">Contratos</a></li>
+			            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionstadium">Estadios</a></li>
+		            		<li class="nav-item"><a class="nav-link" href="<%=path%>/actionassociation">Asociaciones</a></li>
+			            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionposition">Posiciones</a></li>
+		            		<li class="nav-item"><a class="nav-link" href="<%=path%>/actionnationality">Nacionalidades</a></li>
+		            	
+		            	<% } %>
+		          	
+		          	</ul>
 
-      .navbar-nav .nav-link:hover {
-        color: #1a6b32 !important;
-      }
+		          	<div class="ms-auto d-flex align-items-center mt-3 mt-lg-0">
+		            
+		            	<% if (userLogged != null) { %>
+		                	<span class="user-greeting d-none d-lg-block">
+		                    	Hola, <strong><%= userLogged.getEmail() %></strong>
+		                	</span>
+		                
+		                	<a href="<%=path%>/login?logout=true" class="btn btn-outline-danger btn-sm">
+		                    	<i class="fas fa-sign-out-alt"></i> Salir
+		                	</a>
+		            	<% } else { %>
+		                	<a href="<%=path%>/login" class="btn btn-success btn-sm">
+		                    	<i class="fas fa-sign-in-alt"></i> Ingresar
+		                	</a>
+		            	<% } %>
+		
+		          </div>
 
-      .navbar-nav .nav-link.active {
-        color: #1a6b32 !important;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="Home">
-          <img
-            src="assets/TeamUp_LogoNavbar.png"
-            alt="TeamUp Logo"
-            width="80"
-            height="50"
-          />
-        </a>
+        		</div>
+      		</div>
+    	</nav>
 
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="actionplayer">Jugadores</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actioncoach">Directores Técnicos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionpresident">Presidentes</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionstadium">Estadios</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionclub">Clubes</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionassociation">Asociaciones</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actiontournament">Torneos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actioncontract">Contratos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionposition">Posiciones</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionmatch">Partidos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="actionnationality">Nacionalidades</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+	    <script>
+	      
+	    	const currentPath = window.location.pathname;
+	      	const links = document.querySelectorAll('.navbar-nav .nav-link');
+	
+	      	links.forEach((link) => {
+	        
+	    		const linkHref = link.getAttribute('href');
+	        
+	        	if (currentPath.endsWith(linkHref) || linkHref.endsWith(currentPath)) {
 
-    <script>
-      const currentPage = window.location.pathname.split('/').pop();
-      const links = document.querySelectorAll('.navbar-nav .nav-link');
-
-      links.forEach((link) => {
-        if (link.getAttribute('href') === currentPage) {
-          link.classList.add('active');
-        }
-      });
-    </script>
-  </body>
+	        		link.classList.add('active');
+	        
+	        	}
+	      
+	      	});
+	      	
+	    </script>
+	    
+	    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  	</body>
 </html>

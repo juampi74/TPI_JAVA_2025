@@ -287,6 +287,37 @@ public class DataMatch {
         return highestStage;
     
     }
+    
+    public Match getNextMatch() throws SQLException {
+        
+    	Match match = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        		SELECT_ALL_MATCHES_JOINED + " WHERE m.date >= NOW() ORDER BY m.date ASC LIMIT 1"
+        	);
+            
+        	rs = stmt.executeQuery();
+
+            if (rs.next()) match = mapFullMatch(rs);
+            
+        } catch (SQLException e) {
+            
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+
+        	closeResources(rs, stmt);
+        	
+        }
+
+        return match;
+        
+    }
 
     public void add(Match m) throws SQLException {
 

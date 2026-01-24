@@ -33,6 +33,7 @@ public class Logic {
     private DataPlayerPosition dpp;
     private DataMatch dm;
     private DataNationality dn;
+    private DataUser du;
 
     public Logic() {
 
@@ -49,6 +50,7 @@ public class Logic {
         dpp = new DataPlayerPosition();
         dm = new DataMatch();
         dn = new DataNationality();
+        du = new DataUser();
 
     }
 
@@ -628,6 +630,12 @@ public class Logic {
     	
     }
     
+    public Match getNextMatch() throws SQLException {
+        
+    	return dm.getNextMatch();
+    
+    }
+    
     public void addMatch(Match match) throws SQLException {
     
     	dm.add(match);
@@ -685,6 +693,12 @@ public class Logic {
     public void deleteNationality(Integer id) throws SQLException {
     
     	dn.delete(id);
+    
+    }
+    
+    public User getUserByEmail(String email) throws SQLException {
+        
+    	return du.getByEmail(email);
     
     }
     

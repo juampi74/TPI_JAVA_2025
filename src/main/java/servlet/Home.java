@@ -27,10 +27,12 @@ public class Home extends HttpServlet {
             Club club = ctrl.getClubWithMostContracts();
             Contract contract = ctrl.getNextExpiringContract();
             LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
+            Match nextMatch = ctrl.getNextMatch();
 
             request.setAttribute("nextExpiringContract", contract);
             request.setAttribute("clubWithMostContracts", club);
             request.setAttribute("tournaments", tournaments);
+            request.setAttribute("nextMatch", nextMatch);
             
             request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 
