@@ -53,8 +53,18 @@ public class ActionStadium extends HttpServlet {
 			if ("edit".equals(action)) {
 				
 				Stadium stadium = ctrl.getStadiumById(Integer.parseInt(request.getParameter("id")));
-				request.setAttribute("stadium", stadium);
-				request.getRequestDispatcher("WEB-INF/Edit/EditStadium.jsp").forward(request, response);
+				
+				if (stadium != null) {
+				
+					request.setAttribute("stadium", stadium);
+					request.getRequestDispatcher("WEB-INF/Edit/EditStadium.jsp").forward(request, response);
+					
+				} else {
+			        
+			        request.setAttribute("errorMessage", "El estadio solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 			
 			} else if ("add".equals(action)) {
 				
@@ -70,8 +80,10 @@ public class ActionStadium extends HttpServlet {
 			}
 			
 		} catch (SQLException e) {
+			
 			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+		
 		}
 	
 	}
@@ -99,6 +111,7 @@ public class ActionStadium extends HttpServlet {
 
         			request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
         			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+        			return;
 
         		}
         		
@@ -114,6 +127,7 @@ public class ActionStadium extends HttpServlet {
 
         			request.setAttribute("errorMessage", "Error en la capacidad, la misma debe ser mayor a 0");
         			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+        			return;
 
         		}
         	    
@@ -129,15 +143,13 @@ public class ActionStadium extends HttpServlet {
 
             		request.setAttribute("errorMessage", "No se puede eliminar un estadio que pertenece a un club");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
             	
             }
     	    
-    	    LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
-    	    stadiums.sort(Comparator.comparing(Stadium::getName));
-    		request.setAttribute("stadiumsList", stadiums);
-    	    request.getRequestDispatcher("WEB-INF/Management/StadiumManagement.jsp").forward(request, response);
+            response.sendRedirect("actionstadium");
         	
         } catch (SQLException e) {
 

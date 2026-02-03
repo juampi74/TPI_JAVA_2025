@@ -92,12 +92,22 @@ public class ActionPresident extends HttpServlet {
 			if ("edit".equals(action)) {
 				
 				President president = ctrl.getPresidentById(Integer.parseInt(request.getParameter("id")));
-				request.setAttribute("president", president);
 				
-				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
-				request.setAttribute("nationalitiesList", nationalities);
+				if (president != null) {
 				
-				request.getRequestDispatcher("WEB-INF/Edit/EditPresident.jsp").forward(request, response);
+					request.setAttribute("president", president);
+					
+					LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+					request.setAttribute("nationalitiesList", nationalities);
+					
+					request.getRequestDispatcher("WEB-INF/Edit/EditPresident.jsp").forward(request, response);
+					
+				} else {
+			        
+			        request.setAttribute("errorMessage", "El presidente solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 			
 			} else if ("add".equals(action)) {
 				
@@ -158,6 +168,7 @@ public class ActionPresident extends HttpServlet {
 
             		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
             	
@@ -173,6 +184,7 @@ public class ActionPresident extends HttpServlet {
 
             		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el presidente debe ser mayor a 18 años");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
         	    
@@ -182,9 +194,7 @@ public class ActionPresident extends HttpServlet {
         	    
             }
     	    
-    	    LinkedList<President> presidents = ctrl.getAllPresidents();
-    		request.setAttribute("presidentsList", presidents);
-    	    request.getRequestDispatcher("WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
+        	response.sendRedirect("actionpresident");
     	    
         } catch (SQLException e) {
 

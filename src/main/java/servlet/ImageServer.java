@@ -19,8 +19,10 @@ public class ImageServer extends HttpServlet {
         String fileName = request.getParameter("id");
 
         if (fileName == null) {
-            response.sendError(400, "Archivo no especificado");
+            
+        	response.sendError(400, "Archivo no especificado");
             return;
+        
         }
         
         String basePath = Config.get("uploads.path").replace("\"", "");
@@ -28,8 +30,10 @@ public class ImageServer extends HttpServlet {
         File file = new File(basePath + fileName);
 
         if (!file.exists()) {
-            response.sendError(404, "Imagen no encontrada");
+        
+        	response.sendError(404, "Imagen no encontrada");
             return;
+        
         }
 
         FileInputStream fis = new FileInputStream(file);
@@ -42,10 +46,14 @@ public class ImageServer extends HttpServlet {
         int bytesRead;
 
         while ((bytesRead = fis.read(buffer)) != -1) {
-            out.write(buffer, 0, bytesRead);
+        
+        	out.write(buffer, 0, bytesRead);
+        
         }
 
         out.flush();
         fis.close();
+    
     }
+
 }

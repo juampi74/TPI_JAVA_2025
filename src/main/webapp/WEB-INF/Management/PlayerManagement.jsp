@@ -3,9 +3,11 @@
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.time.Period"%>
 <%@ page import="java.time.LocalDate"%>
-<%@ page import="enums.DominantFoot"%>
 <%@ page import="entities.Player"%>
 <%@ page import="entities.Club"%>
+<%@ page import="entities.User"%>
+<%@ page import="enums.DominantFoot"%>
+<%@ page import="enums.UserRole"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -220,6 +222,9 @@
 		</style>
 
 		<%
+			User userLogged = (User) session.getAttribute("user");
+			boolean isAdmin = (userLogged != null && userLogged.getRole() == UserRole.ADMIN);
+		
 			LinkedList<Player> pll = (LinkedList<Player>) request.getAttribute("playersList");
 		    boolean emptyList = (pll == null || pll.isEmpty());
 		    
@@ -277,12 +282,17 @@
 						<span id="freeIndicator" class="free-indicator d-none" title="Filtrando Agente Libre"><i class="fas fa-user-slash"></i>Agente Libre</span>
 					</form>
 		
-			        <form action="actionplayer" method="get" class="m-0 ms-5">
-			        	<input type="hidden" name="action" value="add" />
-			          	<button type="submit" class="btn btn-dark btn-circular" style="border:none;background:none;padding:0;">
-			            	<img src="${pageContext.request.contextPath}/assets/add-button2.svg" alt="Add" width="40" height="40">
-			          	</button>
-			        </form>
+					<% if (isAdmin) { %>
+				        
+				        <form action="actionplayer" method="get" class="m-0 ms-5">
+				        	<input type="hidden" name="action" value="add" />
+				          	<button type="submit" class="btn btn-dark btn-circular" style="border:none;background:none;padding:0;">
+				            	<img src="${pageContext.request.contextPath}/assets/add-button2.svg" alt="Add" width="40" height="40">
+				          	</button>
+				        </form>
+				        
+					<% } %>
+					
 		      	</div>
 		    </div>
 		
@@ -318,37 +328,41 @@
 												clubName = c.getName();
 												break;
 											}
+										
 										}
+									
 									}
+								
 								} catch (NumberFormatException nfe) {}
+							
 							}
 
 						}
 
-							String title;
-							String subtitle;
+						String title;
+						String subtitle;
 
-							if (hasFilter) {
-							    
-								if ("free".equals(clubParam)) {
-							        
-									title = "No hay agentes libres";
-							        subtitle = "Todos los jugadores registrados pertenecen a un club actualmente.";
-							    
-								} else {
-							        
-									title = String.format("El club \"%s\" no tiene plantel asignado", clubName);
-							        subtitle = "Podés registrar un nuevo fichaje desde la sección "
-							                 + "<strong>Contratos</strong>.";
-							    }
-
+						if (hasFilter) {
+						    
+							if ("free".equals(clubParam)) {
+						        
+								title = "No hay agentes libres";
+						        subtitle = "Todos los jugadores registrados pertenecen a un club actualmente.";
+						    
 							} else {
-							    
-								title = "Todavía no agregaste jugadores";
+						        
+								title = String.format("El club \"%s\" no tiene plantel asignado", clubName);
+						        subtitle = "Podés registrar un nuevo fichaje desde la sección "
+						                 + "<strong>Contratos</strong>.";
+						    }
 
-							    subtitle = "No hay jugadores registrados. Usá el botón de <strong>(+)</strong> cuando quieras agregar el primero.";
-							             
-							}
+						} else {
+						    
+							title = "Todavía no agregaste jugadores";
+
+						    subtitle = "No hay jugadores registrados. Usá el botón de <strong>(+)</strong> cuando quieras agregar el primero.";
+						             
+						}
 		        %>
 		
 		        <div class="d-flex justify-content-center align-items-center" style="min-height:60vh;">
@@ -383,8 +397,12 @@
 	                        			<th>Altura</th>
 	                        			<th>Peso</th>
 	                        			<th>Ver Trayectoria</th>
-	                        			<th>Editar</th>
-	                        			<th>Eliminar</th>
+	                        			
+	                        			<% if (isAdmin) { %>
+		                        			<th>Editar</th>
+		                        			<th>Eliminar</th>
+	                        			<% } %>
+	                        			
 					              	</tr>
 					            </thead>
 					           	<tbody>
@@ -488,27 +506,34 @@
 											        </button>
 											    </form>    
 											</td>
-							                <td>
-							                  	<form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
-								                    <input type="hidden" name="action" value="edit" />
-								                    <input type="hidden" name="id" value="<%= p.getId() %>" />
-								                    <button type="submit" class="btn btn-sm" style="background-color:#0D47A1;">
-								                    	<img src="${pageContext.request.contextPath}/assets/edit.svg" alt="" width="25" height="25" style="display:block;">
-								                    </button>
-							                  	</form>
-						                	</td>
-						                	<td>
-							                  	<form method="post" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
-							                    	<input type="hidden" name="action" value="delete" />
-							                    	<input type="hidden" name="id" value="<%= p.getId() %>" />
-							                    	<button type="button" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= p.getId() %>" style="background-color:#9B1C1C;">
-							                      		<img src="${pageContext.request.contextPath}/assets/delete.svg" alt="" width="25" height="25" style="display:block;">
-							                    	</button>
-							                  	</form>
-						                	</td>
+							                
+							                <% if (isAdmin) { %>
+								                
+								                <td>
+								                  	<form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
+									                    <input type="hidden" name="action" value="edit" />
+									                    <input type="hidden" name="id" value="<%= p.getId() %>" />
+									                    <button type="submit" class="btn btn-sm" style="background-color:#0D47A1;">
+									                    	<img src="${pageContext.request.contextPath}/assets/edit.svg" alt="" width="25" height="25" style="display:block;">
+									                    </button>
+								                  	</form>
+							                	</td>
+							                	
+							                	<td>
+								                  	<form method="post" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
+								                    	<input type="hidden" name="action" value="delete" />
+								                    	<input type="hidden" name="id" value="<%= p.getId() %>" />
+								                    	<button type="button" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= p.getId() %>" style="background-color:#9B1C1C;">
+								                      		<img src="${pageContext.request.contextPath}/assets/delete.svg" alt="" width="25" height="25" style="display:block;">
+								                    	</button>
+								                  	</form>
+							                	</td>
+							                
+							                <% } %>
+						              	
 						              	</tr>
 					            <%
-					              }
+					            	}
 					            %>
 				            	</tbody>
 				          	</table>

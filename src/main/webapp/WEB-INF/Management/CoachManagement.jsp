@@ -2,6 +2,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.*"%>
+<%@ page import="enums.UserRole"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -88,6 +89,9 @@
 	    </style>
 		
 		<%
+			User userLogged = (User) session.getAttribute("user");
+			boolean isAdmin = (userLogged != null && userLogged.getRole() == UserRole.ADMIN);
+		
 			LinkedList<Coach> cl = (LinkedList<Coach>) request.getAttribute("coachesList");
 			boolean emptyList = (cl == null || cl.isEmpty());
 			
@@ -100,12 +104,18 @@
 			<div class="row">
 				<div class="d-flex justify-content-between my-4 align-items-center">
 	        		<h1>Directores Técnicos</h1>
-		        	<form action="actioncoach" method="get" style="margin:0;">
-		        		<input type="hidden" name="action" value="add" />
-					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
-					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
-					    </button>
-		    		</form>				
+		        	
+		        	<% if (isAdmin) { %>
+			        	
+			        	<form action="actioncoach" method="get" style="margin:0;">
+			        		<input type="hidden" name="action" value="add" />
+						    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
+						        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
+						    </button>
+			    		</form>
+			    	
+			    	<% } %>
+			    				
 				</div>
 				
 				<% if (emptyList) { %>
@@ -138,8 +148,12 @@
 	                        			<th>Formación Preferida</th>
 	                        			<th>Licencia de Entrenador</th>
 	                        			<th>Fecha de Licencia</th>
-	                        			<th>Editar</th>
-	                        			<th>Eliminar</th>
+	                        			
+	                        			<% if (isAdmin) { %>
+		                        			<th>Editar</th>
+		                        			<th>Eliminar</th>
+	                        			<% } %>
+
 	                      			</tr>
 	                      		</thead>
 	                    		<tbody>
@@ -183,24 +197,30 @@
 	                    				<td><span class="badge bg-secondary"><%=c.getCoachingLicense()%></span></td>
 	                    				<td><%=c.getLicenseObtainedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
 	                    				
-	                    				<td>
-	                    					<form method="get" action="actioncoach" class="d-flex justify-content-center m-0">
-	                    						<input type="hidden" name="action" value="edit" />
-			        							<input type="hidden" name="id" value="<%=c.getId()%>" />
-			        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
-													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
-												</button>
-			    							</form>
-	                    				</td>
-	                    				<td>
-	                    					<form method="post" action="actioncoach" class="d-flex justify-content-center m-0">
-												<input type="hidden" name="action" value="delete" />
-												<input type="hidden" name="id" value="<%=c.getId()%>" />
-												<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>" >
-													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
-												</button>
-											</form>
-	                    				</td>
+	                    				<% if (isAdmin) { %>
+	                    				
+		                    				<td>
+		                    					<form method="get" action="actioncoach" class="d-flex justify-content-center m-0">
+		                    						<input type="hidden" name="action" value="edit" />
+				        							<input type="hidden" name="id" value="<%=c.getId()%>" />
+				        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
+														<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
+													</button>
+				    							</form>
+		                    				</td>
+		                    				
+		                    				<td>
+		                    					<form method="post" action="actioncoach" class="d-flex justify-content-center m-0">
+													<input type="hidden" name="action" value="delete" />
+													<input type="hidden" name="id" value="<%=c.getId()%>" />
+													<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>" >
+														<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
+													</button>
+												</form>
+		                    				</td>
+		                    				
+		                    			<% } %>
+		                    			
 	                    			</tr>
 	                    		<% } %>
 	                    		</tbody>

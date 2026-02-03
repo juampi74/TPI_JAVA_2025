@@ -145,21 +145,31 @@ public class ActionPlayer extends HttpServlet {
 				
 				int id = Integer.parseInt(request.getParameter("id"));
 				Player player = ctrl.getPlayerById(id);
-				request.setAttribute("player", player);
 				
-				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
-				request.setAttribute("nationalitiesList", nationalities);
+				if (player != null) {
 				
-				LinkedList<Position> positions = ctrl.getAllPositions();
-            	request.setAttribute("positionsList", positions);
-            	
-            	LinkedList<Integer> playerPositions = ctrl.getPlayerPositions(id);
-            	request.setAttribute("playerPositionsList", playerPositions);
-            	
-            	Integer primaryPos = ctrl.getPlayerPrincipalPosition(id);
-            	request.setAttribute("playerPrimary", primaryPos);
-            	
-				request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
+					request.setAttribute("player", player);
+					
+					LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+					request.setAttribute("nationalitiesList", nationalities);
+					
+					LinkedList<Position> positions = ctrl.getAllPositions();
+	            	request.setAttribute("positionsList", positions);
+	            	
+	            	LinkedList<Integer> playerPositions = ctrl.getPlayerPositions(id);
+	            	request.setAttribute("playerPositionsList", playerPositions);
+	            	
+	            	Integer primaryPos = ctrl.getPlayerPrincipalPosition(id);
+	            	request.setAttribute("playerPrimary", primaryPos);
+	            	
+					request.getRequestDispatcher("WEB-INF/Edit/EditPlayer.jsp").forward(request, response);
+					
+				} else {
+			        
+			        request.setAttribute("errorMessage", "El jugador solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 			
 			} else if ("add".equals(action)) {
 				
@@ -188,25 +198,33 @@ public class ActionPlayer extends HttpServlet {
 			
 			} else if ("history".equals(action)) {
 			    
-			    int idPlayer = Integer.parseInt(request.getParameter("id"));
+			    int id = Integer.parseInt(request.getParameter("id"));
+				Player player = ctrl.getPlayerById(id);
 			    
-			    Player player = ctrl.getPlayerById(idPlayer);
+			    if (player != null) {
 			    
-			    LocalDate from = null;
-			    LocalDate to = null;
+				    LocalDate from = null;
+				    LocalDate to = null;
+				    
+				    String fromStr = request.getParameter("from");
+				    String toStr = request.getParameter("to");
+				    
+				    if (fromStr != null && !fromStr.isEmpty()) from = LocalDate.parse(fromStr);
+				    if (toStr != null && !toStr.isEmpty()) to = LocalDate.parse(toStr);
+				    
+				    LinkedList<Contract> history = ctrl.getPlayerHistory(id, from, to);
+				    		    
+				    request.setAttribute("player", player);
+				    request.setAttribute("history", history);
+				    
+				    request.getRequestDispatcher("WEB-INF/Management/PlayerHistory.jsp").forward(request, response);
+			
+			    } else {
+			        
+			        request.setAttribute("errorMessage", "El jugador solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
 			    
-			    String fromStr = request.getParameter("from");
-			    String toStr = request.getParameter("to");
-			    
-			    if (fromStr != null && !fromStr.isEmpty()) from = LocalDate.parse(fromStr);
-			    if (toStr != null && !toStr.isEmpty()) to = LocalDate.parse(toStr);
-			    
-			    LinkedList<Contract> history = ctrl.getPlayerHistory(idPlayer, from, to);
-			    		    
-			    request.setAttribute("player", player);
-			    request.setAttribute("history", history);
-			    
-			    request.getRequestDispatcher("WEB-INF/Management/PlayerHistory.jsp").forward(request, response);
+			    }
 
 			} else {
 				
@@ -217,14 +235,22 @@ public class ActionPlayer extends HttpServlet {
 				if (clubIdParam != null && !clubIdParam.isEmpty()) {
 
 					if ("free".equals(clubIdParam)) {
+					
 						players = ctrl.getAvailablePlayers();
+					
 					} else {
+					
 						try {
+						
 							int clubId = Integer.parseInt(clubIdParam);
 							players = ctrl.getPlayersByClub(clubId);
+						
 						} catch (NumberFormatException nfe) {
+						
 							players = ctrl.getAllPlayers();
+						
 						}
+					
 					}
 
 				} else {
@@ -297,6 +323,7 @@ public class ActionPlayer extends HttpServlet {
 
             		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
             	
@@ -329,6 +356,7 @@ public class ActionPlayer extends HttpServlet {
 
             		request.setAttribute("errorMessage", "Error en las fecha de nacimiento (el jugador debe ser mayor a 15 años");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
         	    
@@ -345,24 +373,13 @@ public class ActionPlayer extends HttpServlet {
 
         	    	request.setAttribute("errorMessage", "No se puede eliminar un jugador con contratos activos");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
         	    }
         	    
             }
     	    
-    	    LinkedList<Player> players = ctrl.getAllPlayers();
-    		request.setAttribute("playersList", players);
-    		
-    		Map<Integer, String> primaryPositions = ctrl.getAllPrimaryPositions();
-			request.setAttribute("positionsMap", primaryPositions);
-			
-			Map<Integer, Club> currentClubsMap = ctrl.getPlayersCurrentClubs();
-		    request.setAttribute("currentClubsMap", currentClubsMap);
-    		
-    		LinkedList<Club> clubs = ctrl.getAllClubs();
-    		request.setAttribute("clubsList", clubs);
-		
-		    request.getRequestDispatcher("WEB-INF/Management/PlayerManagement.jsp").forward(request, response);
+        	response.sendRedirect("actionplayer");
     	    
         } catch (SQLException e) {
 

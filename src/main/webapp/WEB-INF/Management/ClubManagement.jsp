@@ -2,9 +2,14 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Club"%>
+<%@ page import="entities.User"%>
+<%@ page import="enums.UserRole"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
+	User userLogged = (User) session.getAttribute("user");
+	boolean isAdmin = (userLogged != null && userLogged.getRole() == UserRole.ADMIN);
+
 	LinkedList<Club> cl = (LinkedList<Club>) request.getAttribute("clubsList");
 	boolean emptyList = (cl == null || cl.isEmpty());
 	
@@ -84,12 +89,14 @@
 			<div class="row">
 				<div class="d-flex justify-content-between my-4 align-items-center">
 	        		<h1>Clubes</h1>
-		        	<form action="actionclub" method="get" style="margin:0;">
-		        		<input type="hidden" name="action" value="add" />
-					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
-					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
-					    </button>
-		    		</form>				
+	        		<% if (isAdmin) { %>
+			        	<form action="actionclub" method="get" style="margin:0;">
+			        		<input type="hidden" name="action" value="add" />
+						    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
+						        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
+						    </button>
+			    		</form>
+			    	<% } %>		
 				</div>
 				
             	<% if (emptyList) { %>
@@ -120,9 +127,18 @@
 							            <th>Fundación</th>
 							            <th>Presupuesto</th>
 							            <th>Estadio</th>
-							            <th>Editar</th>
-							            <th>Clásico Rival</th>
-	                       				<th>Eliminar</th>
+							            
+							            <% if (isAdmin) { %>
+								        
+								            <th>Editar</th>
+								            <th>Clásico Rival</th>
+		                       				<th>Eliminar</th>
+	                       				
+	                       				<% } else { %>
+	                       				
+	                       					<th>Clásico Rival</th>
+	                       				
+	                       				<% } %>
 	                      			</tr>
 	                      		</thead>
 	                    		<tbody>
@@ -138,63 +154,82 @@
 	                    				<td><%=c.getBudget()%></td>
 	                    				<td><%=c.getStadium().getName()%></td>
 	                    				
-	                    				<td>
-	                    					<form method="get" action="actionclub" style="display:inline;" class="d-flex justify-content-center align-items-center">
-	                    						<input type="hidden" name="action" value="edit" />
-			        							<input type="hidden" name="id" value="<%=c.getId()%>" />
-			        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
-													<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
-												</button>
-			    							</form>
-	                    				</td>
+	                    				<% if (isAdmin) { %>
 	                    				
-	                    				<td>
-						                    <% 
-						                       Club classicRival = classicRivalsMap.get(c.getId());
-						                       if (classicRival == null) { 
-						                    %>
-						                        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold shadow-sm"
-						                                data-bs-toggle="modal" data-bs-target="#classicRivalModal"
-						                                onclick="openClassicRivalModal(<%= c.getId() %>, '<%= c.getName() %>', <%= (c.getNationality() != null) ? c.getNationality().getId() : 0 %>)"
-						                                title="Asignar Clásico Rival">
-						                            <img src="${pageContext.request.contextPath}/assets/duel.svg" style="display: block;" alt="Asignar Clásico Rival" width="25" height="25">
-						                        </button>
-						                    <% } else { %>
-						                        <div class="d-flex align-items-center justify-content-start">
-						                            <img src="<%=request.getContextPath() + "/images?id=" + classicRival.getBadgeImage()%>" 
-						                                 title="Clásico Rival: <%= classicRival.getName() %>"
-						                                 class="classic-rival-badge" alt="Clásico Rival">
-						                            
-						                            <form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;">
-											            <input type="hidden" name="action" value="removeClassicRival">
-											            <input type="hidden" name="id" value="<%= c.getId() %>">
-											            <button type="button"
-											            		class="btn btn-sm btn-secondary shadow-sm btn-open-modal"
-											            		data-action="remove-classic-rival"
-											            		data-id="<%= c.getId() %>"
-											            		data-name="<%= c.getName() %>"
-											            		data-classic-rival-name="<%= classicRival.getName() %>"
-											            		title="Desvincular Rivalidad">
-											                <img src="${pageContext.request.contextPath}/assets/unlink.svg" style="display: block;" alt="Remover Rivalidad" width="25" height="25">
-											            </button>
-											        </form>
-						                        </div>
-						                    <% } %>
-						                </td>
-	                    				
-	                    				<td>
-	                    					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
-												<input type="hidden" name="action" value="delete" />
-												<input type="hidden" name="id" value="<%=c.getId()%>" />
-												<button type="button"
-														style="background-color: #9B1C1C"
-														class="btn btn-sm btn-open-modal"
-														data-action="delete"
-														data-id="<%= c.getId() %>" >
-													<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
-												</button>
-											</form>
-	                    				</td>
+		                    				<td>
+		                    					<form method="get" action="actionclub" style="display:inline;" class="d-flex justify-content-center align-items-center">
+		                    						<input type="hidden" name="action" value="edit" />
+				        							<input type="hidden" name="id" value="<%=c.getId()%>" />
+				        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
+														<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
+													</button>
+				    							</form>
+		                    				</td>
+		                    				
+		                    				<td>
+							                    <% 
+							                       Club classicRival = classicRivalsMap.get(c.getId());
+							                       if (classicRival == null) { 
+							                    %>
+							                        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold shadow-sm"
+							                                data-bs-toggle="modal" data-bs-target="#classicRivalModal"
+							                                onclick="openClassicRivalModal(<%= c.getId() %>, '<%= c.getName() %>', <%= (c.getNationality() != null) ? c.getNationality().getId() : 0 %>)"
+							                                title="Asignar Clásico Rival">
+							                            <img src="${pageContext.request.contextPath}/assets/duel.svg" style="display: block;" alt="Asignar Clásico Rival" width="25" height="25">
+							                        </button>
+							                    <% } else { %>
+							                        <div class="d-flex align-items-center justify-content-start">
+							                            <img src="<%=request.getContextPath() + "/images?id=" + classicRival.getBadgeImage()%>" 
+							                                 title="Clásico Rival: <%= classicRival.getName() %>"
+							                                 class="classic-rival-badge" alt="Clásico Rival">
+							                            
+							                            <form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;">
+												            <input type="hidden" name="action" value="removeClassicRival">
+												            <input type="hidden" name="id" value="<%= c.getId() %>">
+												            <button type="button"
+												            		class="btn btn-sm btn-secondary shadow-sm btn-open-modal"
+												            		data-action="remove-classic-rival"
+												            		data-id="<%= c.getId() %>"
+												            		data-name="<%= c.getName() %>"
+												            		data-classic-rival-name="<%= classicRival.getName() %>"
+												            		title="Desvincular Rivalidad">
+												                <img src="${pageContext.request.contextPath}/assets/unlink.svg" style="display: block;" alt="Remover Rivalidad" width="25" height="25">
+												            </button>
+												        </form>
+							                        </div>
+							                    <% } %>
+							                </td>
+		                    				
+		                    				<td>
+		                    					<form method="post" action="actionclub" class="d-flex justify-content-center align-items-center" style="display:inline;" onsubmit="return confirm('¿Estás seguro que querés eliminar este club?');">
+													<input type="hidden" name="action" value="delete" />
+													<input type="hidden" name="id" value="<%=c.getId()%>" />
+													<button type="button"
+															style="background-color: #9B1C1C"
+															class="btn btn-sm btn-open-modal"
+															data-action="delete"
+															data-id="<%= c.getId() %>" >
+														<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
+													</button>
+												</form>
+		                    				</td>
+		                    			
+		                    			<% } else { %>
+
+	                    					<td>
+	                    						<% 
+							                       Club classicRival = classicRivalsMap.get(c.getId());
+							                       if (classicRival != null) { 
+							                    %>
+							                    	<div class="d-flex align-items-center justify-content-center" title="Clásico Rival: <%= classicRival.getName() %>">
+						                            	<img src="<%=request.getContextPath() + "/images?id=" + classicRival.getBadgeImage()%>" 
+						                                     class="classic-rival-badge" alt="Clásico Rival">
+						                            </div>
+							                    <% } else { %>
+							                    	<span class="text-white-50">-</span>
+							                    <% } %>
+	                    					</td>
+	                    				<% } %>
 	                    			</tr>
 	                    		<% 
 	                    			}

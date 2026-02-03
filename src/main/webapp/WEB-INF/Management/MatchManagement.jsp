@@ -28,7 +28,10 @@
 	    </style>
 	
 	    <%
-			LinkedList<Match> ml = (LinkedList<Match>) request.getAttribute("matchList");
+	    	User userLogged = (User) session.getAttribute("user");
+    		boolean isAdmin = (userLogged != null && userLogged.getRole() == UserRole.ADMIN);
+	    
+	    	LinkedList<Match> ml = (LinkedList<Match>) request.getAttribute("matchList");
 			boolean emptyList = (ml == null || ml.isEmpty());
 
 			String selectedTournament = request.getParameter("tournamentId");
@@ -66,17 +69,24 @@
 	                                <option value="">Todos los torneos</option>
 	                                <%
 	                                    LinkedList<Tournament> tournaments = (LinkedList<Tournament>) request.getAttribute("tournamentsList");
-	                                    int selectedId = -1;
-	                                    if (selectedTournament != null && !selectedTournament.isEmpty()) {
-	                                        selectedId = Integer.parseInt(selectedTournament);
-	                                    }
-	                                    if (tournaments != null) {
-	                                        for (Tournament t : tournaments) {
+	                                    
+	                                	int selectedId = -1;
+	                                    
+	                                	if (selectedTournament != null && !selectedTournament.isEmpty()) {
+	                                    
+	                                		selectedId = Integer.parseInt(selectedTournament);
+	                                    
+	                                	}
+	                                    
+	                                	if (tournaments != null) {
+	                                    
+	                                		for (Tournament t : tournaments) {
 	                                %>
 	                                            <option value="<%= t.getId() %>" <%= (t.getId() == selectedId) ? "selected" : "" %>><%= t.getName() %></option>
 	                                <%
 	                                        }
-	                                    }
+	                                    
+	                                	}
 	                                %>
 	                            </select>
 	                        </form>
@@ -90,17 +100,24 @@
 	                                <option value="">Todos los clubes</option>
 	                                <%
 	                                    LinkedList<Club> clubs = (LinkedList<Club>) request.getAttribute("clubsList");
-	                                    int selectedClubId = -1;
-	                                    if (selectedClub != null && !selectedClub.isEmpty()) {
-	                                        selectedClubId = Integer.parseInt(selectedClub);
-	                                    }
-	                                    if (clubs != null) {
-	                                        for (Club c : clubs) {
+	                                    
+	                                	int selectedClubId = -1;
+	                                    
+	                                	if (selectedClub != null && !selectedClub.isEmpty()) {
+	                                    
+	                                		selectedClubId = Integer.parseInt(selectedClub);
+	                                    
+	                                	}
+	                                    
+	                                	if (clubs != null) {
+	                                    
+	                                		for (Club c : clubs) {
 	                                %>
 	                                            <option value="<%= c.getId() %>" <%= (c.getId() == selectedClubId) ? "selected" : "" %>><%= c.getName() %></option>
 	                                <%
 	                                        }
-	                                    }
+	                                    
+	                                	}
 	                                %>
 	                            </select>
 	                        </form>
@@ -171,8 +188,11 @@
 	                                    <th>Zona / Llave</th>
 	                                    <th>Jornada</th>
 	                                    <th>Fecha y Hora</th>
-	                                    <th>Registrar Resultado</th>
-	                                </tr>
+										
+										<% if (isAdmin) { %>
+								            <th>Registrar Resultado</th>
+								        <% } %>
+									</tr>
 	                            </thead>
 	                            <tbody>
 								    <% for (Match m : ml) { 
@@ -269,27 +289,32 @@
 								            <td><%= m.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) %></td>
 								            
 								            <td>
-											    <span class="d-inline-block" tabindex="0" title="<%= tooltipText %>">
-											          
-											        <button type="button" 
-											                class="btn btn-sm text-dark shadow-sm"
-											                style="background-color: #1D442E; <%= disableButton ? "opacity: 0.5; pointer-events: none;" : "" %>"
-											                <%= disableButton ? "disabled" : "" %>
-											                data-bs-toggle="modal" data-bs-target="#resultModal"										                
-											                data-id="<%= m.getId() %>"
-											                data-stage="<%= m.getStage().name() %>"
-											                data-home-name="<%= m.getHome().getName() %>"
-											                data-home-badge="<%= m.getHome().getBadgeImage() %>"
-											                data-home-goals="<%= m.getHomeGoals() != null ? m.getHomeGoals() : "" %>"
-											                data-away-name="<%= m.getAway().getName() %>"
-											                data-away-badge="<%= m.getAway().getBadgeImage() %>"
-											                data-away-goals="<%= m.getAwayGoals() != null ? m.getAwayGoals() : "" %>"										                
-											                onclick="openResultModal(this)">
-											            <img src="${pageContext.request.contextPath}/assets/scoreboard.svg" 
-											                 style="display: block; <%= disableButton ? "filter: grayscale(100%);" : "" %>"
-											                 alt="Registrar Resultado" width="25" height="25">
-											        </button>
-											    </span>
+								            	<% if (isAdmin) { %>
+								            
+												    <span class="d-inline-block" tabindex="0" title="<%= tooltipText %>">
+												          
+												        <button type="button" 
+												                class="btn btn-sm text-dark shadow-sm"
+												                style="background-color: #1D442E; <%= disableButton ? "opacity: 0.5; pointer-events: none;" : "" %>"
+												                <%= disableButton ? "disabled" : "" %>
+												                data-bs-toggle="modal" data-bs-target="#resultModal"										                
+												                data-id="<%= m.getId() %>"
+												                data-stage="<%= m.getStage().name() %>"
+												                data-home-name="<%= m.getHome().getName() %>"
+												                data-home-badge="<%= m.getHome().getBadgeImage() %>"
+												                data-home-goals="<%= m.getHomeGoals() != null ? m.getHomeGoals() : "" %>"
+												                data-away-name="<%= m.getAway().getName() %>"
+												                data-away-badge="<%= m.getAway().getBadgeImage() %>"
+												                data-away-goals="<%= m.getAwayGoals() != null ? m.getAwayGoals() : "" %>"										                
+												                onclick="openResultModal(this)">
+												            <img src="${pageContext.request.contextPath}/assets/scoreboard.svg" 
+												                 style="display: block; <%= disableButton ? "filter: grayscale(100%);" : "" %>"
+												                 alt="Registrar Resultado" width="25" height="25">
+												        </button>
+												        
+												    </span>
+												
+												<% } %>
 											</td>                               
 								        </tr>
 								    <% } %>

@@ -32,7 +32,9 @@ public class ActionClub extends HttpServlet {
     private Club buildClubFromRequest(HttpServletRequest request, String action,Logic ctrl) throws IOException, ServletException, SQLException {
         
     	Club club = new Club();
+    	
     	if ("edit".equals(action)) club.setId(Integer.parseInt(request.getParameter("id")));
+    	
     	club.setName(request.getParameter("name"));
     	club.setFoundationDate(LocalDate.parse(request.getParameter("foundationDate")));
     	club.setPhoneNumber(request.getParameter("phoneNumber"));
@@ -99,17 +101,27 @@ public class ActionClub extends HttpServlet {
         	if ("edit".equals(action)) {
                 
             	Club club = ctrl.getClubById(Integer.parseInt(request.getParameter("id")));
-    			request.setAttribute("club", club);
-                
-                LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
-                stadiums.sort(Comparator.comparing(Stadium::getName));
-            	request.setAttribute("stadiumsList", stadiums);
             	
-            	LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
-            	nationalities.sort(Comparator.comparing(Nationality::getName));
-            	request.setAttribute("nationalitiesList", nationalities);
-                
-            	request.getRequestDispatcher("WEB-INF/Edit/EditClub.jsp").forward(request, response);
+            	if (club != null) {
+            		
+		    			request.setAttribute("club", club);
+		                
+		                LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
+		                stadiums.sort(Comparator.comparing(Stadium::getName));
+		            	request.setAttribute("stadiumsList", stadiums);
+		            	
+		            	LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+		            	nationalities.sort(Comparator.comparing(Nationality::getName));
+		            	request.setAttribute("nationalitiesList", nationalities);
+		                
+		            	request.getRequestDispatcher("WEB-INF/Edit/EditClub.jsp").forward(request, response);
+
+            	} else {
+			        
+			        request.setAttribute("errorMessage", "El club solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
             
             } else if ("add".equals(action)) {
             
@@ -155,7 +167,6 @@ public class ActionClub extends HttpServlet {
                 LinkedList<Stadium> stadiums = ctrl.getAllStadiums();
             	request.setAttribute("stadiumsList", stadiums);
             	
-            	
             	request.getRequestDispatcher("/WEB-INF/Management/ClubManagement.jsp").forward(request, response);
             
             }
@@ -192,6 +203,7 @@ public class ActionClub extends HttpServlet {
         	
         			request.setAttribute("errorMessage", "Error en las fechas introducidas (la fecha de fundación debe ser mayor a hoy)");
         			request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        			return;
         	
         		}
 
@@ -207,6 +219,7 @@ public class ActionClub extends HttpServlet {
         	
         			request.setAttribute("errorMessage", "Error en las fechas introducidas (la fecha de fundación debe ser mayor a hoy)");
         			request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+        			return;
         	
         		}
 
@@ -215,17 +228,11 @@ public class ActionClub extends HttpServlet {
             	int id1 = Integer.parseInt(request.getParameter("idClub1"));
                 int id2 = Integer.parseInt(request.getParameter("idClub2"));               
                 ctrl.addClassicRival(id1, id2);
-                
-                response.sendRedirect("actionclub"); 
-                return;
-        	
+
         	} else if ("removeClassicRival".equals(action)) {
             
         		int id = Integer.parseInt(request.getParameter("id"));
         	    ctrl.removeClassicRival(id);
-        	    
-        	    response.sendRedirect("actionclub");
-        	    return;
             
         	} else if ("delete".equals(action)) {
                 
@@ -239,14 +246,12 @@ public class ActionClub extends HttpServlet {
             		
 					request.setAttribute("errorMessage", "No se puede eliminar un club con contratos activos");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
             	
 				}
             }
 
-            LinkedList<Club> clubs = ctrl.getAllClubs();
-        	clubs.sort(Comparator.comparing(Club::getName));
-            request.setAttribute("clubsList", clubs);
-            request.getRequestDispatcher("WEB-INF/Management/ClubManagement.jsp").forward(request, response);
+        	response.sendRedirect("actionclub");
             
         } catch(SQLException e) {
         	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");

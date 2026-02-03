@@ -125,9 +125,19 @@ public class ActionNationality extends HttpServlet {
 			if ("edit".equals(action)) {
 				
 				Nationality nationality = ctrl.getNationalityById(Integer.parseInt(request.getParameter("id")));
-				request.setAttribute("nationality", nationality);
-				request.getRequestDispatcher("WEB-INF/Edit/EditNationality.jsp").forward(request, response);
+				
+				if (nationality != null) {
+				
+					request.setAttribute("nationality", nationality);
+					request.getRequestDispatcher("WEB-INF/Edit/EditNationality.jsp").forward(request, response);
 			
+				} else {
+			        
+			        request.setAttribute("errorMessage", "La nacionalidad solicitada no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
+					
 			} else if ("add".equals(action)) {
 				
 				request.getRequestDispatcher("WEB-INF/Add/AddNationality.jsp").forward(request, response);
@@ -141,8 +151,10 @@ public class ActionNationality extends HttpServlet {
 			}
 			
 		} catch (SQLException e) {
+			
 			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+		
 		}
 	
 	}
@@ -228,9 +240,8 @@ public class ActionNationality extends HttpServlet {
             	
             }
     	    
-    	    LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
-    		request.setAttribute("nationalitiesList", nationalities);
-    	    request.getRequestDispatcher("WEB-INF/Management/NationalityManagement.jsp").forward(request, response);
+            response.sendRedirect("actionnationality");
+
         	
         } catch (SQLException e) {
 

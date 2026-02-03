@@ -556,13 +556,22 @@ public class ActionTournament extends HttpServlet {
 	    	if ("standings".equals(action)) {
 	    		
 	    		int id = Integer.parseInt(request.getParameter("id"));
-	    		
 	    		Tournament tournament = ctrl.getTournamentById(id);
-	    		TreeMap<String, LinkedList<TeamStats>> tables = ctrl.calculateTables(id);
 	    		
-	    		request.setAttribute("tournament", tournament);
-	    		request.setAttribute("tablesMap", tables);
-	    		request.getRequestDispatcher("WEB-INF/Management/Standings.jsp").forward(request, response);
+	    		if (tournament != null) {
+	    		
+		    		TreeMap<String, LinkedList<TeamStats>> tables = ctrl.calculateTables(id);
+		    		
+		    		request.setAttribute("tournament", tournament);
+		    		request.setAttribute("tablesMap", tables);
+		    		request.getRequestDispatcher("WEB-INF/Management/Standings.jsp").forward(request, response);
+		    	
+	    		} else {
+			        
+			        request.setAttribute("errorMessage", "El torneo solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 	    		
 	    	} else if ("add".equals(action)) {
 
@@ -720,6 +729,7 @@ public class ActionTournament extends HttpServlet {
 							
 					request.setAttribute("errorMessage", "Error en las fechas introducidas (el torneo debe empezar a partir de hoy y durar, al menos, 4 meses)");
 					request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+					return;
 					
 	        	}
 
@@ -758,9 +768,7 @@ public class ActionTournament extends HttpServlet {
                 
             }
 
-            LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-            request.setAttribute("tournamentsList", tournaments);
-            request.getRequestDispatcher("WEB-INF/Management/TournamentManagement.jsp").forward(request, response);
+            response.sendRedirect("actiontournament");
         	
         } catch(SQLException e) {
         	

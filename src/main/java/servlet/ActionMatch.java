@@ -112,6 +112,7 @@ public class ActionMatch extends HttpServlet {
             LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
             
             LinkedList<Club> clubs;
+            
             if (tournamentId != null) {
 
             	clubs = ctrl.getAllClubsByTournamentId(tournamentId);
@@ -233,15 +234,15 @@ public class ActionMatch extends HttpServlet {
 
 			}
 
-			LinkedList<Match> matches = ctrl.getAllMatches();
-			request.setAttribute("matchList", matches);
-			request.getRequestDispatcher("WEB-INF/Management/MatchManagement.jsp").forward(request, response);
+            response.sendRedirect("actionmatch");
 
 		} catch (SQLException e) {
 
 			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 			request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+		
 		}
 
 	}
+
 }

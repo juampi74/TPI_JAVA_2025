@@ -31,6 +31,33 @@ public class AuthFilter implements Filter {
         
         String path = req.getRequestURI().substring(req.getContextPath().length());
         
+        String action = req.getParameter("action");
+        
+        boolean isRestrictedAction = false;
+        if (action != null) {
+            isRestrictedAction = 
+                action.equals("add") || 
+                action.equals("edit") || 
+                action.equals("delete") ||
+                action.equals("members") ||
+                action.equals("setClassicRival") ||
+                action.equals("removeClassicRival") ||
+                action.equals("release") ||
+                action.equals("extend") ||
+                action.equals("setResult") ||
+                action.equals("generatePlayoffs") ||
+                action.equals("generateNextStage") ||
+                action.equals("finishTournament");
+        }
+
+        boolean isMixedServlet = 
+        	path.startsWith("/actiontournament") ||
+            path.startsWith("/actionmatch") ||
+        	path.startsWith("/actionclub") ||
+            path.startsWith("/actionplayer") ||
+            path.startsWith("/actioncoach") ||
+            path.startsWith("/actionpresident");
+        
         boolean isPublicResource = 
             path.equals("/") ||
             path.equals("/index.html") ||
@@ -38,36 +65,42 @@ public class AuthFilter implements Filter {
             path.startsWith("/Home") || 
             path.startsWith("/style") ||
             path.startsWith("/assets") ||
-            path.startsWith("/images") ||
-            path.startsWith("/actionclub") ||
-            path.startsWith("/actiontournament") ||
-            path.startsWith("/actionmatch") ||
-            path.startsWith("/actionplayer") ||
-            path.startsWith("/actioncoach") ||
-            path.startsWith("/actionpresident");
+            path.startsWith("/images") ||          
+            (isMixedServlet && !isRestrictedAction);
+        
         
         if (user != null) {
-
+            
         	chain.doFilter(request, response);
             
         } else {
             
             if (isPublicResource) {
-
-            	chain.doFilter(request, response);
+            	
+                chain.doFilter(request, response);
             
             } else {
-            	
-            	String origin = req.getRequestURI();
-            	
-            	if (req.getQueryString() != null) {
-            		
-                    origin += "?" + req.getQueryString();
-                    
+                
+                String origin = req.getRequestURI();
+                
+                if (req.getQueryString() != null) {
+                
+                	origin += "?" + req.getQueryString();
+                
                 }
-            	
+                
                 session = req.getSession(true);
-                session.setAttribute("flash", "Debes iniciar sesión para acceder a esa sección");
+                
+                if (isRestrictedAction) {
+                
+                	session.setAttribute("flash", "Debés iniciar sesión para realizar cambios");
+                
+                } else {
+                
+                	session.setAttribute("flash", "Debes iniciar sesión para acceder a esa sección");
+                
+                }
+                
                 session.setAttribute("tempOrigin", origin);
 
                 res.sendRedirect(req.getContextPath() + "/login");

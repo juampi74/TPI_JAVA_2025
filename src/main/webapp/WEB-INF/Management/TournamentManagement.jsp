@@ -1,7 +1,9 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="entities.Tournament"%>
+<%@ page import="entities.User"%>
 <%@ page import="enums.TournamentFormat"%>
+<%@ page import="enums.UserRole"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -27,6 +29,9 @@
 	    </style>
 		
 		<%
+	    	User userLogged = (User) session.getAttribute("user");
+        	boolean isAdmin = (userLogged != null && userLogged.getRole() == UserRole.ADMIN);
+		
 			LinkedList<Tournament> tl = (LinkedList<Tournament>) request.getAttribute("tournamentsList");
 			boolean emptyList = (tl == null || tl.isEmpty());
 		%>
@@ -41,12 +46,14 @@
 			<div class="row">
 				<div class="d-flex justify-content-between my-4 align-items-center">
 	        		<h1>Torneos</h1>
-		        	<form action="actiontournament" method="get" style="margin:0;">
-		        		<input type="hidden" name="action" value="add" />
-					    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
-					        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
-					    </button>
-		    		</form>				
+		        	<% if (userLogged != null && userLogged.getRole() == UserRole.ADMIN) { %>
+			        	<form action="actiontournament" method="get" style="margin:0;">
+			        		<input type="hidden" name="action" value="add" />
+						    <button type="submit" class="btn btn-dark btn-circular" style="border:none; background:none; padding:0;">
+						        <img src="${pageContext.request.contextPath}/assets/add-button2.svg" style="display: block;" alt="Agregar" width="40" height="40">
+						    </button>
+			    		</form>
+		    		<% } %>		
 				</div>
 				<% if (emptyList) { %>
 					<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
@@ -114,171 +121,177 @@
 										            </button>
 										        </form>
 										    
-										        <div class="d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-										            <% 
+										        <% 
+										           if (isAdmin) { 
+
 										               boolean isFinished = t.isFinished();
 										               
 										               boolean isLeague = (t.getFormat() == TournamentFormat.ROUND_ROBIN_ONE_LEG || 
 										                                   t.getFormat() == TournamentFormat.ROUND_ROBIN_TWO_LEGS);
-										                                   
+										               
 										               boolean isCupFormat = (t.getFormat() == TournamentFormat.ZONAL_ELIMINATION || 
 										                                      t.getFormat() == TournamentFormat.WORLD_CUP);
-										            
+										               
 										               boolean playoffsExists = t.isPlayoffsAlreadyGenerated();
+										               
 										               boolean groupsFinished = t.isAllGroupMatchesPlayed();
 										               
 										               boolean canGenerateNext = t.isCanGenerateNextStage();
+										               
 										               String nextStageLabel = t.getNextStageLabel();
+										               
 										               boolean isFinishAction = canGenerateNext && "Finalizar Torneo".equals(nextStageLabel);
-
+										
 										               boolean showInitButton = isCupFormat && !playoffsExists && !isFinished;
+										               
 										               boolean enableInitButton = groupsFinished;
+										               
 										               String initTooltip = "";
 										               
 										               if (showInitButton) {
-										            	   
+										               
 										            	   if (enableInitButton) {
-										            		
+										                   
 										            		   initTooltip = "Generar Fase de Eliminación";
-										            	   
+										                   
 										            	   } else {
-										            		
+										                   
 										            		   String phaseName = (t.getFormat() == TournamentFormat.WORLD_CUP) ? "Fase de Grupos" : "Fase de Zonas";
-										            		   initTooltip = "Generar Fase de Eliminación (Faltan resultados de " + phaseName + ")";
-										            	   
+										                       initTooltip = "Generar Fase de Eliminación (Faltan resultados de " + phaseName + ")";
+										                   
 										            	   }
 										               
 										               }
-
+										
 										               boolean showNextStageButton = canGenerateNext && !isFinishAction && !isFinished;
 										               
 										               boolean showFinishButton = false;
+										               
 										               boolean enableFinishButton = false;
+										               
 										               String finishTooltip = "Finalizar Torneo";
 										               
 										               if (!isFinished) {
-										            	   
+										               
 										            	   if (isLeague) {
-
+										                   
 										            		   showFinishButton = true;
+										                       
 										            		   enableFinishButton = isFinishAction;
-										            		   
+										                       
 										            		   if (!enableFinishButton) {
-										            			   
+										                       
 										            			   finishTooltip = "Finalizar Torneo (Hay partidos que todavía no se jugaron)";
-										            		   
+										                       
 										            		   }
-										            	   
+										                   
 										            	   } else {
-
+										                   
 										            		   showFinishButton = isFinishAction;
+										                       
 										            		   enableFinishButton = true;
-										            		   
+										                   
 										            	   }
 										               
 										               }
-										            %>
-										
-										            <% if (isFinished) { %>
-										            	
-										            	<span class="text-success d-flex justify-content-center align-items-center" 
-													          title="Torneo Finalizado" 
-													          style="width: 40px; height: 40px; cursor: help;"> 
-													          <i class="fas fa-check-circle fa-lg"></i>
-													    </span>
+										        %>
 										            
-										            <% } else if (showFinishButton) { %>
-										            	
-										            	<form method="post" action="actiontournament" class="m-0">
-													        <input type="hidden" name="action" value="finishTournament"> 
-													        <input type="hidden" name="id" value="<%= t.getId() %>">
-													        
-													        <span class="d-inline-block" tabindex="0" title="<%= finishTooltip %>">
-													            <button type="button" class="btn btn-sm btn-open-modal btn-success text-white fw-bold p-0 d-flex justify-content-center align-items-center"
-													                    data-action="finish" 
-													                    data-id="<%= t.getId() %>" 
-													                    data-name="<%= t.getName() %>"
-													                    style="width: 40px; height: 40px; <%= !enableFinishButton ? "cursor: not-allowed; opacity: 0.6;" : "" %>"
-													                    <%= !enableFinishButton ? "disabled" : "" %>>
-													                <img src="${pageContext.request.contextPath}/assets/finish.svg" alt="" width="25" height="25">
-													            </button>
-													        </span>
-													    </form>
-
-										            <% } else if (showInitButton) { %>
-    													
-    													<form method="post" action="actiontournament" class="m-0">
-													        <input type="hidden" name="action" value="generatePlayoffs">
-													        <input type="hidden" name="id" value="<%= t.getId() %>">
-													        
-													        <span class="d-inline-block" tabindex="0" title="<%= initTooltip %>">
-													            <button type="button" class="btn btn-sm btn-open-modal btn-warning text-dark fw-bold p-0 d-flex justify-content-center align-items-center"
-													                    data-action="playoffs" 
-													                    data-id="<%= t.getId() %>" 
-													                    data-name="<%= t.getName() %>"
-													                    style="width: 40px; height: 40px; <%= !enableInitButton ? "cursor: not-allowed; opacity: 0.6;" : "" %>"
-													                    <%= !enableInitButton ? "disabled" : "" %>>
-													                <img src="${pageContext.request.contextPath}/assets/trophy-2.svg" alt="" width="25" height="25">
-													            </button>
-													        </span>
-													    </form>
-													
-													<% } else if (showNextStageButton) { %>
-													
-														<form method="post" action="actiontournament" class="m-0">
-													        <input type="hidden" name="action" value="generateNextStage">
-													        <input type="hidden" name="id" value="<%= t.getId() %>">
-													        
-													        <span class="d-inline-block" tabindex="0" title="<%= t.getNextStageLabel() %>">
-													            <button type="button" class="btn btn-sm btn-open-modal btn-info text-white fw-bold p-0 d-flex justify-content-center align-items-center"
-													                    data-action="nextStage" 
-													                    data-id="<%= t.getId() %>" 
-													                    data-name="<%= t.getName() %>"
-													                    data-label="<%= t.getNextStageLabel() %>"
-													                    style="width: 40px; height: 40px;">
-													                <img src="${pageContext.request.contextPath}/assets/forward.svg" alt="" width="35" height="35">
-													            </button>
-													        </span>
-													    </form>
-													    
-													<% } else if (isCupFormat && playoffsExists) { %>
+										            <div class="d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+										
+										                <% if (isFinished) { %>
+										                    
+										                    <span class="text-success d-flex justify-content-center align-items-center" 
+										                          title="Torneo Finalizado" 
+										                          style="width: 40px; height: 40px; cursor: help;"> 
+										                          <i class="fas fa-check-circle fa-lg"></i>
+										                    </span>
 										                
-										                <span class="text-warning d-flex justify-content-center align-items-center" 
-													          title="<%= (t.getCurrentStatusLabel() != null) ? t.getCurrentStatusLabel() : "Fase en disputa" %>" 
-													          style="width: 40px; height: 40px; cursor: help;">
-													          	<i class="fas fa-hourglass-half fa-fade fa-lg" style="--fa-animation-duration: 2.5s;"></i>
-													    </span>
+										                <% } else if (showFinishButton) { %>
+										                    
+										                    <form method="post" action="actiontournament" class="m-0">
+										                        <input type="hidden" name="action" value="finishTournament"> 
+										                        <input type="hidden" name="id" value="<%= t.getId() %>">
+										                        <span class="d-inline-block" tabindex="0" title="<%= finishTooltip %>">
+										                            <button type="button" class="btn btn-sm btn-open-modal btn-success text-white fw-bold p-0 d-flex justify-content-center align-items-center"
+										                                    data-action="finish" 
+										                                    data-id="<%= t.getId() %>" 
+										                                    data-name="<%= t.getName() %>"
+										                                    style="width: 40px; height: 40px; <%= !enableFinishButton ? "cursor: not-allowed; opacity: 0.6;" : "" %>"
+										                                    <%= !enableFinishButton ? "disabled" : "" %>>
+										                                <img src="${pageContext.request.contextPath}/assets/finish.svg" alt="" width="25" height="25">
+										                            </button>
+										                        </span>
+										                    </form>
+										
+										                <% } else if (showInitButton) { %>
+										                    
+										                    <form method="post" action="actiontournament" class="m-0">
+										                        <input type="hidden" name="action" value="generatePlayoffs">
+										                        <input type="hidden" name="id" value="<%= t.getId() %>">
+										                        <span class="d-inline-block" tabindex="0" title="<%= initTooltip %>">
+										                            <button type="button" class="btn btn-sm btn-open-modal btn-warning text-dark fw-bold p-0 d-flex justify-content-center align-items-center"
+										                                    data-action="playoffs" 
+										                                    data-id="<%= t.getId() %>" 
+										                                    data-name="<%= t.getName() %>"
+										                                    style="width: 40px; height: 40px; <%= !enableInitButton ? "cursor: not-allowed; opacity: 0.6;" : "" %>"
+										                                    <%= !enableInitButton ? "disabled" : "" %>>
+										                                <img src="${pageContext.request.contextPath}/assets/trophy-2.svg" alt="" width="25" height="25">
+										                            </button>
+										                        </span>
+										                    </form>
 										                
-										            <% } else { %>
+										                <% } else if (showNextStageButton) { %>
+										                    
+										                    <form method="post" action="actiontournament" class="m-0">
+										                        <input type="hidden" name="action" value="generateNextStage">
+										                        <input type="hidden" name="id" value="<%= t.getId() %>">
+										                        <span class="d-inline-block" tabindex="0" title="<%= t.getNextStageLabel() %>">
+										                            <button type="button" class="btn btn-sm btn-open-modal btn-info text-white fw-bold p-0 d-flex justify-content-center align-items-center"
+										                                    data-action="nextStage" 
+										                                    data-id="<%= t.getId() %>" 
+										                                    data-name="<%= t.getName() %>"
+										                                    data-label="<%= t.getNextStageLabel() %>"
+										                                    style="width: 40px; height: 40px;">
+										                                <img src="${pageContext.request.contextPath}/assets/forward.svg" alt="" width="35" height="35">
+										                            </button>
+										                        </span>
+										                    </form>
+										                    
+										                <% } else if (isCupFormat && playoffsExists) { %>
+										                    
+										                    <span class="text-warning d-flex justify-content-center align-items-center" 
+										                          title="<%= (t.getCurrentStatusLabel() != null) ? t.getCurrentStatusLabel() : "Fase en disputa" %>" 
+										                          style="width: 40px; height: 40px; cursor: help;">
+										                          <i class="fas fa-hourglass-half fa-fade fa-lg" style="--fa-animation-duration: 2.5s;"></i>
+										                    </span>
 										                
-										                <span class="text-white-50 fw-bold d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">-</span>
+										                <% } else { %>
+										                
+										                    <span class="text-white-50 fw-bold d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">-</span>
+										                
+										                <% } %>
 										            
-										            <% } %>
-										        </div>
+										            </div>
 										
-												<%
-												
-													boolean hasMatchesPlayed = t.isHasMatchesPlayed();
-												
-												%>
-										
-										        <form method="post" action="actiontournament" class="m-0">
-												    <input type="hidden" name="action" value="delete" />
-												    <input type="hidden" name="id" value="<%=t.getId()%>" />
-												    
-												    <span class="d-inline-block" tabindex="0" 
-												          title="<%= hasMatchesPlayed ? "No se puede eliminar: el torneo ya tiene partidos jugados" : "Eliminar Torneo" %>">
-												        
-												        <button type="button" style="background-color: #9B1C1C; width: 40px; height: 40px; border: none; <%= hasMatchesPlayed ? "opacity: 0.5;" : "" %>" 
-												                class="btn btn-sm btn-open-modal p-0 d-flex justify-content-center align-items-center" 
-												                data-action="delete" 
-												                data-id="<%= t.getId() %>" 
-												                data-name="<%= t.getName() %>"
-												                <%= hasMatchesPlayed ? "disabled" : "" %>> <img src="${pageContext.request.contextPath}/assets/delete.svg" alt="" width="25" height="25">
-												        </button>
-												        
-												    </span>
-												</form>
+										            <% boolean hasMatchesPlayed = t.isHasMatchesPlayed(); %>
+										            
+										            <form method="post" action="actiontournament" class="m-0">
+										                <input type="hidden" name="action" value="delete" />
+										                <input type="hidden" name="id" value="<%=t.getId()%>" />
+										                <span class="d-inline-block" tabindex="0" 
+										                      title="<%= hasMatchesPlayed ? "No se puede eliminar: el torneo ya tiene partidos jugados" : "Eliminar Torneo" %>">
+										                    <button type="button" style="background-color: #9B1C1C; width: 40px; height: 40px; border: none; <%= hasMatchesPlayed ? "opacity: 0.5;" : "" %>" 
+										                            class="btn btn-sm btn-open-modal p-0 d-flex justify-content-center align-items-center" 
+										                            data-action="delete" 
+										                            data-id="<%= t.getId() %>" 
+										                            data-name="<%= t.getName() %>"
+										                            <%= hasMatchesPlayed ? "disabled" : "" %>> 
+										                        <img src="${pageContext.request.contextPath}/assets/delete.svg" alt="" width="25" height="25">
+										                    </button>
+										                </span>
+										            </form>
+										            
+										        <% } %>
 										        
 										    </div>
 										</td>

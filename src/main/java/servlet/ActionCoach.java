@@ -101,12 +101,22 @@ public class ActionCoach extends HttpServlet {
 			if ("edit".equals(action)) {
 				
 				Coach coach = ctrl.getCoachById(Integer.parseInt(request.getParameter("id")));
-				request.setAttribute("coach", coach);
+
+				if (coach != null) {
+					
+					request.setAttribute("coach", coach);
+					
+					LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
+					request.setAttribute("nationalitiesList", nationalities);
+					
+					request.getRequestDispatcher("WEB-INF/Edit/EditCoach.jsp").forward(request, response);
 				
-				LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
-				request.setAttribute("nationalitiesList", nationalities);
-				
-				request.getRequestDispatcher("WEB-INF/Edit/EditCoach.jsp").forward(request, response);
+				} else {
+			        
+			        request.setAttribute("errorMessage", "El director técnico solicitado no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 			
 			} else if ("add".equals(action)) {
 				
@@ -161,27 +171,40 @@ public class ActionCoach extends HttpServlet {
         	if ("add".equals(action)) {
             	
             	Coach c = buildCoachFromRequest(request, action, ctrl);
+            	
             	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
+            	
             		ctrl.addCoach(c);
+            	
             	} else {
+            	
             		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
+            	
             	}
             	
             } else if ("edit".equals(action)) {
             	
             	Coach c = buildCoachFromRequest(request, action, ctrl);
+            	
             	if (checkDates(c.getBirthdate(), c.getLicenseObtainedDate())) {
-                	ctrl.updateCoach(c);
+                
+            		ctrl.updateCoach(c);
+            	
             	} else {
+            	
             		request.setAttribute("errorMessage", "Error en las fechas introducidas (el técnico debe ser mayor a 18 años y su licencia debe ser 6 meses posterior a su mayoria de edad)");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
+            	
             	}
         	    
             } else if ("delete".equals(action)){
             	
             	Integer id_c = Integer.parseInt(request.getParameter("id")); 
-        	    if (checkContracts(id_c, ctrl)) {
+        	    
+            	if (checkContracts(id_c, ctrl)) {
 
 					ctrl.deleteCoach(id_c);
 
@@ -189,14 +212,13 @@ public class ActionCoach extends HttpServlet {
         	    	
 					request.setAttribute("errorMessage", "No se puede eliminar un técnico con contratos activos");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
         	    
 				}
         	    
             }
     	    
-    	    LinkedList<Coach> coaches = ctrl.getAllCoaches();
-    		request.setAttribute("coachesList", coaches);
-    	    request.getRequestDispatcher("WEB-INF/Management/CoachManagement.jsp").forward(request, response);
+        	response.sendRedirect("actioncoach");
         	
         } catch (SQLException e) {
 

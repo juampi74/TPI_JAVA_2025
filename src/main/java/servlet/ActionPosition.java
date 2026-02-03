@@ -50,8 +50,18 @@ public class ActionPosition extends HttpServlet {
 			if ("edit".equals(action)) {
 				
 				Position position = ctrl.getPositionById(Integer.parseInt(request.getParameter("id")));
-				request.setAttribute("position", position);
-				request.getRequestDispatcher("WEB-INF/Edit/EditPosition.jsp").forward(request, response);
+				
+				if (position != null) {
+				
+					request.setAttribute("position", position);
+					request.getRequestDispatcher("WEB-INF/Edit/EditPosition.jsp").forward(request, response);
+					
+				} else {
+			        
+			        request.setAttribute("errorMessage", "La posición solicitada no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 			
 			} else if ("add".equals(action)) {
 				
@@ -66,8 +76,10 @@ public class ActionPosition extends HttpServlet {
 			}
 			
 		} catch (SQLException e) {
+			
 			request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
 	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+		
 		}
 	
 	}
@@ -87,7 +99,7 @@ public class ActionPosition extends HttpServlet {
             	
         		Position position = buildPositionFromRequest(request, action);
         		
-        		if(checkAbbreviation(position.getAbbreviation())) {
+        		if (checkAbbreviation(position.getAbbreviation())) {
         			
         			ctrl.addPosition(position);
         			
@@ -95,6 +107,7 @@ public class ActionPosition extends HttpServlet {
         			
         			request.setAttribute("errorMessage", "Error en la abreviación, la misma debe tener como máximo 5 caracteres");
         			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+        			return;
         			
         		}
         		
@@ -102,7 +115,7 @@ public class ActionPosition extends HttpServlet {
             	
             	Position position = buildPositionFromRequest(request, action);
             	
-            	if(checkAbbreviation(position.getAbbreviation())) {
+            	if (checkAbbreviation(position.getAbbreviation())) {
         			
             		ctrl.updatePosition(position);
         			
@@ -110,6 +123,7 @@ public class ActionPosition extends HttpServlet {
         			
         			request.setAttribute("errorMessage", "Error en la abreviación, la misma debe tener como máximo 5 caracteres");
         			request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+        			return;
         			
         		}	
         	    
@@ -125,14 +139,13 @@ public class ActionPosition extends HttpServlet {
             		
 					request.setAttribute("errorMessage", "No se puede eliminar una posición que tiene jugadores asociados");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
             	
 				}
             	
             }
     	    
-    	    LinkedList<Position> positions = ctrl.getAllPositions();
-    		request.setAttribute("positionsList", positions);
-    	    request.getRequestDispatcher("WEB-INF/Management/PositionManagement.jsp").forward(request, response);
+            response.sendRedirect("actionposition");
         	
         } catch (SQLException e) {
 

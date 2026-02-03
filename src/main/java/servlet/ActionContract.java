@@ -24,9 +24,12 @@ public class ActionContract extends HttpServlet {
     private Contract buildContractFromRequest(HttpServletRequest request, String action, Logic ctrl) throws SQLException {
 
         Contract contract = new Contract();
+        
         if (action.equals("edit")) contract.setId(Integer.parseInt(request.getParameter("id")));
+        
         contract.setStartDate(LocalDate.parse(request.getParameter("startDate")));
         contract.setEndDate(LocalDate.parse(request.getParameter("endDate")));
+        
         String releaseClause = request.getParameter("releaseClause");
         if (releaseClause != null && !releaseClause.isEmpty()) {
 
@@ -180,11 +183,13 @@ public class ActionContract extends HttpServlet {
 
                     request.setAttribute("errorMessage", "Error en las fechas introducidas (el contrato debe empezar a partir de hoy y durar, al menos, 6 meses)");
                     request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+                    return;
 
                 } else if (checkContracts(contract.getPerson().getId(), ctrl)) {
 
                     request.setAttribute("errorMessage", "La persona ya tiene un contrato activo");
                     request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+                    return;
 
                 } else {
 
@@ -201,17 +206,20 @@ public class ActionContract extends HttpServlet {
                 ctrl.deleteContract(Integer.parseInt(request.getParameter("id")));
 
             } else if ("extend".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
+                
+            	int id = Integer.parseInt(request.getParameter("id"));
                 int months = Integer.parseInt(request.getParameter("extension"));
+                
                 Contract c = ctrl.getContractById(id);
                 LocalDate newEndDate = c.getEndDate().plusMonths(months);
+                
                 c.setEndDate(newEndDate);
+                
                 ctrl.updateContract(c);
+            
             }
 
-            LinkedList<Contract> contracts = ctrl.getAllContracts();
-            request.setAttribute("contractsList", contracts);
-            request.getRequestDispatcher("WEB-INF/Management/ContractManagement.jsp").forward(request, response);
+            response.sendRedirect("actioncontract");
 
         } catch (SQLException e) {
 
@@ -221,4 +229,5 @@ public class ActionContract extends HttpServlet {
         }
 
     }
+
 }

@@ -25,13 +25,17 @@ public class ActionAssociation extends HttpServlet {
 	private Association buildAssociationFromRequest(HttpServletRequest request, String action) {
         
 		Association association = new Association();
-		if("edit".equals(action)) association.setId(Integer.parseInt(request.getParameter("id")));
+		
+		if ("edit".equals(action)) association.setId(Integer.parseInt(request.getParameter("id")));
+		
 		association.setName(request.getParameter("name"));
 		association.setCreationDate(LocalDate.parse(request.getParameter("creationDate")));
+		
 		String type = request.getParameter("type");
 	    if (type != null && !type.isEmpty()) {
 	        association.setType(AssociationType.valueOf(type));
 	    }
+	    
 	    String continent = request.getParameter("continent");
 	    if (association.getType() != AssociationType.INTERNATIONAL && continent != null && !continent.isEmpty()) {
 	        association.setContinent(Continent.valueOf(continent));
@@ -69,21 +73,38 @@ public class ActionAssociation extends HttpServlet {
 				
 				Association association = ctrl.getAssociationById(Integer.parseInt(request.getParameter("id")));
 				
-				LinkedList<Continent> availableContinents = new LinkedList<>();
-				HashSet<Continent> used = new HashSet<>();
-				LinkedList<Association> all = ctrl.getAllAssociations();
-				for (Association a : all) {
-					if (a.getType() == AssociationType.CONTINENTAL && a.getContinent() != null && a.getId() != association.getId()) {
-						used.add(a.getContinent());
-					}
-				}
-				for (Continent c : Continent.values()) {
-					if (!used.contains(c)) availableContinents.add(c);
-				}
+				if (association != null) {
 				
-				request.setAttribute("availableContinents", availableContinents);
-				request.setAttribute("association", association);
-				request.getRequestDispatcher("WEB-INF/Edit/EditAssociation.jsp").forward(request, response);
+					LinkedList<Continent> availableContinents = new LinkedList<>();
+					HashSet<Continent> used = new HashSet<>();
+					LinkedList<Association> all = ctrl.getAllAssociations();
+					
+					for (Association a : all) {
+					
+						if (a.getType() == AssociationType.CONTINENTAL && a.getContinent() != null && a.getId() != association.getId()) {
+						
+							used.add(a.getContinent());
+						
+						}
+					
+					}
+					
+					for (Continent c : Continent.values()) {
+					
+						if (!used.contains(c)) availableContinents.add(c);
+					
+					}
+					
+					request.setAttribute("availableContinents", availableContinents);
+					request.setAttribute("association", association);
+					request.getRequestDispatcher("WEB-INF/Edit/EditAssociation.jsp").forward(request, response);
+					
+				} else {
+			        
+			        request.setAttribute("errorMessage", "La asociación solicitada no existe");
+			        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+			    
+			    }
 			
 			} else if ("members".equals(action)) {
 				
@@ -207,6 +228,7 @@ public class ActionAssociation extends HttpServlet {
 
             		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
             	
@@ -222,6 +244,7 @@ public class ActionAssociation extends HttpServlet {
 
             		request.setAttribute("errorMessage", "Error en la fecha de fundación, la misma debe ser maximo hoy");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 
             	}
             	
@@ -245,13 +268,12 @@ public class ActionAssociation extends HttpServlet {
 
             		request.setAttribute("errorMessage", "No se puede eliminar una asociación que organiza torneos");
             		request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
+            		return;
 					
             	}
             }
     	    
-    	    LinkedList<Association> associations = ctrl.getAllAssociations();
-    		request.setAttribute("associationsList", associations);
-    	    request.getRequestDispatcher("WEB-INF/Management/AssociationManagement.jsp").forward(request, response);
+        	response.sendRedirect("actionassociation");
         	
         } catch(SQLException e) {
         
