@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="entities.User" %>
+<%@ page import="enums.UserRole" %>
 
 <%
     User userLogged = (User) session.getAttribute("user");
@@ -61,33 +62,61 @@
 	        	</button>
 	
 		        <div class="collapse navbar-collapse" id="navbarContent">
-		        	<ul class="navbar-nav me-auto">
-		            	
-		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actiontournament">Torneos</a></li>
-		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionmatch">Partidos</a></li>
-		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionclub">Clubes</a></li>
-		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionplayer">Jugadores</a></li>
-		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actioncoach">Directores Técnicos</a></li>
-		            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionpresident">Presidentes</a></li>
-		            	
-		            	<% if (userLogged != null) { %>
-			            	
-			            	<li class="nav-item border-start ms-2 ps-2 border-secondary d-none d-lg-block"></li>
-			            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actioncontract">Contratos</a></li>
-			            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionstadium">Estadios</a></li>
-		            		<li class="nav-item"><a class="nav-link" href="<%=path%>/actionassociation">Asociaciones</a></li>
-			            	<li class="nav-item"><a class="nav-link" href="<%=path%>/actionposition">Posiciones</a></li>
-		            		<li class="nav-item"><a class="nav-link" href="<%=path%>/actionnationality">Nacionalidades</a></li>
-		            	
-		            	<% } %>
-		          	
-		          	</ul>
+		        	<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    
+					    <li class="nav-item"><a class="nav-link" href="<%=path%>/actiontournament">Torneos</a></li>
+					    <li class="nav-item"><a class="nav-link" href="<%=path%>/actionmatch">Partidos</a></li>
+					
+					    <li class="nav-item dropdown">
+					        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownParticipants" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					            Participantes
+					        </a>
+					        <ul class="dropdown-menu" aria-labelledby="navbarDropdownParticipants">
+					            <li><a class="dropdown-item" href="<%=path%>/actionclub">Clubes</a></li>
+					            <li><hr class="dropdown-divider"></li>
+					            <li><a class="dropdown-item" href="<%=path%>/actionplayer">Jugadores</a></li>
+					            <li><a class="dropdown-item" href="<%=path%>/actioncoach">Directores Técnicos</a></li>
+					            <li><a class="dropdown-item" href="<%=path%>/actionpresident">Presidentes</a></li>
+					        </ul>
+					    </li>
+					
+					    <% if (userLogged != null) { %>
+					        
+					        <li class="nav-item border-start ms-2 ps-2 border-secondary d-none d-lg-block"></li>
+					
+					        <li class="nav-item dropdown">
+					            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+					                Gestión
+					            </a>
+					            <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
+					                <li><a class="dropdown-item" href="<%=path%>/actioncontract">Contratos</a></li>
+					                <li><a class="dropdown-item" href="<%=path%>/actionstadium">Estadios</a></li>
+					                <li><a class="dropdown-item" href="<%=path%>/actionassociation">Asociaciones</a></li>
+					                <li><hr class="dropdown-divider"></li>
+					                <li><a class="dropdown-item" href="<%=path%>/actionposition">Posiciones</a></li>
+					                <li><a class="dropdown-item" href="<%=path%>/actionnationality">Nacionalidades</a></li>
+					            </ul>
+					        </li>
+					
+					        <% if (userLogged.getRole() == UserRole.ADMIN) { %>
+							    <li class="nav-item ms-lg-2 d-flex align-items-center">
+							        
+							        <a class="nav-link fw-bold border border-secondary rounded px-3 py-1" href="<%=path%>/admin/users">
+							            <i class="fas fa-user-check me-1"></i> Solicitudes de Registro
+							        </a>
+							        
+							    </li>
+							<% } %>
+					
+					    <% } %>
+					
+					</ul>
 
 		          	<div class="ms-auto d-flex align-items-center mt-3 mt-lg-0">
 		            
 		            	<% if (userLogged != null) { %>
 		                	<span class="user-greeting d-none d-lg-block">
-		                    	Hola, <strong><%= userLogged.getEmail() %></strong>
+		                    	<strong><%= userLogged.getEmail() %></strong>
 		                	</span>
 		                
 		                	<a href="<%=path%>/login?logout=true" class="btn btn-outline-danger btn-sm">

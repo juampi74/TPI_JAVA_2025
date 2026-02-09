@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-import org.mindrot.jbcrypt.BCrypt;
+import utils.Security;
 
 import entities.User;
 import logic.Logic;
@@ -37,22 +37,9 @@ public class Login extends HttpServlet {
         
         if (session != null) {
             
-            String flashMessage = (String) session.getAttribute("flash");
-            
-            if (flashMessage != null) {
-
-            	request.setAttribute("flash", flashMessage);
-                session.removeAttribute("flash");
-            
-            }
-            
-            String tempOrigin = (String) session.getAttribute("tempOrigin");
-            
-            if (tempOrigin != null) {
-                
-            	request.setAttribute("origin", tempOrigin);
-                session.removeAttribute("tempOrigin");
-            }
+            moveAttribute(session, request, "flash");
+            moveAttribute(session, request, "cssClass");
+            moveAttribute(session, request, "tempOrigin", "origin");
             
         }
         
@@ -61,54 +48,86 @@ public class Login extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-              
-    	String email = request.getParameter("email");
+        
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String origin = request.getParameter("origin");
         
         Logic ctrl = new Logic();
         User user = null;
         
         try {
-            
-            user = ctrl.getUserByEmail(email);
-                       
+        
+        	user = ctrl.getUserByEmail(email);
+        
         } catch (SQLException e) {
         	
         	request.setAttribute("errorMessage", "Error al conectarse a la base de datos");
-	        request.getRequestDispatcher("WEB-INF/ErrorMessage.jsp").forward(request, response);
-	        return;
+            request.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(request, response);
+            return;
         
         }
         
-        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+        String errorFlash = null;
+
+        if (user == null || !Security.checkPassword(password, user.getPassword())) {
             
-            HttpSession session = request.getSession();
+            errorFlash = "Email o contraseña incorrectos";
+        
+        } else if (!user.isActive()) {
+            
+            errorFlash = "Tu cuenta está pendiente de aprobación por un Administrador";
+        
+        }
+
+        if (errorFlash != null) {
+
+            request.setAttribute("flash", errorFlash);
+            request.setAttribute("cssClass", "alert-danger");
+            request.setAttribute("prevEmail", email);
+            request.setAttribute("origin", origin);
+            
+            request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+            
+        } else {
+
+            HttpSession oldSession = request.getSession(false);
+            
+            if (oldSession != null) oldSession.invalidate();
+            
+            HttpSession session = request.getSession(true);
             
             session.setAttribute("user", user);
             
-            String origin = request.getParameter("origin");
-            
             if (origin != null && !origin.isEmpty()) {
                 
-                response.sendRedirect(origin);
-                
+            	response.sendRedirect(origin);
+            
             } else {
                 
-                response.sendRedirect(request.getContextPath() + "/Home"); 
+            	response.sendRedirect(request.getContextPath() + "/Home"); 
             
             }
-            
-        } else {
-            
-        	String origin = request.getParameter("origin");
-            request.setAttribute("origin", origin);
-        	
-        	request.setAttribute("flash", "Email o contraseña incorrectos");
-            
-            request.setAttribute("prevEmail", email);
-            
-            request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+        
+        }
+    
+    }
+    
+    private void moveAttribute(HttpSession session, HttpServletRequest request, String key) {
+        
+    	moveAttribute(session, request, key, key);
+    
+    }
 
+    private void moveAttribute(HttpSession session, HttpServletRequest request, String sessionKey, String requestKey) {
+    
+    	Object value = session.getAttribute(sessionKey);
+        
+        if (value != null) {
+        
+        	request.setAttribute(requestKey, value);
+            session.removeAttribute(sessionKey);
+        
         }
     
     }

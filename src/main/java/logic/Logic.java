@@ -702,6 +702,30 @@ public class Logic {
     
     }
     
+    public void registerUser(User u, int idPerson, String fullname, int idNationality) throws SQLException {
+        
+        du.register(u, idPerson, fullname, idNationality);
+        
+    }
+    
+    public LinkedList<User> getPendingUsers() throws SQLException {
+    	
+    	return du.getPendingUsers();
+    	
+    }
+    
+    public void approveUser(int userId) throws SQLException {
+    	
+    	du.approveUser(userId);
+    	
+    }
+    
+    public void rejectUser(int userId) throws SQLException {
+    	
+    	du.rejectUser(userId);
+    	
+    }
+    
     public TreeMap<String, LinkedList<TeamStats>> calculateTables(int tournamentId) throws SQLException {
         
     	LinkedList<Match> matches = dm.getGroupStageMatchesByTournamentId(tournamentId);

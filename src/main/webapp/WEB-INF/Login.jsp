@@ -26,12 +26,22 @@
 	
 	        <h1 class="h3 mb-3 font-weight-normal text-white">Iniciar Sesión</h1>
 	
-	        <% String flash = (String) request.getAttribute("flash"); %>
-	        <% if (flash != null) { %>
-	            <div class="alert alert-danger p-2" role="alert" style="font-size: 0.9rem;">
-	                <%= flash %>
-	            </div>
-	        <% } %>
+	        <% 
+			    String flash = (String) request.getAttribute("flash");
+			    String cssClass = (String) request.getAttribute("cssClass");
+			
+			    if (flash != null && cssClass == null) {
+
+			    	cssClass = "alert-danger";
+			    
+			    }
+			%>
+			
+			<% if (flash != null) { %>
+			    <div class="alert <%= cssClass %> p-2 mb-3 shadow-sm" role="alert" style="font-size: 0.9rem;">
+			        <%= flash %>
+			    </div>
+			<% } %>
 	
 	        <form action="${pageContext.request.contextPath}/login" method="post">
 	        	<input type="hidden" name="origin" 
@@ -56,11 +66,17 @@
 	            </button>
 	        </form>
 	        
-	        <div class="mt-3">
-	            <a href="${pageContext.request.contextPath}/Home" class="text-white-50" style="font-size: 0.9rem;">
+	        <div class="mt-4">
+	            <a href="${pageContext.request.contextPath}/register" class="text-warning text-decoration-none" style="font-size: 0.9rem;">
+	                ¿No tenés cuenta? Solicitá tu registro
+	            </a>
+	        </div>
+	        
+	        <div class="mt-3"> <a href="${pageContext.request.contextPath}/Home" class="text-white-50" style="font-size: 0.9rem;">
 	                Volver al inicio (Entrar como Invitado)
 	            </a>
 	        </div>
+	        
 	    </div>
 	
 	</body>

@@ -47,7 +47,8 @@ public class AuthFilter implements Filter {
                 action.equals("setResult") ||
                 action.equals("generatePlayoffs") ||
                 action.equals("generateNextStage") ||
-                action.equals("finishTournament");
+                action.equals("finishTournament") ||
+                action.equals("admin/users");
         }
 
         boolean isMixedServlet = 
@@ -61,7 +62,8 @@ public class AuthFilter implements Filter {
         boolean isPublicResource = 
             path.equals("/") ||
             path.equals("/index.html") ||
-            path.startsWith("/login") || 
+            path.startsWith("/login") ||
+            path.startsWith("/register") ||
             path.startsWith("/Home") || 
             path.startsWith("/style") ||
             path.startsWith("/assets") ||
