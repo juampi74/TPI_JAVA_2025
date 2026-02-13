@@ -3,11 +3,9 @@
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.time.Period"%>
 <%@ page import="java.time.LocalDate"%>
-<%@ page import="entities.Player"%>
-<%@ page import="entities.Club"%>
-<%@ page import="entities.User"%>
-<%@ page import="enums.DominantFoot"%>
+<%@ page import="entities.*"%>
 <%@ page import="enums.UserRole"%>
+<%@ page import="enums.DominantFoot"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -48,26 +46,30 @@
 		      background-size:1rem .8rem;
 		    }
 		    
-		    .fancy-select:hover{
+		    .fancy-select:hover {
 		      border-color:#fff !important;
 		    }
 		
-		    .empty-state{
+		    .empty-state {
 		      max-width:840px;
 		    }
 		    
-		    .text-balance{
+		    .text-balance {
 		      text-wrap: balance;
 		    }
 		    
-		    .empty-state h3{
+		    .empty-state h3 {
 		      font-size: clamp(1.25rem, 2vw + 1rem, 1.75rem);
 		    }
 		    
-		    .empty-state p{
+		    .empty-state p {
 		      font-size: .95rem;
 		      line-height: 1.5;
 		    }
+		    
+		    .jersey-number-cell {
+			  min-width: 65px;
+			}
 		    
 			.tm-badge {
 			  background-color: #004e7d;
@@ -82,6 +84,13 @@
 			  justify-content: center;
 			  border-radius: 50%;
 			  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+			}
+			
+			.tm-badge-empty {
+			  background-color: rgba(255, 255, 255, 0.05);
+			  color: #6c757d;
+			  border: 1px dashed #6c757d;
+			  box-shadow: none;
 			}
 
 			.player-position {
@@ -105,6 +114,14 @@
 			  opacity: 0.9; 
 			  margin-left: 8px;
 			  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+			}
+			
+			.profile-pic-cell {
+			  min-width: 110px;
+			  margin: 0 auto;
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
 			}
 			
 			.profile-pic {
@@ -162,6 +179,12 @@
 			  border: 1px solid rgba(255, 193, 7, 0.3);
 			}
 			
+			.foot-unknown {
+			  background-color: rgba(108, 117, 125, 0.2);
+			  color: #adb5bd;
+			  border: 1px solid rgba(108, 117, 125, 0.3);
+			}
+			
 			.age-text {
 			  color: #adb5bd;
 			  font-size: 0.9em;
@@ -201,23 +224,23 @@
 			}
 
 			.select-free {
-				box-shadow: 0 0 0 .15rem rgba(255,193,7,0.12) !important;
-				border-color: rgba(255,193,7,0.45) !important;
-				background-color: rgba(255,193,7,0.06) !important;
+			  box-shadow: 0 0 0 .15rem rgba(255,193,7,0.12) !important;
+			  border-color: rgba(255,193,7,0.45) !important;
+			  background-color: rgba(255,193,7,0.06) !important;
 			}
 
 			.free-indicator {
-				display: inline-flex;
-				align-items: center;
-				gap: .4rem;
-				padding: .25rem .55rem;
-				border-radius: .45rem;
-				background: rgba(255,193,7,0.12);
-				color: #ffda6a;
-				border: 1px solid rgba(255,193,7,0.25);
-				font-weight: 600;
-				margin-left: .5rem;
-				white-space: nowrap;
+			  display: inline-flex;
+			  align-items: center;
+			  gap: .4rem;
+			  padding: .25rem .55rem;
+			  border-radius: .45rem;
+			  background: rgba(255,193,7,0.12);
+			  color: #ffda6a;
+			  border: 1px solid rgba(255,193,7,0.25);
+			  font-weight: 600;
+			  margin-left: .5rem;
+			  white-space: nowrap;
 			}
 		</style>
 
@@ -327,6 +350,7 @@
 											
 												clubName = c.getName();
 												break;
+											
 											}
 										
 										}
@@ -406,18 +430,30 @@
 					              	</tr>
 					            </thead>
 					           	<tbody>
-					            <%
-					            	for (Player p : pll) {
-					            %>
+					            	<% for (Player p : pll) { %>
 						            	<tr>
-						            		<td>
-						            			<div class="tm-badge">
-								                    <%=p.getJerseyNumber()%>
-								                </div>
-						            		</td>
-							                <td>
-		                    					<img src="<%=request.getContextPath() + "/images?id=" + p.getPhoto()%>" class="profile-pic" alt="">
-		                    				</td>
+						            		<td class="jersey-number-cell">
+											    <% if (p.getJerseyNumber() > 0) { %>
+											        <div class="tm-badge">
+											            <%= p.getJerseyNumber() %>
+											        </div>
+											    <% } else { %>
+											        <div class="tm-badge tm-badge-empty" title="Sin dorsal asignado">
+											            <i class="fas fa-tshirt" style="font-size: 0.8em;"></i>
+											        </div>
+											    <% } %>
+											</td>
+							                <td class="profile-pic-cell">
+											    <% if (p.getPhoto() != null && !p.getPhoto().isEmpty()) { %>
+											        <img src="<%=request.getContextPath() + "/images?id=" + p.getPhoto()%>" 
+											             class="profile-pic" 
+											             alt="">
+											    <% } else { %>
+											        <div class="profile-pic d-flex justify-content-center align-items-center" style="font-size: 2.2rem; color: #2C3034;">
+											            <i class="fas fa-solid fa-user"></i>
+											        </div>
+											    <% } %>
+											</td>
 		                    				<td>
 											    <% 
 											       Club currentClub = (currentClubsMap != null) ? currentClubsMap.get(p.getId()) : null;
@@ -462,41 +498,64 @@
 												</div>
 								            </td>
 		                    				<td>
-										        <%= p.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %>
-										        <% 
-										           int age = Period.between(p.getBirthdate(), LocalDate.now()).getYears();
-										        %>
-										        <span class="age-text">(<%= age %>)</span>
-										    </td>
+											    <% if (p.getBirthdate() != null) { %>
+											        <%= p.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %>
+											        <% 
+											           int age = Period.between(p.getBirthdate(), LocalDate.now()).getYears();
+											        %>
+											        <span class="age-text">(<%= age %>)</span>
+											    <% } else { %>
+											        -
+											    <% } %>
+											</td>
 		                    				<td>
-										        <% 
-												   String footClass = "foot-right";
-												   DominantFoot foot = p.getDominantFoot();
-												   String footText = (foot != null) ? foot.getDisplayName() : null;
-                                           
-												   if (foot != null) {
-													   if (foot == DominantFoot.LEFT) {
-														   footClass = "foot-left";
-													   } else if (foot == DominantFoot.AMBIDEXTROUS) {
-														   footClass = "foot-ambi";
-													   }
-												   }
-												%>
-												<span class="foot-badge <%= footClass %>"><%= (footText != null) ? footText : "-" %></span>
-										    </td>
+											    <% 
+											       String footClass = "foot-unknown";
+											       String footText = "Sin Determinar";
+											       DominantFoot foot = p.getDominantFoot();
+											       
+											       if (foot != null) {
+											           
+											    	   footText = foot.getDisplayName();
+											           
+											           if (foot == DominantFoot.RIGHT) {
+											           
+											        	   footClass = "foot-right";
+											           
+											           } else if (foot == DominantFoot.LEFT) {
+											           
+											        	   footClass = "foot-left";
+											           
+											           } else if (foot == DominantFoot.AMBIDEXTROUS) {
+											           
+											        	   footClass = "foot-ambi";
+											           
+											           }
+											       
+											       }
+											    %>
+											    <span class="foot-badge <%= footClass %>"><%= footText %></span>
+											</td>
 		                    				<td>
-										        <span class="stat-value">
-											        <%= String.format(java.util.Locale.US, "%.2f", p.getHeight()) %>
-											    </span>
-										        <span class="stat-unit">mts</span>
-										    </td>
-										
+											    <% if (p.getHeight() > 0) { %>
+											        <span class="stat-value">
+											            <%= String.format(java.util.Locale.US, "%.2f", p.getHeight()) %>
+											        </span>
+											        <span class="stat-unit">mts</span>
+											    <% } else { %>
+											        -
+											    <% } %>
+											</td>	
 										    <td>
-										        <span class="stat-value">
-											        <%= Math.round(p.getWeight()) %>
-											    </span>
-										        <span class="stat-unit">kg</span>
-										    </td>
+											    <% if (p.getWeight() > 0) { %>
+											        <span class="stat-value">
+											            <%= Math.round(p.getWeight()) %>
+											        </span>
+											        <span class="stat-unit">kg</span>
+											    <% } else { %>
+											        -
+											    <% } %>
+											</td>
 										    <td>
 											    <form method="get" action="actionplayer" class="d-flex justify-content-center align-items-center m-0">
 											        <input type="hidden" name="action" value="history" />
@@ -532,9 +591,9 @@
 							                <% } %>
 						              	
 						              	</tr>
-					            <%
-					            	}
-					            %>
+					            	
+					            	<% } %>
+				            	
 				            	</tbody>
 				          	</table>
 				        </div>

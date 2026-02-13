@@ -1,5 +1,7 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.time.Period"%>
+<%@ page import="java.time.LocalDate"%>
 <%@ page import="entities.President"%>
 <%@ page import="entities.User"%>
 <%@ page import="enums.UserRole"%>
@@ -25,7 +27,6 @@
 	    	  text-align: center;
 	    	}
 	    	
-	    	
 	    	table th, table td {
 			  vertical-align: middle !important;
 			}
@@ -37,21 +38,36 @@
 			}
 
 			.national-flag {
-				height: 18px; 
-				width: auto; 
-				border-radius: 2px; 
-				opacity: 0.9; 
-				margin-left: 8px;
-				box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+			  height: 18px; 
+			  width: auto; 
+			  border-radius: 2px; 
+			  opacity: 0.9; 
+			  margin-left: 8px;
+			  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 			}
 			
+			.profile-pic-cell {
+			  min-width: 120px;
+			  margin: 0 auto;
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			}
+
 			.profile-pic {
-				width: 65px;
-				height: 65px;
-				object-fit: cover;
-				object-position: top center;
-				border-radius: 50%;
-				border: 2px solid #444;
+			  width: 65px;
+			  height: 65px;
+			  object-fit: cover;
+			  object-position: top center;
+			  border-radius: 50%;
+			  background-color: #e9ecef;
+    		  border: 2px solid #2C632D;
+			}
+			
+			.age-text {
+			  color: #adb5bd;
+			  font-size: 0.9em;
+			  margin-left: 5px;
 			}
 			
 			.policy-cell {
@@ -68,11 +84,6 @@
 			    font-size: 0.9rem;
 			    color: #DDD;
 			    line-height: 1.4;
-			}
-			
-			.profile-pic-cell {
-			    min-width: 170px;
-			    margin: 0 auto;
 			}
 	    </style>
 		
@@ -143,11 +154,16 @@
 	                    		<% for (President pr : prl) { %>
 	                    			<tr>                    				
 	                    				<td class="profile-pic-cell">
-	                    					<div class="d-flex justify-content-center align-items-center">
-	                    						<img src="<%=request.getContextPath() + "/images?id=" + pr.getPhoto()%>" class="profile-pic" alt="">
-	                    					</div>
-	                    				</td>
-	                    				
+										    <% if (pr.getPhoto() != null) { %>
+										        <img src="<%=request.getContextPath() + "/images?id=" + pr.getPhoto()%>" 
+										             class="profile-pic" 
+										             alt="">
+										    <% } else { %>
+										        <div class="profile-pic d-flex justify-content-center align-items-center" style="font-size: 2.2rem; color: #2C3034;">
+										            <i class="fas fa-solid fa-user"></i>
+										        </div>
+										    <% } %>
+										</td>
 	                    				<td class="pl-3">
 	                    					<div class="d-flex flex-column align-items-center text-center">
 												<div class="d-flex align-items-center justify-content-center">
@@ -160,12 +176,25 @@
 	                    						</div>
 	                    					</div>
 	                    				</td>
-	                    				
-	                    				<td><%=pr.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-	                    				
+	                    				<td>
+										    <% if (pr.getBirthdate() != null) { %>
+										        <%= pr.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %>
+										        <% 
+										           int age = Period.between(pr.getBirthdate(), LocalDate.now()).getYears();
+										        %>
+										        <span class="age-text">(<%= age %>)</span>
+										    <% } else { %>
+										        -
+										    <% } %>
+										</td>
+										
 	                    				<td class="policy-cell">
-										    <div class="policy-text" title="<%=pr.getManagementPolicy()%>">
-										        <%=pr.getManagementPolicy()%>
+										    <div class="policy-text" title="<%= pr.getManagementPolicy() %>">
+												<% if (pr.getManagementPolicy() != null && !pr.getManagementPolicy().isEmpty()) { %>
+											        <%= pr.getManagementPolicy() %>
+												<% } else { %>
+													-
+												<% } %>
 										    </div>
 										</td>
 										

@@ -1,6 +1,8 @@
 <%@ page import="java.util.LinkedList"%>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.time.Period"%>
+<%@ page import="java.time.LocalDate"%>
 <%@ page import="entities.*"%>
 <%@ page import="enums.UserRole"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -40,19 +42,29 @@
 			  margin-left: 8px;
 			  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 			}
-			
+						
+			.profile-pic-cell {
+			  min-width: 150px;
+			  margin: 0 auto;
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			}
+
 			.profile-pic {
 			  width: 65px;
 			  height: 65px;
 			  object-fit: cover;
 			  object-position: top center;
 			  border-radius: 50%;
-			  border: 2px solid #444;
+			  background-color: #e9ecef;
+    		  border: 2px solid #2C632D;
 			}
 			
-			.profile-pic-cell {
-			    min-width: 170px;
-			    margin: 0 auto;
+			.age-text {
+			  color: #adb5bd;
+			  font-size: 0.9em;
+			  margin-left: 5px;
 			}
 			
 			.club-badge {
@@ -147,7 +159,6 @@
 										<th>Fecha de Nacimiento</th>
 	                        			<th>Formación Preferida</th>
 	                        			<th>Licencia de Entrenador</th>
-	                        			<th>Fecha de Licencia</th>
 	                        			
 	                        			<% if (isAdmin) { %>
 		                        			<th>Editar</th>
@@ -157,72 +168,98 @@
 	                      			</tr>
 	                      		</thead>
 	                    		<tbody>
-	                    		<% for (Coach c : cl) { %>
-	                    			<tr>		
-										<td class="profile-pic-cell">
-											<img src="<%=request.getContextPath() + "/images?id=" + c.getPhoto()%>" class="profile-pic" alt="">
-										</td>
-										<td>
-											<% 
-											    Club currentClub = (currentClubsMap != null) ? currentClubsMap.get(c.getId()) : null;
-											    
-												if (currentClub != null && currentClub.getBadgeImage() != null) {
-											%>
-											      <img src="<%=request.getContextPath() + "/images?id=" + currentClub.getBadgeImage()%>" 
-											           title="<%= currentClub.getName() %>" 
-											           class="club-badge" 
-											           alt="">
-											<% } else { %>
-											      <div class="free-agent-badge" title="Agente Libre (Sin Club)">
-										              <i class="fas fa-user-slash" style="font-size: 0.7em;"></i>
-										          </div>
-											<% } %>
-										</td>
-	                    				
-	                    				<td class="pl-3">
-											<div class="d-flex flex-column align-items-center text-center">
-												<div class="d-flex align-items-center justify-content-center">
-													<span class="coach-name"><%= c.getFullname() %></span>
-													<% if (c.getNationality() != null && c.getNationality().getFlagImage() != null) { %>
-														<img src="<%=request.getContextPath() + "/images?id=" + c.getNationality().getFlagImage()%>" 
-															 title="<%=c.getNationality().getName()%>"
-															 class="national-flag" alt="">
-													<% } %>
-												</div>							                    
-											</div>
-							            </td>
-	                    				
-	                    				<td><%=c.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-	                    				<td><%=c.getPreferredFormation()%></td>
-	                    				<td><span class="badge bg-secondary"><%=c.getCoachingLicense()%></span></td>
-	                    				<td><%=c.getLicenseObtainedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))%></td>
-	                    				
-	                    				<% if (isAdmin) { %>
-	                    				
+		                    		<% for (Coach c : cl) { %>
+		                    			<tr>
+		                    				<td class="profile-pic-cell">
+											    <% if (c.getPhoto() != null) { %>
+											        <img src="<%=request.getContextPath() + "/images?id=" + c.getPhoto()%>" 
+											             class="profile-pic" 
+											             alt="">
+											    <% } else { %>
+											        <div class="profile-pic d-flex justify-content-center align-items-center" style="font-size: 2.2rem; color: #2C3034;">
+											            <i class="fas fa-solid fa-user"></i>
+											        </div>
+											    <% } %>
+											</td>
+											<td>
+												<% 
+												    Club currentClub = (currentClubsMap != null) ? currentClubsMap.get(c.getId()) : null;
+												    
+													if (currentClub != null && currentClub.getBadgeImage() != null) {
+												%>
+												      <img src="<%=request.getContextPath() + "/images?id=" + currentClub.getBadgeImage()%>" 
+												           title="<%= currentClub.getName() %>" 
+												           class="club-badge" 
+												           alt="">
+												<% } else { %>
+												      <div class="free-agent-badge" title="Agente Libre (Sin Club)">
+											              <i class="fas fa-user-slash" style="font-size: 0.7em;"></i>
+											          </div>
+												<% } %>
+											</td>
+		                    				<td class="pl-3">
+												<div class="d-flex flex-column align-items-center text-center">
+													<div class="d-flex align-items-center justify-content-center">
+														<span class="coach-name"><%= c.getFullname() %></span>
+														<% if (c.getNationality() != null && c.getNationality().getFlagImage() != null) { %>
+															<img src="<%=request.getContextPath() + "/images?id=" + c.getNationality().getFlagImage()%>" 
+																 title="<%=c.getNationality().getName()%>"
+																 class="national-flag" alt="">
+														<% } %>
+													</div>							                    
+												</div>
+								            </td>
+								            <td>
+											    <% if (c.getBirthdate() != null) { %>
+											        <%= c.getBirthdate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %>
+											        <% 
+											           int age = Period.between(c.getBirthdate(), LocalDate.now()).getYears();
+											        %>
+											        <span class="age-text">(<%= age %>)</span>
+											    <% } else { %>
+											        -
+											    <% } %>
+											</td>
 		                    				<td>
-		                    					<form method="get" action="actioncoach" class="d-flex justify-content-center m-0">
-		                    						<input type="hidden" name="action" value="edit" />
-				        							<input type="hidden" name="id" value="<%=c.getId()%>" />
-				        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
-														<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
-													</button>
-				    							</form>
-		                    				</td>
+											    <%= (c.getPreferredFormation() != null && !c.getPreferredFormation().isEmpty()) ? c.getPreferredFormation() : "-" %>
+											</td>
+											
+											<td>
+											    <% if (c.getCoachingLicense() != null) { %>
+											        <span class="badge bg-secondary"><%= c.getCoachingLicense() %></span>
+											    <% } else { %>
+											        -
+											    <% } %>
+											</td>
+											
+		                    				<% if (isAdmin) { %>
 		                    				
-		                    				<td>
-		                    					<form method="post" action="actioncoach" class="d-flex justify-content-center m-0">
-													<input type="hidden" name="action" value="delete" />
-													<input type="hidden" name="id" value="<%=c.getId()%>" />
-													<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>" >
-														<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
-													</button>
-												</form>
-		                    				</td>
-		                    				
-		                    			<% } %>
-		                    			
-	                    			</tr>
-	                    		<% } %>
+			                    				<td>
+			                    					<form method="get" action="actioncoach" class="d-flex justify-content-center m-0">
+			                    						<input type="hidden" name="action" value="edit" />
+					        							<input type="hidden" name="id" value="<%=c.getId()%>" />
+					        							<button type="submit" style="background-color: #0D47A1" class="btn btn-sm">
+															<img src="${pageContext.request.contextPath}/assets/edit.svg" style="display: block;" alt="Editar" width="25" height="25">
+														</button>
+					    							</form>
+			                    				</td>
+			                    				
+			                    				<td>
+			                    					<form method="post" action="actioncoach" class="d-flex justify-content-center m-0">
+														<input type="hidden" name="action" value="delete" />
+														<input type="hidden" name="id" value="<%=c.getId()%>" />
+														<button type="button" style="background-color: #9B1C1C" class="btn btn-sm btn-open-modal" data-action="delete" data-id="<%= c.getId() %>" >
+															<img src="${pageContext.request.contextPath}/assets/delete.svg" style="display: block;" alt="Eliminar" width="25" height="25">
+														</button>
+													</form>
+			                    				</td>
+			                    				
+			                    			<% } %>
+			                    			
+	                    				</tr>
+		                    		
+	                    			<% } %>
+	                    		
 	                    		</tbody>
 							</table>        		
 						</div>
