@@ -436,6 +436,12 @@ public class Logic {
         return dto.getByAssociationId(id);
 
     }
+    
+    public LinkedList<Tournament> getTournamentsByClubId(int id) throws SQLException {
+
+        return dto.getByClubId(id);
+
+    }
 
     public LinkedList<Tournament> getTournamentByName(String name) throws SQLException {
 
@@ -633,6 +639,12 @@ public class Logic {
     public Match getNextMatch() throws SQLException {
         
     	return dm.getNextMatch();
+    
+    }
+    
+public Match getNextMatchClub(int id_club) throws SQLException {
+        
+    	return dm.getNextMatchClub(id_club);
     
     }
     

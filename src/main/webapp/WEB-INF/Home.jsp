@@ -41,7 +41,7 @@
 	    <%
 	    	User userLogged = (User) session.getAttribute("user");
 	    
-			Club club = (Club) request.getAttribute("clubWithMostContracts");
+			Club club = (Club) request.getAttribute("club");
 	    	Contract contract = (Contract) request.getAttribute("nextExpiringContract");
 	    	LinkedList<Tournament> ts = (LinkedList<Tournament>) request.getAttribute("tournaments");
 	    	String src_shield = request.getContextPath() + "/assets/shield.svg";
@@ -58,7 +58,7 @@
 	        <div class="row justify-content-center mb-4">
 	            <div class="d-flex justify-content-center align-items-center col-auto text-dark border border-dark rounded p-3 me-4 border border-white" style="width: 300px; min-height: 200px; background-color: rgba(33,37,41,1);">
 			        <form action="actionclub" method="get" style="margin:0;">
-						<button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
+						<button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-70 h-100" style="border:none; background:none;">
 					    	<img alt="Escudo" src="<%= club != null ? request.getContextPath() + "/images?id=" + club.getBadgeImage() : src_shield %>" width="95" height="95" style="margin-bottom:10px;">
 					    	<h4 class="text-white m-0">Ver Clubes</h4>
 					  	</button>
@@ -67,54 +67,121 @@
 	
                 <%
                 	if (userLogged != null) {
+                	
                 		
-                		if (contract == null) {
-                %>
-	                		<div class="d-flex justify-content-center align-items-center col-auto text-center border border-dark rounded p-4 bg-dark border border-white" style="width: 300px; min-height: 200px;">
-							    <form action="actioncontract" method="get" style="margin:0;">
-							        <input type="hidden" name="action" value="add">
-							        <button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
-							            <img alt="Agregar contrato" src="${pageContext.request.contextPath}/assets/contract.svg" width="85" height="95" style="margin-bottom: 10px;">
-							            <h4 class="text-white m-0">Agregar Contrato</h4>
-							        </button>
-							    </form>
-							</div>
-                <%
-                		} else {
-                %>		
-	                		<div class="col-auto text-dark border border-dark rounded p-3 bg-dark border border-white" style="width: 300px; min-height: 200px;">
-		                		<h3 style="color:white;">Extender Contrato</h3>
-		                		<div class="d-flex my-3 align-items-center justify-content-between gap-3">
-		                			<img alt="" src="<%=request.getContextPath() + "/images?id=" + contract.getPerson().getPhoto()%>" width="70" height="90">
-			                		<div class="text-left" style="vertical-align: middle !important;">
-			                			<p class="text-white m-0">Nombre: <b><%= contract.getPerson().getFullname() %></b></p>
-			                			<p class="text-white m-0">Fecha Inicio: <b><%= contract.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>
-			                			<p class="text-white m-0">Fecha Fin: <b><%= contract.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>
-			                		</div>
-		                		</div>
-		                		
-		                		<form action="actioncontract" method="post" class="text-start">
-								    <input type="hidden" name="action" value="extend">
-								    <input type="hidden" name="id" value="<%= contract.getId() %>">
-								
-								    <div class="d-flex justify-content-center align-items-center gap-2">
-									    <select name="extension" id="extension"
-					                  		class="form-select form-select-md w-auto fancy-select bg-dark text-white" required>
-								            <option value="" disabled selected>Seleccionar duración</option>
-								            <option value="6">6 meses</option>
-								            <option value="12">1 año</option>
-								            <option value="24">2 años</option>
-								            <option value="36">3 años</option>
-								        </select>
-								
-								        <button type="submit" class="btn btn-success p-1" style="">
-								            <img src="${pageContext.request.contextPath}/assets/judge.svg" alt="Extender" width="28" height="28">
-								        </button>
-								    </div>
-								</form>
-	                		</div>
-                <%		
+                		if (userLogged.getRole().name().equals("ADMIN")) {
+                			if (contract == null) {
+                                %>
+                	                		<div class="d-flex justify-content-center align-items-center col-auto text-center border border-dark rounded p-4 bg-dark border border-white" style="width: 300px; min-height: 200px;">
+                							    <form action="actioncontract" method="get" style="margin:0;">
+                							        <input type="hidden" name="action" value="add">
+                							        <button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
+                							            <img alt="Agregar contrato" src="${pageContext.request.contextPath}/assets/contract.svg" width="85" height="95" style="margin-bottom: 10px;">
+                							            <h4 class="text-white m-0">Agregar Contrato</h4>
+                							        </button>
+                							    </form>
+                							</div>
+                                <%
+                                		} else {
+                                %>		
+                	                		<div class="col-auto text-dark border border-dark rounded p-3 bg-dark border border-white" style="width: 300px; min-height: 200px;">
+                		                		<h3 style="color:white;">Extender Contrato</h3>
+                		                		<div class="d-flex my-3 align-items-center justify-content-between gap-3">
+                		                			<img alt="" src="<%=request.getContextPath() + "/images?id=" + contract.getPerson().getPhoto()%>" width="70" height="90">
+                			                		<div class="text-left" style="vertical-align: middle !important;">
+                			                			<p class="text-white m-0">Nombre: <b><%= contract.getPerson().getFullname() %></b></p>
+                			                			<p class="text-white m-0">Fecha Inicio: <b><%= contract.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>
+                			                			<p class="text-white m-0">Fecha Fin: <b><%= contract.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) %></b></p>
+                			                		</div>
+                		                		</div>
+                		                		
+                		                		<form action="actioncontract" method="post" class="text-start">
+                								    <input type="hidden" name="action" value="extend">
+                								    <input type="hidden" name="id" value="<%= contract.getId() %>">
+                								
+                								    <div class="d-flex justify-content-center align-items-center gap-2">
+                									    <select name="extension" id="extension"
+                					                  		class="form-select form-select-md w-auto fancy-select bg-dark text-white" required>
+                								            <option value="" disabled selected>Seleccionar duración</option>
+                								            <option value="6">6 meses</option>
+                								            <option value="12">1 año</option>
+                								            <option value="24">2 años</option>
+                								            <option value="36">3 años</option>
+                								        </select>
+                								
+                								        <button type="submit" class="btn btn-success p-1" style="">
+                								            <img src="${pageContext.request.contextPath}/assets/judge.svg" alt="Extender" width="28" height="28">
+                								        </button>
+                								    </div>
+                								</form>
+                	                		</div>
+                                <%		
+                                		}
                 		}
+                		
+                		if (userLogged.getRole().name().equals("PLAYER")) {
+                			
+                		}
+                		
+						if (userLogged.getRole().name().equals("COACH")) {
+							Match nextMatch = (Match) request.getAttribute("nextMatchClub");
+			                %>
+			                        <div class="d-flex flex-column justify-content-center align-items-center col-auto text-dark border border-dark rounded p-3 bg-dark border border-white" 
+			                             style="width: 300px; min-height: 200px;">
+			                            
+			                            <% if (nextMatch != null) { %>
+			                                
+			                                <h4 class="text-white m-0" style="font-size: 1.25rem;">Próximo Encuentro</h4>
+			                                
+			                                <p class="text-info font-weight-bold m-0 mt-1 mb-3" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+			                                    <%= nextMatch.getTournament().getName().toUpperCase() %>
+			                                </p>
+			                                
+			                                <div class="d-flex align-items-center justify-content-center w-100 mb-2">
+			                                    
+			                                    <div class="mx-3">
+			                                        <img src="<%= request.getContextPath() %>/images?id=<%= nextMatch.getHome().getBadgeImage() %>" 
+			                                             width="65" height="65" 
+			                                             alt="<%= nextMatch.getHome().getName() %>" 
+			                                             title="<%= nextMatch.getHome().getName() %>"
+			                                             style="object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));">
+			                                    </div>
+
+			                                    <div class="text-white font-weight-bold mx-1" style="font-size: 1.3rem; opacity: 0.8;">VS</div>
+
+			                                    <div class="mx-3">
+			                                        <img src="<%= request.getContextPath() %>/images?id=<%= nextMatch.getAway().getBadgeImage() %>" 
+			                                             width="65" height="65" 
+			                                             alt="<%= nextMatch.getAway().getName() %>" 
+			                                             title="<%= nextMatch.getAway().getName() %>"
+			                                             style="object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));">
+			                                    </div>
+			                                </div>
+
+			                                <span class="badge bg-success mt-2" style="font-size: 0.85rem; font-weight: normal;">
+			                                    <%= nextMatch.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm")) %>
+			                                </span>
+			                                 
+			                                <a href="<%= request.getContextPath() %>/actionmatch" class="text-white-50 mt-1" style="font-size: 0.7rem; text-decoration: none;">
+			                                    Ver fixture completo &rarr;
+			                                </a>
+
+			                            <% } else { %>
+			                                
+			                                <img src="${pageContext.request.contextPath}/assets/trophy.svg" width="60" height="60" class="mb-2 opacity-50">
+			                                <h5 class="text-white-50">Sin partidos programados</h5>
+			                                
+			                            <% } %>
+
+			                        </div>
+			                <% 
+                		}
+						
+						if (userLogged.getRole().name().equals("PRESIDENT")) {
+                			
+                		}
+                		
+                		
                 		
                 	} else { 
 
@@ -179,24 +246,24 @@
 	        		
 	        		<%
 	        			if (ts.isEmpty()) {
-	        				
 	        				if (userLogged != null) {
 	        				
-	        					String src_trophy = request.getContextPath() + "/assets/trophy.svg";
-	        		%>
-			        			<form action="actiontournament" method="get" style="margin:0;">
-							        <input type="hidden" name="action" value="add">
-							        <button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
-							            <img alt="Agregar torneo" src="<%= src_trophy %>" width="85" height="95" style="margin-bottom: 10px;">
-							            <h4 class="text-white m-0">Agregar Torneo</h4>
-							        </button>
-							    </form>
-	        		<%
-	        				} else {
-	        		%>
-	        					<h4 class="text-white m-0">No hay torneos registrados</h4>
-		        	<%
-	        				}
+		        				if (userLogged.getRole().name().equals("ADMIN")) {
+		        				
+		        					String src_trophy = request.getContextPath() + "/assets/trophy.svg";
+		        		%>
+				        			<form action="actiontournament" method="get" style="margin:0;">
+								        <input type="hidden" name="action" value="add">
+								        <button type="submit" class="btn btn-outline-light d-flex flex-column align-items-center justify-content-center w-100 h-100" style="border:none; background:none;">
+								            <img alt="Agregar torneo" src="<%= src_trophy %>" width="85" height="95" style="margin-bottom: 10px;">
+								            <h4 class="text-white m-0">Agregar Torneo</h4>
+								        </button>
+								    </form>
+		        		<%
+		        				} }else {
+		        		%>
+		        					<h4 class="text-white m-0">No hay torneos registrados</h4>
+			        	<% }
 	        				
 	        			} else {
 	        		%>

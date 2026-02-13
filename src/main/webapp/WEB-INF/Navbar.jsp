@@ -79,8 +79,8 @@
 					            <li><a class="dropdown-item" href="<%=path%>/actionpresident">Presidentes</a></li>
 					        </ul>
 					    </li>
-					
-					    <% if (userLogged != null) { %>
+					<% if (userLogged != null) { %>
+					    <% if (userLogged.getRole() == UserRole.ADMIN) { %>
 					        
 					        <li class="nav-item border-start ms-2 ps-2 border-secondary d-none d-lg-block"></li>
 					
@@ -108,8 +108,11 @@
 							    </li>
 							<% } %>
 					
-					    <% } %>
+					    <% } else if (userLogged.getRole() == UserRole.COACH) { %>
+								<li class="nav-item border-start ms-2 ps-2 border-secondary d-none d-lg-block"></li>
 					
+						        <li><a class="dropdown-item" href="<%=path%>/actioncontract">Contratos</a></li>
+						<% } } %>
 					</ul>
 
 		          	<div class="ms-auto d-flex align-items-center mt-3 mt-lg-0">
