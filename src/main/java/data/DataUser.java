@@ -11,12 +11,11 @@ import java.util.LinkedList;
 
 public class DataUser {
 
-    private static final String SELECT_USER_BY_EMAIL = 
+    private static final String BASE_QUERY = 
         "SELECT u.id AS u_id, u.email, u.password, u.role AS u_role, u.active, u.id_person, " +
         "p.id AS p_id, p.fullname, p.birthdate, p.address, p.photo, p.role AS p_role " +
         "FROM user u " +
-        "LEFT JOIN person p ON u.id_person = p.id " +
-        "WHERE u.email = ?";
+        "LEFT JOIN person p ON u.id_person = p.id ";
     
     private static final String SELECT_PENDING_USERS = 
 	    "SELECT u.id AS u_id, u.email, u.role, p.id AS p_id, p.fullname, " +
@@ -32,7 +31,37 @@ public class DataUser {
     private static final String GET_ID_PERSON_BY_USER = "SELECT id_person FROM user WHERE id = ?";
     private static final String DELETE_USER = "DELETE FROM user WHERE id = ?";
     private static final String DELETE_PERSON = "DELETE FROM person WHERE id = ?";
+    
+    public User getById(int id) throws SQLException {
 
+    	User user = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	BASE_QUERY + "WHERE u.id = ?"
+            );
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) user = mapFullUser(rs);
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return user;
+
+    }
 
     public User getByEmail(String email) throws SQLException {
         
@@ -42,7 +71,7 @@ public class DataUser {
 
         try {
             
-        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_USER_BY_EMAIL);
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(BASE_QUERY + "WHERE u.email = ?");
             stmt.setString(1, email);
             
             rs = stmt.executeQuery();

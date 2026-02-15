@@ -32,11 +32,7 @@ public class DataNationality {
             stmt = DbConnector.getInstance().getConn().createStatement();
             rs = stmt.executeQuery(SELECT_ALL_NATIONALITIES);
 
-            while (rs.next()) {
-
-            	nationalities.add(mapNationality(rs));
-
-            }
+            while (rs.next()) nationalities.add(mapNationality(rs));
 
         } catch (SQLException e) {
 
@@ -67,11 +63,7 @@ public class DataNationality {
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
-            if (rs.next()) {
-
-            	nationality = mapNationality(rs);
-
-            }
+            if (rs.next()) nationality = mapNationality(rs);
 
         } catch (SQLException e) {
 

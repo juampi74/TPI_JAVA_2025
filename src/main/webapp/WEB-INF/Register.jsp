@@ -73,11 +73,16 @@
                         <select name="idNationality" id="idNationality" class="form-control form-control-sm" required>
                             <option value="">-- Seleccionar --</option>
                             <% LinkedList<Nationality> nats = (LinkedList<Nationality>) request.getAttribute("nationalitiesList");
-                                if (nats != null) {
-                                    for (Nationality n : nats) { %>
-                                <option value="<%= n.getId() %>"><%= n.getName() %></option>
-                            <%      }
-                                } %>
+                        	   String prevNationality = (String) request.getAttribute("prevNationality");
+                               if (nats != null) {
+                                   for (Nationality n : nats) { 
+                                       String isSelected = "";
+                                       if (prevNationality != null && prevNationality.equals(String.valueOf(n.getId()))) {
+                            		      isSelected = "selected";
+                        			   } %>
+                                       <option value="<%= n.getId() %>" <%= isSelected %>><%= n.getName() %></option>
+                            <%     }
+                               } %>
                         </select>
                     </div>
                 </div>
