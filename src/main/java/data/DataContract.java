@@ -218,7 +218,7 @@ public class DataContract {
             
             if (fromDate != null) {
                 
-            	sql.append(" AND (c.end_date >= ? OR c.end_date IS NULL) ");
+                sql.append(" AND (COALESCE(c.release_date, c.end_date) >= ? OR COALESCE(c.release_date, c.end_date) IS NULL) ");
             
             }
             

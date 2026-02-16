@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/favicon.png">
     <title>Solicitudes de Registro</title>
     
     <link href="/style/bootstrap.css" rel="stylesheet">
