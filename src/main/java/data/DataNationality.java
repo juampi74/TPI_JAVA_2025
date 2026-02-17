@@ -3,7 +3,6 @@ package data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 
 import entities.Nationality;
@@ -23,14 +22,14 @@ public class DataNationality {
 
     public LinkedList<Nationality> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Nationality> nationalities = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_NATIONALITIES);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_NATIONALITIES);
+            rs = stmt.executeQuery();
 
             while (rs.next()) nationalities.add(mapNationality(rs));
 
@@ -300,7 +299,7 @@ public class DataNationality {
 
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

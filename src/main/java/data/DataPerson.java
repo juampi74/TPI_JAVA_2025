@@ -137,7 +137,7 @@ public class DataPerson {
         
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

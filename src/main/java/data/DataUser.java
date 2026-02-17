@@ -176,13 +176,13 @@ public class DataUser {
     public LinkedList<User> getPendingUsers() throws SQLException {
         
     	LinkedList<User> users = new LinkedList<>();
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             
-        	stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_PENDING_USERS);
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_PENDING_USERS);
+            rs = stmt.executeQuery();
             
             while (rs.next()) {
                 
@@ -279,24 +279,25 @@ public class DataUser {
     
     public void rejectUser(int userId) throws SQLException {
         
-    	Connection conn = null;
-    	PreparedStatement stmtUser = null;
+        Connection conn = null;
+        
+        PreparedStatement stmtUser = null;
         PreparedStatement stmtPerson = null;
         PreparedStatement stmtGetId = null;
+        
         ResultSet rs = null;
         
         try {
-
-        	conn = DbConnector.getInstance().getConn();
-        	
+            
+            conn = DbConnector.getInstance().getConn();
+            conn.setAutoCommit(false);
+            
             stmtGetId = conn.prepareStatement(GET_ID_PERSON_BY_USER);
             stmtGetId.setInt(1, userId);
             rs = stmtGetId.executeQuery();
             
             int personId = -1;
-            if (rs.next()) {
-                personId = rs.getInt("id_person");
-            }
+            if (rs.next()) personId = rs.getInt("id_person");
             
             stmtUser = conn.prepareStatement(DELETE_USER);
             stmtUser.setInt(1, userId);
@@ -310,14 +311,44 @@ public class DataUser {
             
             }
             
-        } catch (SQLException e) {
+            conn.commit();
             
-        	e.printStackTrace();
+        } catch (SQLException e) {
+
+            if (conn != null) {
+                
+                try {
+                
+                    conn.rollback();
+                
+                } catch (SQLException ex) {
+                
+                    ex.printStackTrace();
+                
+                }
+            
+            }
+            
+            e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
-        
-        	closeResources(rs, stmtGetId, stmtUser, stmtPerson);
+
+            if (conn != null) {
+                
+                try {
+                
+                    conn.setAutoCommit(true);
+                
+                } catch (SQLException e) {
+                
+                    e.printStackTrace();
+                
+                }
+            
+            }
+            
+            closeResources(rs, stmtGetId, stmtUser, stmtPerson);
         
         }
     
@@ -462,13 +493,13 @@ public class DataUser {
     
     }
 
-    private void closeResources(ResultSet rs, Statement... stmts) {
+    private void closeResources(ResultSet rs, PreparedStatement... stmts) {
         
     	try {
         
     		if (rs != null) rs.close();
 			
-            for (Statement stmt : stmts) {
+            for (PreparedStatement stmt : stmts) {
             	
             	if (stmt != null) stmt.close();
             

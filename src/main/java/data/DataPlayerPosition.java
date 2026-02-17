@@ -3,7 +3,6 @@ package data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 
 public class DataPlayerPosition {
@@ -220,7 +219,7 @@ public class DataPlayerPosition {
 
     }
 	
-	private void closeResources(ResultSet rs, Statement stmt) {
+	private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

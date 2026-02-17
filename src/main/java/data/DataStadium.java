@@ -12,14 +12,14 @@ public class DataStadium {
 
     public LinkedList<Stadium> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Stadium> stadiums = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_STADIUMS);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_STADIUMS);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -221,7 +221,7 @@ public class DataStadium {
         return stadium;
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

@@ -48,7 +48,7 @@ public class DataPresident {
     
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
         
     	try {
         
@@ -66,15 +66,14 @@ public class DataPresident {
 
     public LinkedList<President> getAll() throws SQLException {
         
-    	Statement stmt = null;
+    	PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<President> presidents = new LinkedList<>();
 
         try {
         
-        	stmt = DbConnector.getInstance().getConn().createStatement();
-            
-        	rs = stmt.executeQuery(SELECT_PRESIDENT_BASE);
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_PRESIDENT_BASE);
+        	rs = stmt.executeQuery();
 
             while (rs.next()) presidents.add(mapPresident(rs));
             

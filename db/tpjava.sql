@@ -421,7 +421,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin@teamup.com','$2a$10$ip7ynI0f4K9n9YTobeYGX.u/hJKvIWXRBTs1L8JyA9gSdM/D.vDvi','ADMIN',1,NULL),(14,'johnwatson@gmail.com','$2a$10$/dcv7UXI3QXwkzkz5L5RK.TkjMcA9s643tDjps/Yo04/0MzpeXk4C','COACH',1,11221122),(15,'andres.fassi@gmail.com','$2a$10$ypawRH2xbYz8vYrQObv4guxR5GoM4yMjT5TmjK2XifzgxOSsZyVMW','PRESIDENT',1,33224411),(16,'juampijaca@gmail.com','$2a$10$Cr7whQyonyCytua5jMV6B.WWSOyliXzKn8q3qVbpKVNDNTO2eGvjq','PLAYER',1,45656433),(18,'nahuel.berli@gmail.com','$2a$10$lGvgsjlR/1UMIFym7J8MquANM99u2/iUbaBURO7BOVxnUNnki5GtW','PLAYER',1,45638484),(19,'gustgiam2001@gmail.com','$2a$10$n.ge3V4CghK61.TA6LO65OjKyWvcrD9HwZssSo3Z/R2YCadCponYC','PLAYER',1,43399550),(26,'pedrinhodasilva@gmail.com','$2a$10$HvrGl6JuNqVtRPmdByxFJuZYb1R7EJa/s.F73muqYqR0ek2HSBIeG','PLAYER',1,44441133);
+INSERT INTO `user` VALUES (1,'admin@teamup.com','$2a$10$ip7ynI0f4K9n9YTobeYGX.u/hJKvIWXRBTs1L8JyA9gSdM/D.vDvi','ADMIN',1,NULL),(14,'johnwatson@gmail.com','$2a$10$/dcv7UXI3QXwkzkz5L5RK.TkjMcA9s643tDjps/Yo04/0MzpeXk4C','COACH',1,11221122),(15,'andres.fassi@gmail.com','$2a$10$ypawRH2xbYz8vYrQObv4guxR5GoM4yMjT5TmjK2XifzgxOSsZyVMW','PRESIDENT',0,33224411),(16,'juampijaca@gmail.com','$2a$10$Cr7whQyonyCytua5jMV6B.WWSOyliXzKn8q3qVbpKVNDNTO2eGvjq','PLAYER',1,45656433),(18,'nahuel.berli@gmail.com','$2a$10$lGvgsjlR/1UMIFym7J8MquANM99u2/iUbaBURO7BOVxnUNnki5GtW','PLAYER',0,45638484),(19,'gustgiam2001@gmail.com','$2a$10$n.ge3V4CghK61.TA6LO65OjKyWvcrD9HwZssSo3Z/R2YCadCponYC','PLAYER',1,43399550),(26,'pedrinhodasilva@gmail.com','$2a$10$HvrGl6JuNqVtRPmdByxFJuZYb1R7EJa/s.F73muqYqR0ek2HSBIeG','PLAYER',1,44441133);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -434,4 +434,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-17 16:36:06
+-- Dump completed on 2026-02-17 18:39:18

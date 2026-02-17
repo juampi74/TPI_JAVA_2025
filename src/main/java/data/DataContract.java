@@ -29,14 +29,14 @@ public class DataContract {
 
     public LinkedList<Contract> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Contract> contracts = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_CONTRACTS_JOINED);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_CONTRACTS_JOINED);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -472,7 +472,7 @@ public class DataContract {
 
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

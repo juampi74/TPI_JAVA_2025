@@ -96,14 +96,14 @@ public class DataClub {
 
     public LinkedList<Club> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Club> clubs = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_CLUBS_JOINED + " ORDER BY cl.name");
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_CLUBS_JOINED + " ORDER BY cl.name");
+            rs = stmt.executeQuery();
 
             if (rs != null) {
 
@@ -220,14 +220,14 @@ public class DataClub {
 
     public Club getClubWithMostContracts() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         Club club = null;
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_CLUB_WITH_MOST_CONTRACTS);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_CLUB_WITH_MOST_CONTRACTS);
+            rs = stmt.executeQuery();
 
             if (rs != null && rs.next()) {
 
@@ -253,14 +253,12 @@ public class DataClub {
     public HashMap<Integer, Club> getClassicRivalsMap() throws SQLException {
         
     	HashMap<Integer, Club> classicRivalsMap = new HashMap<>();
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
         
-        	stmt = DbConnector.getInstance().getConn().createStatement();
-                               
-        	rs = stmt.executeQuery(
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
     		    "SELECT r.id_club_1 AS origin_id, c.id, c.name, c.badge_image "
     		    + "FROM classic_rivalry r "
     		    + "INNER JOIN club c ON r.id_club_2 = c.id "
@@ -270,7 +268,8 @@ public class DataClub {
     		    + "SELECT r.id_club_2 AS origin_id, c.id, c.name, c.badge_image "
     		    + "FROM classic_rivalry r "
     		    + "INNER JOIN club c ON r.id_club_1 = c.id"
-    		);
+            );
+        	rs = stmt.executeQuery();
             
             while (rs.next()) {
 
@@ -597,7 +596,7 @@ public class DataClub {
         return club;
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 
