@@ -205,10 +205,10 @@ public class DataPresident {
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());
-            stmt.setString(3, p.getAddress());
+            stmt.setObject(3, p.getAddress());
             stmt.setString(4, p.getRole().name());
-            stmt.setString(5, p.getManagementPolicy());
-            stmt.setString(6, p.getPhoto());
+            stmt.setObject(5, p.getManagementPolicy());
+            stmt.setObject(6, p.getPhoto());
             stmt.setInt(7, p.getNationality().getId());
             
             stmt.setInt(8, p.getId());

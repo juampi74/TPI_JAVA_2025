@@ -298,12 +298,12 @@ public class DataCoach {
             );
             stmt.setString(1, coach.getFullname());
             stmt.setObject(2, coach.getBirthdate());
-            stmt.setString(3, coach.getAddress());
+            stmt.setObject(3, coach.getAddress());
             stmt.setString(4, coach.getRole().name());
-            stmt.setString(5, coach.getPreferredFormation());
-            stmt.setString(6, coach.getCoachingLicense());
+            stmt.setObject(5, coach.getPreferredFormation());
+            stmt.setObject(6, coach.getCoachingLicense());
             stmt.setObject(7, coach.getLicenseObtainedDate());
-            stmt.setString(8, coach.getPhoto());
+            stmt.setObject(8, coach.getPhoto());
             stmt.setInt(9, coach.getNationality().getId());
             
             stmt.setInt(10, coach.getId());

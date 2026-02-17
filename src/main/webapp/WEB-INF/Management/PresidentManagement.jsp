@@ -71,7 +71,7 @@
 			}
 			
 			.policy-cell {
-			    max-width: 300px;
+			    max-width: 350px;
 			    margin: 0 auto;
 			}
 			

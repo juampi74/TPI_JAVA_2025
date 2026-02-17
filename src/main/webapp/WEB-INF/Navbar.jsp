@@ -41,6 +41,38 @@
 	      		color: white;
 	      		margin-right: 15px;
 	    	}
+	    	
+	    	.nav-profile-link {
+			  transition: transform 0.2s;
+			  display: flex;
+			  align-items: center;
+			  text-decoration: none;
+			}
+			
+			.nav-profile-link:hover {
+			  transform: scale(1.05);
+			}
+			
+			.nav-profile-pic {
+			  width: 38px;
+			  height: 38px;
+			  object-fit: contain;
+			  border-radius: 50%;
+			  border: 2px solid #198754;
+			}
+			
+			.nav-profile-placeholder {
+			  width: 38px;
+			  height: 38px;
+			  background-color: #e9ecef;
+			  color: #2C3034;
+			  border-radius: 50%;
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			  font-size: 1.1rem;
+			  border: 2px solid #198754;
+			}
 	  	</style>
 	</head>
   	<body>
@@ -113,22 +145,48 @@
 					</ul>
 
 		          	<div class="ms-auto d-flex align-items-center mt-3 mt-lg-0">
-		            
-		            	<% if (userLogged != null) { %>
-		                	<span class="user-greeting d-none d-lg-block">
-		                    	<strong><%= userLogged.getEmail() %></strong>
-		                	</span>
-		                
-		                	<a href="<%=path%>/login?logout=true" class="btn btn-outline-danger btn-sm">
-		                    	<i class="fas fa-sign-out-alt"></i> Salir
-		                	</a>
-		            	<% } else { %>
-		                	<a href="<%=path%>/login" class="btn btn-success btn-sm">
-		                    	<i class="fas fa-sign-in-alt"></i> Ingresar
-		                	</a>
-		            	<% } %>
-		
-		          </div>
+					    <% if (userLogged != null) { %>
+					        
+					        <% if (userLogged.getRole() == UserRole.ADMIN) { %>
+
+					            <span class="user-greeting d-none d-lg-block">
+					                <strong><%= userLogged.getEmail() %></strong>
+					            </span>
+
+					        <% } else { %>
+
+					            <a href="<%=path%>/my-profile" class="nav-profile-link me-3" title="Mi Perfil">
+					                
+					                <% if (userLogged.getPerson().getPhoto() != null && !userLogged.getPerson().getPhoto().isEmpty()) { %>
+					                
+					                    <img src="<%=path%>/images?id=<%= userLogged.getPerson().getPhoto() %>" 
+					                         class="nav-profile-pic" 
+					                         alt="Foto de Perfil">
+					                         
+					                <% } else { %>
+					                    
+					                    <div class="nav-profile-placeholder">
+					                        <i class="fas fa-user"></i>
+					                    </div>
+					                
+					                <% } %>
+					            
+					            </a>
+					        
+					        <% } %>
+					
+					        <a href="<%=path%>/login?logout=true" class="btn btn-outline-danger btn-sm">
+					            <i class="fas fa-sign-out-alt"></i> Salir
+					        </a>
+					
+					    <% } else { %>
+					        
+					        <a href="<%=path%>/login" class="btn btn-success btn-sm">
+					            <i class="fas fa-sign-in-alt"></i> Ingresar
+					        </a>
+					    
+					    <% } %>
+					</div>
 
         		</div>
       		</div>

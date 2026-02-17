@@ -416,8 +416,8 @@ public class DataContract {
             if (dfStr != null) player.setDominantFoot(DominantFoot.valueOf(dfStr));
             
             player.setJerseyNumber(rs.getInt("jersey_number"));
-            player.setHeight(rs.getDouble("height"));
-            player.setWeight(rs.getDouble("weight"));
+            player.setHeight(rs.getObject("height", Double.class));
+            player.setWeight(rs.getObject("weight", Double.class));
             player.setPhoto(rs.getString("photo"));
             person = player;
 

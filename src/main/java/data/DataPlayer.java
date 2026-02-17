@@ -62,8 +62,8 @@ public class DataPlayer {
         if (dfStr != null) player.setDominantFoot(DominantFoot.valueOf(dfStr));
 
         player.setJerseyNumber(rs.getInt("jersey_number"));
-        player.setHeight(rs.getDouble("height"));
-        player.setWeight(rs.getDouble("weight"));
+        player.setHeight(rs.getObject("height", Double.class));
+        player.setWeight(rs.getObject("weight", Double.class));
         player.setPhoto(rs.getString("photo"));
 
         Nationality nationality = new Nationality();
@@ -377,13 +377,13 @@ public class DataPlayer {
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());
-            stmt.setString(3, p.getAddress());
+            stmt.setObject(3, p.getAddress());
             stmt.setString(4, p.getRole().name());
             stmt.setString(5, p.getDominantFoot().name());
             stmt.setInt(6, p.getJerseyNumber());
-            stmt.setDouble(7, p.getHeight());
-            stmt.setDouble(8, p.getWeight());
-            stmt.setString(9, p.getPhoto());
+            stmt.setObject(7, p.getHeight());
+            stmt.setObject(8, p.getWeight());
+            stmt.setObject(9, p.getPhoto());
             stmt.setInt(10, p.getNationality().getId());
             stmt.setInt(11, p.getId());
 

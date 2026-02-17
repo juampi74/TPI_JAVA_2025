@@ -2,6 +2,7 @@ package data;
 
 import entities.*;
 import enums.Continent;
+import enums.DominantFoot;
 import enums.PersonRole;
 import enums.UserRole;
 
@@ -13,9 +14,14 @@ public class DataUser {
 
     private static final String BASE_QUERY = 
         "SELECT u.id AS u_id, u.email, u.password, u.role AS u_role, u.active, u.id_person, " +
-        "p.id AS p_id, p.fullname, p.birthdate, p.address, p.photo, p.role AS p_role " +
+        "p.id AS p_id, p.fullname, p.birthdate, p.address, p.photo, p.role AS p_role, " +
+        "p.dominant_foot, p.jersey_number, p.height, p.weight, " +
+        "p.preferred_formation, p.coaching_license, p.license_obtained_date, " +
+        "p.management_policy, " +
+        "n.id AS n_id, n.name AS n_name, n.iso_code AS n_iso_code, n.flag_image AS n_flag_image, n.continent AS n_continent " +
         "FROM user u " +
-        "LEFT JOIN person p ON u.id_person = p.id ";
+        "LEFT JOIN person p ON u.id_person = p.id " +
+        "LEFT JOIN nationality n ON p.id_nationality = n.id ";
     
     private static final String SELECT_PENDING_USERS = 
 	    "SELECT u.id AS u_id, u.email, u.role, p.id AS p_id, p.fullname, " +
@@ -383,7 +389,62 @@ public class DataUser {
                     p.setBirthdate(rs.getObject("birthdate", LocalDate.class));
                     p.setAddress(rs.getString("address"));
                     p.setPhoto(rs.getString("photo"));               
-                    p.setRole(roleEnum); 
+                    p.setRole(roleEnum);
+                    
+                    if (p instanceof Player) {
+                        
+                    	Player pl = (Player) p;
+                        
+                    	String footStr = rs.getString("dominant_foot");
+                        
+                    	if (footStr != null) {
+                        
+                    		pl.setDominantFoot(DominantFoot.valueOf(footStr.toUpperCase()));
+                        
+                    	}
+                        
+                    	pl.setJerseyNumber(rs.getInt("jersey_number"));
+                        pl.setHeight(rs.getObject("height", Double.class));
+                        pl.setWeight(rs.getObject("weight", Double.class));
+
+                    } else if (p instanceof Coach) {
+                        
+                    	Coach c = (Coach) p;
+                        
+                    	c.setPreferredFormation(rs.getString("preferred_formation"));
+                        c.setCoachingLicense(rs.getString("coaching_license"));
+                        c.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
+
+                    } else if (p instanceof President) {
+                        
+                    	President pres = (President) p;
+                        
+                    	pres.setManagementPolicy(rs.getString("management_policy"));
+                    
+                    }
+                    
+                    int nationalityId = rs.getInt("n_id");
+                    
+                    if (nationalityId > 0) {
+                        
+                    	Nationality n = new Nationality();
+                    	
+                        n.setId(nationalityId);
+                        n.setName(rs.getString("n_name"));
+                        n.setIsoCode(rs.getString("n_iso_code"));
+                        n.setFlagImage(rs.getString("n_flag_image"));
+                        
+                        String continentStr = rs.getString("n_continent");
+                        
+                        if (continentStr != null) {
+                        
+                        	n.setContinent(Continent.valueOf(continentStr.toUpperCase()));
+                        
+                        }
+                        
+                        p.setNationality(n);
+                    
+                    }
                     
                     u.setPerson(p); 
 
