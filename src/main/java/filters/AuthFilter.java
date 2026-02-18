@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import entities.User;
+import enums.UserRole;
 
 @WebFilter("/*")
 public class AuthFilter implements Filter {
@@ -33,45 +34,66 @@ public class AuthFilter implements Filter {
         
         String action = req.getParameter("action");
         
+
         boolean isRestrictedAction = false;
+        
         if (action != null) {
-            isRestrictedAction = 
-                action.equals("add") || 
-                action.equals("edit") || 
-                action.equals("delete") ||
-                action.equals("members") ||
-                action.equals("setClassicRival") ||
-                action.equals("removeClassicRival") ||
-                action.equals("release") ||
-                action.equals("extend") ||
-                action.equals("setResult") ||
-                action.equals("generatePlayoffs") ||
-                action.equals("generateNextStage") ||
-                action.equals("finishTournament") ||
-                action.equals("admin/users");
+        
+        	isRestrictedAction = 
+                action.equals("add") || action.equals("edit") || 
+                action.equals("delete") || action.equals("members") ||
+                action.equals("setClassicRival") || action.equals("removeClassicRival") ||
+                action.equals("release") || action.equals("extend") ||
+                action.equals("setResult") || action.equals("generatePlayoffs") ||
+                action.equals("generateNextStage") || action.equals("finishTournament");
+        
         }
 
         boolean isMixedServlet = 
-        	path.startsWith("/actiontournament") ||
-            path.startsWith("/actionmatch") ||
-        	path.startsWith("/actionclub") ||
-            path.startsWith("/actionplayer") ||
-            path.startsWith("/actioncoach") ||
-            path.startsWith("/actionpresident");
+        	path.startsWith("/actiontournament") || path.startsWith("/actionmatch") ||
+        	path.startsWith("/actionclub") || path.startsWith("/actionplayer") ||
+            path.startsWith("/actioncoach") || path.startsWith("/actionpresident");
         
         boolean isPublicResource = 
-            path.equals("/") ||
-            path.equals("/index.html") ||
-            path.startsWith("/login") ||
-            path.startsWith("/register") ||
-            path.startsWith("/Home") || 
-            path.startsWith("/style") ||
-            path.startsWith("/assets") ||
-            path.startsWith("/images") ||          
+            path.equals("/") || path.equals("/index.html") ||
+            path.startsWith("/login") || path.startsWith("/register") ||
+            path.startsWith("/Home") || path.startsWith("/style") ||
+            path.startsWith("/assets") || path.startsWith("/images") ||          
             (isMixedServlet && !isRestrictedAction);
         
+        boolean isAdminOnly = path.startsWith("/admin/") ||
+        		(path.startsWith("/action") && !isMixedServlet);
+        
+        boolean isParticipantOnly = path.equals("/my-profile");
         
         if (user != null) {
+        	
+        	if (isParticipantOnly && user.getRole() == UserRole.ADMIN) {
+                
+        		req.setAttribute("errorMessage", "Acceso denegado: Al ser administrador, no poseés un perfil de participante");
+                req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                
+                return; 
+                
+            }
+        	
+        	if (isAdminOnly && user.getRole() != UserRole.ADMIN) {
+                
+        		req.setAttribute("errorMessage", "Acceso denegado: Se requieren permisos de administrador");
+                req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                
+                return;
+            
+        	}
+        	
+            if (isRestrictedAction && user.getRole() != UserRole.ADMIN) {
+                
+            	req.setAttribute("errorMessage", "Acceso denegado: No tenés permisos para realizar esta operación");
+                req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                
+                return;
+            
+            }
             
         	chain.doFilter(request, response);
             

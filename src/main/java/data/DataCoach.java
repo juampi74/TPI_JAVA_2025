@@ -67,7 +67,7 @@ public class DataCoach {
         return coach;
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
        
     	try {
         
@@ -85,15 +85,15 @@ public class DataCoach {
 
     public LinkedList<Coach> getAll() throws SQLException {
         
-    	Statement stmt = null;
+    	PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Coach> coaches = new LinkedList<>();
 
         try {
         
-        	stmt = DbConnector.getInstance().getConn().createStatement();
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_COACH_BASE);
             
-        	rs = stmt.executeQuery(SELECT_COACH_BASE);
+        	rs = stmt.executeQuery();
 
             while (rs.next()) coaches.add(mapCoach(rs));
             
@@ -207,19 +207,18 @@ public class DataCoach {
     public Map<Integer, Club> getCurrentClubs() throws SQLException {
         
     	Map<Integer, Club> clubsMap = new HashMap<>();
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
         
-        	stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(
-                "SELECT con.id_person, c.id, c.name, c.badge_image " +
-                	"FROM contract con " +
-                	"INNER JOIN club c ON con.id_club = c.id " +
-                	"WHERE con.release_date IS NULL " +
-                	"AND con.end_date >= CURDATE()"
-            );
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+                "SELECT con.id_person, c.id, c.name, c.badge_image "
+                + "FROM contract con "
+                + "INNER JOIN club c ON con.id_club = c.id "
+                + "WHERE con.release_date IS NULL "
+                + "AND con.end_date >= CURDATE()");
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
              
@@ -298,12 +297,12 @@ public class DataCoach {
             );
             stmt.setString(1, coach.getFullname());
             stmt.setObject(2, coach.getBirthdate());
-            stmt.setString(3, coach.getAddress());
+            stmt.setObject(3, coach.getAddress());
             stmt.setString(4, coach.getRole().name());
-            stmt.setString(5, coach.getPreferredFormation());
-            stmt.setString(6, coach.getCoachingLicense());
+            stmt.setObject(5, coach.getPreferredFormation());
+            stmt.setObject(6, coach.getCoachingLicense());
             stmt.setObject(7, coach.getLicenseObtainedDate());
-            stmt.setString(8, coach.getPhoto());
+            stmt.setObject(8, coach.getPhoto());
             stmt.setInt(9, coach.getNationality().getId());
             
             stmt.setInt(10, coach.getId());

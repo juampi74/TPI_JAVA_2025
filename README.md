@@ -18,4 +18,4 @@ La plataforma facilitará el seguimiento completo de la actividad deportiva, per
 
 ## 📑 Documentación
 
-Hacé click en el enlace para visualizar la **[documentación completa del proyecto](./docs/README.md)**.
+Hacé click en el enlace para visualizar la **[documentación completa del proyecto](./doc/README.md)**.

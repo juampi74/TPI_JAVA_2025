@@ -537,7 +537,7 @@
 											    <span class="foot-badge <%= footClass %>"><%= footText %></span>
 											</td>
 		                    				<td>
-											    <% if (p.getHeight() > 0) { %>
+											    <% if (p.getHeight() != null) { %>
 											        <span class="stat-value">
 											            <%= String.format(java.util.Locale.US, "%.2f", p.getHeight()) %>
 											        </span>
@@ -547,7 +547,7 @@
 											    <% } %>
 											</td>	
 										    <td>
-											    <% if (p.getWeight() > 0) { %>
+											    <% if (p.getWeight() != null) { %>
 											        <span class="stat-value">
 											            <%= Math.round(p.getWeight()) %>
 											        </span>

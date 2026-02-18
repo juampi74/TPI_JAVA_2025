@@ -36,14 +36,14 @@ public class DataTournament {
 
     public LinkedList<Tournament> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Tournament> tournaments = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(BASE_QUERY + GROUP_BY_CLAUSE + " ORDER BY t.start_date, t.end_date");
+            stmt = DbConnector.getInstance().getConn().prepareStatement(BASE_QUERY + GROUP_BY_CLAUSE + " ORDER BY t.start_date, t.end_date");
+            rs = stmt.executeQuery();
 
             if (rs != null) {
 
@@ -234,7 +234,7 @@ public class DataTournament {
             stmt = DbConnector.getInstance().getConn().prepareStatement(
                 "INSERT INTO tournament (name, start_date, end_date, format, season, id_association) "
                 + "VALUES (?, ?, ?, ?, ?, ?)",
-                Statement.RETURN_GENERATED_KEYS
+                PreparedStatement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, t.getName());
             stmt.setObject(2, t.getStartDate());
@@ -390,7 +390,7 @@ public class DataTournament {
     
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

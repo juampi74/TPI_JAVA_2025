@@ -62,8 +62,8 @@ public class DataPlayer {
         if (dfStr != null) player.setDominantFoot(DominantFoot.valueOf(dfStr));
 
         player.setJerseyNumber(rs.getInt("jersey_number"));
-        player.setHeight(rs.getDouble("height"));
-        player.setWeight(rs.getDouble("weight"));
+        player.setHeight(rs.getObject("height", Double.class));
+        player.setWeight(rs.getObject("weight", Double.class));
         player.setPhoto(rs.getString("photo"));
 
         Nationality nationality = new Nationality();
@@ -81,7 +81,7 @@ public class DataPlayer {
         
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
         
     	try {
         
@@ -99,15 +99,15 @@ public class DataPlayer {
 
     public LinkedList<Player> getAll() throws SQLException {
         
-    	Statement stmt = null;
+    	PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Player> players = new LinkedList<>();
 
         try {
             
-        	stmt = DbConnector.getInstance().getConn().createStatement();
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_PLAYER_BASE);
             
-        	rs = stmt.executeQuery(SELECT_PLAYER_BASE);
+        	rs = stmt.executeQuery();
 
             while (rs.next()) players.add(mapPlayer(rs));
             
@@ -251,18 +251,18 @@ public class DataPlayer {
     public Map<Integer, String> getAllPrimaryPositions() throws SQLException {
         
     	Map<Integer, String> positionsMap = new HashMap<>();
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
         		"SELECT pp.id_player, pos.description "
         		+ "FROM player_position pp "
                 + "INNER JOIN position pos ON pp.id_position = pos.id "
                 + "WHERE pp.is_primary = 1"
             );
+            rs = stmt.executeQuery();
 
             while (rs.next()) positionsMap.put(rs.getInt("id_player"), rs.getString("description"));
 
@@ -284,19 +284,19 @@ public class DataPlayer {
     public Map<Integer, Club> getCurrentClubs() throws SQLException {
         
     	Map<Integer, Club> clubsMap = new HashMap<>();
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
             	"SELECT con.id_person, c.id, c.name, c.badge_image "
             	+ "FROM contract con "
                 + "INNER JOIN club c ON con.id_club = c.id "
                 + "WHERE con.release_date IS NULL "
                 + "AND con.end_date >= CURDATE()"
             );
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -377,13 +377,13 @@ public class DataPlayer {
             );
             stmt.setString(1, p.getFullname());
             stmt.setObject(2, p.getBirthdate());
-            stmt.setString(3, p.getAddress());
+            stmt.setObject(3, p.getAddress());
             stmt.setString(4, p.getRole().name());
             stmt.setString(5, p.getDominantFoot().name());
             stmt.setInt(6, p.getJerseyNumber());
-            stmt.setDouble(7, p.getHeight());
-            stmt.setDouble(8, p.getWeight());
-            stmt.setString(9, p.getPhoto());
+            stmt.setObject(7, p.getHeight());
+            stmt.setObject(8, p.getWeight());
+            stmt.setObject(9, p.getPhoto());
             stmt.setInt(10, p.getNationality().getId());
             stmt.setInt(11, p.getId());
 

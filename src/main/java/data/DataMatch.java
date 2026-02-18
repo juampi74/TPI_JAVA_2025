@@ -28,14 +28,14 @@ public class DataMatch {
 
     public LinkedList<Match> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Match> matches = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_MATCHES_JOINED + " ORDER BY m.date ASC");
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_MATCHES_JOINED + " ORDER BY m.date ASC");
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -480,7 +480,7 @@ public Match getNextMatchClub(int id_club) throws SQLException {
 
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

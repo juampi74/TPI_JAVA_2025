@@ -4,6 +4,8 @@ import data.*;
 import entities.*;
 import enums.*;
 import enums.PersonRole;
+import utils.EmailSender;
+
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -728,13 +730,90 @@ public Match getNextMatchClub(int id_club) throws SQLException {
     
     public void approveUser(int userId) throws SQLException {
     	
+    	User u = du.getById(userId);
+    	
     	du.approveUser(userId);
+    	
+    	if (u != null) {
+            
+    		new Thread(() -> {
+            
+    			try {
+                
+    				EmailSender sender = new EmailSender();
+                    
+    				String subject = "¡Bienvenido a TeamUp! ⚽";
+                    
+    				String message = "<div style='font-family: Arial, sans-serif; color: #333; max-width: 600px; padding: 20px;'>"
+		                           + "  <h2 style='color: #10442E; margin-top: 0;'>¡Hola, <span style='color: #10442E;'>" + u.getPerson().getFullname() + "</span>! ⚽</h2>"
+		                           + "  <p style='font-size: 16px; line-height: 1.5;'>Nos alegra contarte que tu solicitud de registro ha sido <strong style='color: #28a745;'>APROBADA</strong>.</p>"
+		                           + "  <p style='font-size: 16px; line-height: 1.5;'>Ya formás parte de la comunidad. Ahora podés iniciar sesión y gestionar tu carrera o tu equipo.</p>"
+		                           + "  <div style='margin: 30px 0;'>"
+		                           + "    <a href='http://localhost:8080/TPI_JAVA_2025/login' style='background-color: #10442E; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;'>Iniciar Sesión en TeamUp</a>"
+		                           + "  </div>"
+		                           + "  <p style='font-size: 14px; color: #444;'>¡Nos vemos en la cancha!</p>"
+		                           + "  <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
+		                           + "  <p style='font-size: 14px; color: #444;'>Atentamente,<br>El Equipo de <strong>TeamUp</strong></p>"
+		                           + "</div>";
+                
+                    sender.sendEmail(u.getEmail(), subject, message);
+                
+    			} catch (Exception e) {
+                
+    				System.out.println("Error enviando email asíncrono: " + e.getMessage());
+                
+    			}
+            
+    		}).start();
+        
+    	}
     	
     }
     
     public void rejectUser(int userId) throws SQLException {
     	
+    	User u = du.getById(userId);
+    	
     	du.rejectUser(userId);
+    	
+    	if (u != null) {
+            
+    		new Thread(() -> {
+    			
+    			try {
+                
+	    			EmailSender sender = new EmailSender();
+	                
+	    			String subject = "Estado de tu solicitud de registro en TeamUp";
+	                   			
+	    			String message = "<div style='font-family: Arial, sans-serif; color: #333; max-width: 600px; padding: 20px;'>"
+	    		               + "  <h2 style='margin-top: 0;'>Hola, " + u.getPerson().getFullname() + ".</h2>"
+	    		               + "  <p style='font-size: 16px; line-height: 1.5;'>Lamentamos informarte que tu solicitud de registro ha sido <strong style='color: #9B1C1C;'>RECHAZADA</strong>.</p>"
+	    		               + "  <p style='font-size: 16px; line-height: 1.5;'>Esto suele ocurrir por alguno de los siguientes motivos:</p>"
+	    		               + "  <ul style='color: #444; line-height: 1.5;'>"
+	    		               + "    <li>El DNI ingresado no coincide con los datos personales provistos.</li>"
+	    		               + "    <li>El rol solicitado no pudo ser validado por la administración.</li>"
+	    		               + "    <li>Se detectaron datos de identidad inconsistentes o incompletos.</li>"
+	    		               + "  </ul>"
+	    		               + "  <p style='font-size: 16px;'>Por favor, revisá tu información y volvé a registrarte:</p>"
+	    		               + "  <div style='margin: 30px 0;'>"
+	    		               + "    <a href='http://localhost:8080/TPI_JAVA_2025/register' style='color: #10442E; font-weight: bold; font-size: 16px; text-decoration: underline;'>Volver a Registrarme</a>"
+	    		               + "  </div>"
+	    		               + "  <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
+	    		               + "  <p style='font-size: 14px; color: #444;'>Atentamente,<br>El Equipo de <strong>TeamUp</strong></p>"
+	    		               + "</div>";
+	                
+	                sender.sendEmail(u.getEmail(), subject, message);
+	           
+    			} catch (Exception e) {
+                    
+    				System.out.println("Error enviando email asíncrono: " + e.getMessage());
+                
+    			}
+            
+    		}).start();
+        
+    	}
     	
     }
     

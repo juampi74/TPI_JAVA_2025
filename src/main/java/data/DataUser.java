@@ -2,6 +2,7 @@ package data;
 
 import entities.*;
 import enums.Continent;
+import enums.DominantFoot;
 import enums.PersonRole;
 import enums.UserRole;
 
@@ -11,12 +12,16 @@ import java.util.LinkedList;
 
 public class DataUser {
 
-    private static final String SELECT_USER_BY_EMAIL = 
+    private static final String BASE_QUERY = 
         "SELECT u.id AS u_id, u.email, u.password, u.role AS u_role, u.active, u.id_person, " +
-        "p.id AS p_id, p.fullname, p.birthdate, p.address, p.photo, p.role AS p_role " +
+        "p.id AS p_id, p.fullname, p.birthdate, p.address, p.photo, p.role AS p_role, " +
+        "p.dominant_foot, p.jersey_number, p.height, p.weight, " +
+        "p.preferred_formation, p.coaching_license, p.license_obtained_date, " +
+        "p.management_policy, " +
+        "n.id AS n_id, n.name AS n_name, n.iso_code AS n_iso_code, n.flag_image AS n_flag_image, n.continent AS n_continent " +
         "FROM user u " +
         "LEFT JOIN person p ON u.id_person = p.id " +
-        "WHERE u.email = ?";
+        "LEFT JOIN nationality n ON p.id_nationality = n.id ";
     
     private static final String SELECT_PENDING_USERS = 
 	    "SELECT u.id AS u_id, u.email, u.role, p.id AS p_id, p.fullname, " +
@@ -32,7 +37,37 @@ public class DataUser {
     private static final String GET_ID_PERSON_BY_USER = "SELECT id_person FROM user WHERE id = ?";
     private static final String DELETE_USER = "DELETE FROM user WHERE id = ?";
     private static final String DELETE_PERSON = "DELETE FROM person WHERE id = ?";
+    
+    public User getById(int id) throws SQLException {
 
+    	User user = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	BASE_QUERY + "WHERE u.id = ?"
+            );
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) user = mapFullUser(rs);
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return user;
+
+    }
 
     public User getByEmail(String email) throws SQLException {
         
@@ -42,7 +77,7 @@ public class DataUser {
 
         try {
             
-        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_USER_BY_EMAIL);
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(BASE_QUERY + "WHERE u.email = ?");
             stmt.setString(1, email);
             
             rs = stmt.executeQuery();
@@ -141,13 +176,13 @@ public class DataUser {
     public LinkedList<User> getPendingUsers() throws SQLException {
         
     	LinkedList<User> users = new LinkedList<>();
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             
-        	stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_PENDING_USERS);
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_PENDING_USERS);
+            rs = stmt.executeQuery();
             
             while (rs.next()) {
                 
@@ -244,24 +279,25 @@ public class DataUser {
     
     public void rejectUser(int userId) throws SQLException {
         
-    	Connection conn = null;
-    	PreparedStatement stmtUser = null;
+        Connection conn = null;
+        
+        PreparedStatement stmtUser = null;
         PreparedStatement stmtPerson = null;
         PreparedStatement stmtGetId = null;
+        
         ResultSet rs = null;
         
         try {
-
-        	conn = DbConnector.getInstance().getConn();
-        	
+            
+            conn = DbConnector.getInstance().getConn();
+            conn.setAutoCommit(false);
+            
             stmtGetId = conn.prepareStatement(GET_ID_PERSON_BY_USER);
             stmtGetId.setInt(1, userId);
             rs = stmtGetId.executeQuery();
             
             int personId = -1;
-            if (rs.next()) {
-                personId = rs.getInt("id_person");
-            }
+            if (rs.next()) personId = rs.getInt("id_person");
             
             stmtUser = conn.prepareStatement(DELETE_USER);
             stmtUser.setInt(1, userId);
@@ -275,14 +311,44 @@ public class DataUser {
             
             }
             
-        } catch (SQLException e) {
+            conn.commit();
             
-        	e.printStackTrace();
+        } catch (SQLException e) {
+
+            if (conn != null) {
+                
+                try {
+                
+                    conn.rollback();
+                
+                } catch (SQLException ex) {
+                
+                    ex.printStackTrace();
+                
+                }
+            
+            }
+            
+            e.printStackTrace();
             throw new SQLException("No se pudo conectar a la base de datos.", e);
         
         } finally {
-        
-        	closeResources(rs, stmtGetId, stmtUser, stmtPerson);
+
+            if (conn != null) {
+                
+                try {
+                
+                    conn.setAutoCommit(true);
+                
+                } catch (SQLException e) {
+                
+                    e.printStackTrace();
+                
+                }
+            
+            }
+            
+            closeResources(rs, stmtGetId, stmtUser, stmtPerson);
         
         }
     
@@ -354,7 +420,62 @@ public class DataUser {
                     p.setBirthdate(rs.getObject("birthdate", LocalDate.class));
                     p.setAddress(rs.getString("address"));
                     p.setPhoto(rs.getString("photo"));               
-                    p.setRole(roleEnum); 
+                    p.setRole(roleEnum);
+                    
+                    if (p instanceof Player) {
+                        
+                    	Player pl = (Player) p;
+                        
+                    	String footStr = rs.getString("dominant_foot");
+                        
+                    	if (footStr != null) {
+                        
+                    		pl.setDominantFoot(DominantFoot.valueOf(footStr.toUpperCase()));
+                        
+                    	}
+                        
+                    	pl.setJerseyNumber(rs.getInt("jersey_number"));
+                        pl.setHeight(rs.getObject("height", Double.class));
+                        pl.setWeight(rs.getObject("weight", Double.class));
+
+                    } else if (p instanceof Coach) {
+                        
+                    	Coach c = (Coach) p;
+                        
+                    	c.setPreferredFormation(rs.getString("preferred_formation"));
+                        c.setCoachingLicense(rs.getString("coaching_license"));
+                        c.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
+
+                    } else if (p instanceof President) {
+                        
+                    	President pres = (President) p;
+                        
+                    	pres.setManagementPolicy(rs.getString("management_policy"));
+                    
+                    }
+                    
+                    int nationalityId = rs.getInt("n_id");
+                    
+                    if (nationalityId > 0) {
+                        
+                    	Nationality n = new Nationality();
+                    	
+                        n.setId(nationalityId);
+                        n.setName(rs.getString("n_name"));
+                        n.setIsoCode(rs.getString("n_iso_code"));
+                        n.setFlagImage(rs.getString("n_flag_image"));
+                        
+                        String continentStr = rs.getString("n_continent");
+                        
+                        if (continentStr != null) {
+                        
+                        	n.setContinent(Continent.valueOf(continentStr.toUpperCase()));
+                        
+                        }
+                        
+                        p.setNationality(n);
+                    
+                    }
                     
                     u.setPerson(p); 
 
@@ -372,13 +493,13 @@ public class DataUser {
     
     }
 
-    private void closeResources(ResultSet rs, Statement... stmts) {
+    private void closeResources(ResultSet rs, PreparedStatement... stmts) {
         
     	try {
         
     		if (rs != null) rs.close();
 			
-            for (Statement stmt : stmts) {
+            for (PreparedStatement stmt : stmts) {
             	
             	if (stmt != null) stmt.close();
             

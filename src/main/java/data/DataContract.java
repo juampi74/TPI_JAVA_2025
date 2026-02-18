@@ -29,14 +29,14 @@ public class DataContract {
 
     public LinkedList<Contract> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Contract> contracts = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_CONTRACTS_JOINED);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_CONTRACTS_JOINED);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -218,7 +218,7 @@ public class DataContract {
             
             if (fromDate != null) {
                 
-            	sql.append(" AND (c.end_date >= ? OR c.end_date IS NULL) ");
+                sql.append(" AND (COALESCE(c.release_date, c.end_date) >= ? OR COALESCE(c.release_date, c.end_date) IS NULL) ");
             
             }
             
@@ -416,8 +416,8 @@ public class DataContract {
             if (dfStr != null) player.setDominantFoot(DominantFoot.valueOf(dfStr));
             
             player.setJerseyNumber(rs.getInt("jersey_number"));
-            player.setHeight(rs.getDouble("height"));
-            player.setWeight(rs.getDouble("weight"));
+            player.setHeight(rs.getObject("height", Double.class));
+            player.setWeight(rs.getObject("weight", Double.class));
             player.setPhoto(rs.getString("photo"));
             person = player;
 
@@ -472,7 +472,7 @@ public class DataContract {
 
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

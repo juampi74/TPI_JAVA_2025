@@ -3,7 +3,6 @@ package data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 
 import entities.Position;
@@ -15,14 +14,14 @@ public class DataPosition {
 
     public LinkedList<Position> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Position> positions = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_POSITIONS);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_POSITIONS);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -224,7 +223,7 @@ public class DataPosition {
         return position;
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
+    private void closeResources(ResultSet rs, PreparedStatement stmt) {
 
         try {
 

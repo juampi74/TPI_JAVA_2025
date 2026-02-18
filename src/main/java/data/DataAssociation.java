@@ -20,14 +20,14 @@ public class DataAssociation {
 
     public LinkedList<Association> getAll() throws SQLException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         LinkedList<Association> associations = new LinkedList<>();
 
         try {
 
-            stmt = DbConnector.getInstance().getConn().createStatement();
-            rs = stmt.executeQuery(SELECT_ALL_ASSOCIATIONS);
+            stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_ALL_ASSOCIATIONS);
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
 
@@ -319,8 +319,7 @@ public class DataAssociation {
             
             }
             
-            closeResources(null, stmtDelete);
-            closeResources(null, stmtInsert);
+            closeResources(null, stmtDelete, stmtInsert);
             
         }
         
@@ -367,20 +366,26 @@ public class DataAssociation {
         return a;
     }
 
-    private void closeResources(ResultSet rs, Statement stmt) {
-
-        try {
-
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+    private void closeResources(ResultSet rs, PreparedStatement... stmts) {
+        
+    	try {
+        
+    		if (rs != null) rs.close();
+			
+            for (PreparedStatement stmt : stmts) {
+            	
+            	if (stmt != null) stmt.close();
+            
+            }
+            
             DbConnector.getInstance().releaseConn();
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-        }
-
+        
+    	} catch (SQLException e) {
+        
+    		e.printStackTrace();
+        
+    	}
+    
     }
 
 }

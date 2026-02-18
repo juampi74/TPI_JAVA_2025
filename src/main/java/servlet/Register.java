@@ -68,7 +68,7 @@ public class Register extends HttpServlet {
 			
 			if (idPerStr == null || idPerStr.isEmpty()) {
 				
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, "Por favor, ingresá tu DNI");
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, "Por favor, ingresá tu DNI");
 				return;
 				
 			}
@@ -77,7 +77,7 @@ public class Register extends HttpServlet {
 
 			if (idNatStr == null || idNatStr.isEmpty()) {
 				
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, "Por favor, seleccioná una nacionalidad");
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, "Por favor, seleccioná una nacionalidad");
 				return;
 			
 			}
@@ -86,21 +86,21 @@ public class Register extends HttpServlet {
 
 			if (roleStr == null || roleStr.isEmpty()) {
 			
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, "Por favor, seleccioná un rol");
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, "Por favor, seleccioná un rol");
 				return;
 			
 			}
 			
 			if ("ADMIN".equals(roleStr)) {
 			
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, "Rol no válido");
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, "Rol no válido");
 				return;
 			
 			}
 
 			if (!password.equals(confirmPassword)) {
 
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, "Las contraseñas no coinciden");
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, "Las contraseñas no coinciden");
 				return;
 			
 			}
@@ -109,7 +109,7 @@ public class Register extends HttpServlet {
 			
 			if (existingUser != null) {
 			
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, "El email ya está registrado");
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, "El email ya está registrado");
 				return;
 			
 			}
@@ -149,7 +149,7 @@ public class Register extends HttpServlet {
 			
 			try {
 			
-				reloadFormOnError(request, response, ctrl, idPerStr, firstname, lastname, email, roleStr, errorMsg);
+				reloadFormOnError(request, response, ctrl, idPerStr, idNatStr, firstname, lastname, email, roleStr, errorMsg);
 			
 			} catch (Exception ex) {
 			
@@ -164,19 +164,21 @@ public class Register extends HttpServlet {
 	}
 	
 	private void reloadFormOnError(HttpServletRequest request, HttpServletResponse response, Logic ctrl, 
-			String idPerson, String name, String lastname, String email, String role, String errorMsg) throws ServletException, IOException, SQLException {
+			String idPerson, String nationality, String name, String lastname, String email, String role, String errorMsg) throws ServletException, IOException, SQLException {
 		
 		request.setAttribute("prevId", idPerson);
+		request.setAttribute("prevNationality", nationality);
 		request.setAttribute("prevName", name);
 		request.setAttribute("prevLastname", lastname);
 		request.setAttribute("prevEmail", email);
 		request.setAttribute("prevRole", role);
+		
 		request.setAttribute("flash", errorMsg);
 		
 		LinkedList<Nationality> nationalities = ctrl.getAllNationalities();
 		nationalities.sort(Comparator.comparing(Nationality::getName));
 		request.setAttribute("nationalitiesList", nationalities);
-		
+			
 		request.getRequestDispatcher("WEB-INF/Register.jsp").forward(request, response);
 	
 	}
