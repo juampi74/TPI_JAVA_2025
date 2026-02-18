@@ -358,7 +358,7 @@
 				                    "<i class='fas fa-exclamation-triangle fs-4 me-3 flex-shrink-0'></i>" +
 				                    "<div>" +
 				                        "<strong>¡Atención!</strong> Esta acción es <b><u>irreversible</u></b>.<br>" +
-				                        "Se borrarán permanentemente todos sus partidos y resultados asociados." +
+				                        "Se borrarán permanentemente todos sus partidos programados." +
 				                    "</div>" +
 				                "</div>";
 		
