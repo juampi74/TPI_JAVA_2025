@@ -30,44 +30,67 @@ public class Home extends HttpServlet {
 
         	if (session != null) {
         	    userLogged = (User) session.getAttribute("user");
-        	    System.out.print(userLogged);
-        	    if (userLogged != null) {
-	        	    if (userLogged.getRole().name().equals("COACH")) {
-	        	    	Map<Integer, Club> clubsMap = ctrl.getCoachesCurrentClubs();
-	                    Club coachClub = clubsMap.get(userLogged.getPerson().getId());
-	                    if (coachClub != null) {
-	                    	Match nextMatchClub = ctrl.getNextMatchClub(coachClub.getId());
-	                    	LinkedList<Tournament> tournaments = ctrl.getTournamentsByClubId(coachClub.getId());
-	                    	
-	                        request.setAttribute("tournaments", tournaments);
-	                    	request.setAttribute("club", coachClub);
-	                    	request.setAttribute("nextMatchClub", nextMatchClub);
-	                    }
-	        	    } else if (userLogged.getRole().name().equals("PLAYER")) {
-	        	    	
-	        	    } else if (userLogged.getRole().name().equals("PRESIDENT")) {
-	        	    	Contract contract = ctrl.getNextExpiringContract();
-	        	    	request.setAttribute("nextExpiringContract", contract);
-	        	    	
-	        	    } else if (userLogged.getRole().name().equals("ADMIN")) {
-	        	    	Contract contract = ctrl.getNextExpiringContract();
-	        	    	Club club = ctrl.getClubWithMostContracts();
-	        	    	LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-	        	    	
-	                    request.setAttribute("tournaments", tournaments);
-	        	    	request.setAttribute("club", club);
-	        	    	request.setAttribute("nextExpiringContract", contract);
-	        	    }
-        	    
-        	} else {
-        		Club club = ctrl.getClubWithMostContracts();
-                LinkedList<Tournament> tournaments = ctrl.getAllTournaments();
-                Match nextMatch = ctrl.getNextMatch();                
-                request.setAttribute("club", club);
-                request.setAttribute("tournaments", tournaments);
-                request.setAttribute("nextMatch", nextMatch);
-    	    }}
-   
+        	}
+        	LinkedList<Tournament> tournaments = new LinkedList<>();
+            Club club = null;
+            Contract contract = null;
+    	    if (userLogged != null) {
+    	    	switch (userLogged.getRole()) {
+
+                case COACH:
+                	club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+                    if (club != null) {
+                        Match nextMatchClub = ctrl.getNextMatchClub(club.getId());
+                        tournaments = ctrl.getTournamentsByClubId(club.getId());
+                        request.setAttribute("nextMatch", nextMatchClub);
+                    } else {
+                    	tournaments = ctrl.getAllTournaments();
+                        Match nextMatch = ctrl.getNextMatch();                
+                        request.setAttribute("nextMatch", nextMatch);
+                    }
+                    
+                    break;
+
+                case ADMIN:
+                    contract = ctrl.getNextExpiringContract();
+                    club = ctrl.getClubWithMostContracts();
+                    tournaments = ctrl.getAllTournaments();
+                    request.setAttribute("nextExpiringContract", contract);
+                    break;
+
+                case PRESIDENT:
+                	club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+                	if (club != null) {
+                		contract = ctrl.getNextExpiringContractByClub(club.getId());
+                	}
+                    tournaments = ctrl.getAllTournaments();
+                    request.setAttribute("nextExpiringContract", contract);
+                    break;
+
+                case PLAYER:
+                    club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+                    if (club != null) {
+                        Match nextMatchClub = ctrl.getNextMatchClub(club.getId());
+                        tournaments = ctrl.getTournamentsByClubId(club.getId());
+                        request.setAttribute("nextMatch", nextMatchClub);
+                    } else {
+                    	tournaments = ctrl.getAllTournaments();
+                        Match nextMatch = ctrl.getNextMatch();                
+                        request.setAttribute("nextMatch", nextMatch);
+                    }
+                    
+                    break;
+            }
+    	    
+    	} else {
+    		club = ctrl.getClubWithMostContracts();
+            tournaments = ctrl.getAllTournaments();
+            Match nextMatch = ctrl.getNextMatch();                
+            
+            request.setAttribute("nextMatch", nextMatch);
+	    }
+    	    request.setAttribute("club", club);
+            request.setAttribute("tournaments", tournaments);
             request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 
         } catch (SQLException e) {

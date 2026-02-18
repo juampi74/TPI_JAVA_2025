@@ -11,9 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import entities.*;
 import enums.PersonRole;
+import enums.UserRole;
 import logic.Logic;
 
 @WebServlet("/actioncontract")
@@ -55,6 +57,10 @@ public class ActionContract extends HttpServlet {
         } else if (personRole.equals(PersonRole.COACH)) {
 
             contract.setPerson(ctrl.getCoachById(Integer.parseInt(request.getParameter("id_person"))));
+
+        } else if (personRole.equals(PersonRole.PRESIDENT)) {
+
+            contract.setPerson(ctrl.getPresidentById(Integer.parseInt(request.getParameter("id_person"))));
 
         }
 
@@ -112,11 +118,33 @@ public class ActionContract extends HttpServlet {
 
                 LinkedList<Player> players = ctrl.getAvailablePlayers();
                 LinkedList<Coach> coaches = ctrl.getAvailableCoaches();
+                LinkedList<President> presidents = ctrl.getAvailablePresidents();
 
                 people.addAll(players);
                 people.addAll(coaches);
-
-                LinkedList<Club> clubs = ctrl.getAllClubs();
+                people.addAll(presidents);
+                
+                HttpSession session = request.getSession(false);
+            	User userLogged = null;
+            	LinkedList<Contract> contracts = null;
+            	if (session != null) {
+            	    userLogged = (User) session.getAttribute("user");
+            	}
+            	
+            	LinkedList<Club> clubs = new LinkedList<>();
+            	
+            	if (userLogged != null) {
+            		if (userLogged.getRole() != UserRole.ADMIN) {
+	            		Club club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+	            		if (club != null) {	            			
+	            			clubs.add(club);
+	            		}
+            		} else {
+            			clubs = ctrl.getAllClubs();
+            		}
+            	} else {
+            		clubs = ctrl.getAllClubs();
+            	}
 
                 if (people.size() > 0 && clubs.size() > 0) {
                 	
@@ -135,8 +163,25 @@ public class ActionContract extends HttpServlet {
                 }
 
             } else {
-
-                LinkedList<Contract> contracts = ctrl.getAllContracts();
+            	HttpSession session = request.getSession(false);
+            	User userLogged = null;
+            	LinkedList<Contract> contracts = null;
+            	if (session != null) {
+            	    userLogged = (User) session.getAttribute("user");
+            	}
+            	
+            	if (userLogged != null) {
+            		if (userLogged.getRole() != UserRole.ADMIN) {
+	            		Club club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+	            		if (club != null) {
+	            			contracts = ctrl.getContractsByClubId(club.getId());
+	            		}
+            		} else {
+            			contracts = ctrl.getAllContracts();
+            		}
+            	} else {
+            		contracts = ctrl.getAllContracts();
+            	}
                 request.setAttribute("contractsList", contracts);
 
                 LinkedList<Person> people = new LinkedList<>();
@@ -198,13 +243,51 @@ public class ActionContract extends HttpServlet {
                 }
 
             } else if ("release".equals(action)) {
-
-                ctrl.releaseContract(Integer.parseInt(request.getParameter("id")));
-
+            	Integer release_id = Integer.parseInt(request.getParameter("id"));
+            	Contract contract = ctrl.getContractById(release_id);
+            	HttpSession session = request.getSession(false);
+            	User userLogged = null;
+            	if (session != null) {
+            	    userLogged = (User) session.getAttribute("user");
+            	}
+            	
+            	if (userLogged != null) {
+            		if (userLogged.getRole() != UserRole.ADMIN) {
+	            		if(contract.getPerson().getId() == userLogged.getPerson().getId()) {
+	            			ctrl.releaseContract(release_id);
+	            			response.sendRedirect("home");
+	            			return;
+	            		} else {
+	            			ctrl.releaseContract(release_id);
+	            		}
+	            		
+            		} else {
+            			ctrl.releaseContract(release_id);
+            		}
+            	}
             } else if ("delete".equals(action)) {
-
-                ctrl.deleteContract(Integer.parseInt(request.getParameter("id")));
-
+                Integer release_id = Integer.parseInt(request.getParameter("id"));
+            	Contract contract = ctrl.getContractById(release_id);
+            	HttpSession session = request.getSession(false);
+            	User userLogged = null;
+            	if (session != null) {
+            	    userLogged = (User) session.getAttribute("user");
+            	}
+            	
+            	if (userLogged != null) {
+            		if (userLogged.getRole() != UserRole.ADMIN) {
+	            		if(contract.getPerson().getId() == userLogged.getPerson().getId() && contract.getReleaseDate() == null && contract.getEndDate().isAfter(LocalDate.now())) {
+	            			ctrl.deleteContract(release_id);
+	            			response.sendRedirect("home");
+	            			return;
+	            		} else {
+	            			ctrl.deleteContract(release_id);
+	            		}
+	            		
+            		} else {
+            			ctrl.deleteContract(release_id);
+            		}
+            	}
             } else if ("extend".equals(action)) {
                 
             	int id = Integer.parseInt(request.getParameter("id"));

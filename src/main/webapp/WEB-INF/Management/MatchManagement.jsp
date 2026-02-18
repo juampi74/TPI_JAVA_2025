@@ -123,7 +123,7 @@
 	                        </form>
 	                        
 	                        <% if (hasFilters) { %>
-	                            <a href="actionmatch" class="btn btn-sm btn-outline-light" title="Borrar filtros">
+	                            <a href="actionmatch?clear=true" class="btn btn-sm btn-outline-light" title="Borrar filtros">
 	                                <i class="fas fa-times"></i>
 	                            </a>
 	                        <% } %>

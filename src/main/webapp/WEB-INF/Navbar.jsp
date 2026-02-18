@@ -140,10 +140,11 @@
 							    </li>
 							<% } %>
 					
-					    <% } else if (userLogged.getRole() == UserRole.COACH) { %>
-								<li class="nav-item border-start ms-2 ps-2 border-secondary d-none d-lg-block"></li>
-					
-						        <li><a class="dropdown-item" href="<%=path%>/actioncontract">Contratos</a></li>
+					    <% } else if (userLogged.getRole() == UserRole.PRESIDENT) { %>
+					    		<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					    			<li class="nav-item"><a class="nav-link" href="<%=path%>/actioncontract">Contratos</a></li>
+					    		</ul>
+								
 						<% } } %>
 					</ul>
 

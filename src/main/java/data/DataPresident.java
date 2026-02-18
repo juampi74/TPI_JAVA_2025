@@ -9,12 +9,26 @@ import java.util.LinkedList;
 public class DataPresident {
 
 	private static final String SELECT_PRESIDENT_BASE
-            = "SELECT "
-            + "    p.id, p.fullname, p.birthdate, p.address, p.role, p.management_policy, p.photo, "
-            + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
-            + "FROM person p "
-            + "INNER JOIN nationality n ON p.id_nationality = n.id "
-            + "WHERE p.role = 'PRESIDENT'";
+        = "SELECT "
+        + "    p.id, p.fullname, p.birthdate, p.address, p.role, p.management_policy, p.photo, "
+        + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
+        + "FROM person p "
+        + "INNER JOIN nationality n ON p.id_nationality = n.id "
+        + "WHERE p.role = 'PRESIDENT'";
+	
+	private static final String SELECT_AVAILABLE_PRESIDENTS
+		= "SELECT "
+	    + "    p.id, p.fullname, p.birthdate, p.address, p.role, p.management_policy, p.photo, "
+	    + "    n.id AS nat_id, n.name AS nat_name, n.iso_code, n.flag_image, n.continent "
+	    + "FROM person p "
+	    + "INNER JOIN nationality n ON p.id_nationality = n.id "
+	    + "WHERE p.role = 'PRESIDENT' "
+	    + "  AND NOT EXISTS ( "
+	    + "      SELECT 1 FROM contract c "
+	    + "      WHERE c.id_person = p.id "
+	    + "        AND c.release_date IS NULL "
+	    + "        AND c.end_date >= CURDATE() "
+	    + "  )";
 
     private President mapPresident(ResultSet rs) throws SQLException {
 
@@ -121,6 +135,34 @@ public class DataPresident {
         }
         
         return president;
+    
+    }
+    
+public LinkedList<President> getAvailable() throws SQLException {
+        
+    	PreparedStatement stmt = null;
+        ResultSet rs = null;
+        LinkedList<President> presidents = new LinkedList<>();
+
+        try {
+        
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(SELECT_AVAILABLE_PRESIDENTS);
+            
+        	rs = stmt.executeQuery();
+
+            while (rs.next()) presidents.add(mapPresident(rs));
+            
+        } catch (SQLException e) {
+            
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+        return presidents;
     
     }
 
