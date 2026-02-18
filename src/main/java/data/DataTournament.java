@@ -106,6 +106,46 @@ public class DataTournament {
         
     }
 
+    public LinkedList<Tournament> getByClubId(int id) throws SQLException {
+
+        LinkedList<Tournament> tournaments = new LinkedList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	BASE_QUERY + "WHERE m.id_home = ? or m.id_away = ?" + GROUP_BY_CLAUSE
+            );
+            stmt.setInt(1, id);
+            stmt.setInt(2, id);
+            rs = stmt.executeQuery();
+
+            if (rs != null) {
+
+                while (rs.next()) {
+
+                    Tournament tournament = mapFullTournament(rs);
+                    tournaments.add(tournament);
+
+                }
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return tournaments;
+        
+    }
+    		
     public LinkedList<Tournament> getByAssociationId(int id) throws SQLException {
 
         LinkedList<Tournament> tournaments = new LinkedList<>();

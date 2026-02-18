@@ -133,6 +133,45 @@ public class DataContract {
         return contract;
 
     }
+    
+    public Contract getNextExpiringContractByClub(Integer id_club) throws SQLException {
+
+        Contract contract = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+                    SELECT_ALL_CONTRACTS_JOINED
+                    + " WHERE c.release_date IS NULL AND c.id_club = ?"
+                    + "   AND c.end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH) "
+                    + " ORDER BY c.end_date ASC "
+                    + " LIMIT 1"
+            );
+            stmt.setInt(1, id_club);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                contract = mapFullContract(rs);
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return contract;
+
+    }
 
     public LinkedList<Contract> getByPersonId(int id) throws SQLException {
 
@@ -429,6 +468,13 @@ public class DataContract {
             c.setLicenseObtainedDate(rs.getObject("license_obtained_date", LocalDate.class));
             c.setPhoto(rs.getString("photo"));
             person = c;
+
+        } else if (role.equals(PersonRole.PRESIDENT)) {
+
+            President p = new President();
+            //p.setManagementPolicy(rs.getString("management_policy"));
+            p.setPhoto(rs.getString("photo"));
+            person = p;
 
         } else {
 

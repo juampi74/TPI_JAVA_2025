@@ -228,7 +228,26 @@ public class ActionPlayer extends HttpServlet {
 
 			} else {
 				
-				String clubIdParam = request.getParameter("clubId");
+				User userLogged = null;
+			    if (request.getSession(false) != null) {
+			        userLogged = (User) request.getSession(false).getAttribute("user");
+			    }
+
+			    
+			    boolean clubParamPresent = request.getParameterMap().containsKey("clubId");
+
+			    String clubIdParam = request.getParameter("clubId");
+
+			    
+			    if (!clubParamPresent 
+			        && userLogged != null 
+			        && (userLogged.getRole() == UserRole.COACH || userLogged.getRole() == UserRole.PLAYER || userLogged.getRole() == UserRole.PRESIDENT)) {
+			        Club club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+			        if (club != null) {
+			            response.sendRedirect("actionplayer?clubId=" + club.getId());
+			            return;
+			        }
+			    }
 				
 				LinkedList<Player> players;
 				

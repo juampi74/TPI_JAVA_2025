@@ -318,6 +318,40 @@ public class DataMatch {
         return match;
         
     }
+    
+public Match getNextMatchClub(int id_club) throws SQLException {
+        
+    	Match match = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+        		SELECT_ALL_MATCHES_JOINED + " WHERE m.date >= NOW() and (m.id_home = ? or m.id_away = ?) ORDER BY m.date ASC LIMIT 1"
+        	);
+        	
+        	stmt.setInt(1, id_club);
+        	stmt.setInt(2, id_club);
+            
+        	rs = stmt.executeQuery();
+
+            if (rs.next()) match = mapFullMatch(rs);
+            
+        } catch (SQLException e) {
+            
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+
+        	closeResources(rs, stmt);
+        	
+        }
+
+        return match;
+        
+    }
 
     public void add(Match m) throws SQLException {
 

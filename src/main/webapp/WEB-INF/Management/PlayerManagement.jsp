@@ -274,22 +274,20 @@
                      
 								int selectedId = -1;
                      
-								if (selectedClub != null && !selectedClub.isEmpty()) {
-									
-									if (!"free".equals(selectedClub)) {
-									
-										try {
-										
-											selectedId = Integer.parseInt(selectedClub);
-										
-										} catch (NumberFormatException ex) {
-										
-											selectedId = -1;
-										
-										}
-									
-									}
-								
+								if (selectedClub != null) {
+
+								    if (selectedClub.isEmpty()) {
+								        selectedId = -1;
+
+								    } else if (!"free".equals(selectedClub)) {
+
+								        try {
+								            selectedId = Integer.parseInt(selectedClub);
+								        } catch (NumberFormatException ex) {
+								            selectedId = -1;
+								        }
+
+								    }
 								}
 				              
 				            	if (clubs != null) {

@@ -27,6 +27,8 @@ public class DataClub {
         + "FROM club cl "
         + "INNER JOIN stadium s ON cl.id_stadium = s.id "
         + "INNER JOIN nationality n ON cl.id_nationality = n.id ";
+	
+		
 
     private static final String SELECT_ALL_CLUBS_TOURNAMENT =
         "SELECT DISTINCT "
@@ -193,6 +195,41 @@ public class DataClub {
 
             stmt = DbConnector.getInstance().getConn().prepareStatement(
             	SELECT_ALL_CLUBS_JOINED + " WHERE cl.id = ?"
+            );
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            if (rs != null && rs.next()) {
+
+                club = mapFullClub(rs);
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+
+        } finally {
+
+            closeResources(rs, stmt);
+
+        }
+
+        return club;
+        
+    }
+    
+    public Club getByPersonId(int id) throws SQLException {
+
+        Club club = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+
+            stmt = DbConnector.getInstance().getConn().prepareStatement(
+            	SELECT_ALL_CLUBS_JOINED + " INNER JOIN contract c ON c.id_club = cl.id INNER JOIN person p ON c.id_person = p.id" + " WHERE p.id = ? and release_date is null and end_date > curdate()"
             );
             stmt.setInt(1, id);
             rs = stmt.executeQuery();

@@ -17,7 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import entities.Club;
 import entities.Match;
 import entities.Tournament;
+import entities.User;
 import enums.TournamentStage;
+import enums.UserRole;
 import logic.Logic;
 
 @WebServlet("/actionmatch")
@@ -85,10 +87,29 @@ public class ActionMatch extends HttpServlet {
 		Logic ctrl = new Logic();
 
 		try {
+			
+			User userLogged = null;
+	        if (request.getSession(false) != null) {
+	            userLogged = (User) request.getSession(false).getAttribute("user");
+	        }
+	        boolean clubParamPresent = request.getParameterMap().containsKey("clubId");
 
-			Integer clubId = parseId(request.getParameter("clubId"));
+	        Integer clubId = parseId(request.getParameter("clubId"));
 	        Integer tournamentId = parseId(request.getParameter("tournamentId"));
-	            
+	        String clear = request.getParameter("clear");
+
+	        if (!clubParamPresent 
+	        	&& clear == null
+	            && userLogged != null 
+	            && (userLogged.getRole() == UserRole.COACH || userLogged.getRole() == UserRole.PLAYER || userLogged.getRole() == UserRole.PRESIDENT)) {
+
+	        	Club club = ctrl.getClubByPersonId(userLogged.getPerson().getId());
+
+	            if (club != null) {
+	                response.sendRedirect("actionmatch?clubId=" + club.getId());
+	                return;
+	            }
+	        }
 	        LinkedList<Match> matches;
 
             if (clubId != null && tournamentId != null) {

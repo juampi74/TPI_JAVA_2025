@@ -181,6 +181,12 @@ public class Logic {
         return dpr.getAll();
 
     }
+    
+    public LinkedList<President> getAvailablePresidents() throws SQLException {
+
+        return dpr.getAvailable();
+
+    }
 
     public President getPresidentById(int id) throws SQLException {
 
@@ -263,6 +269,12 @@ public class Logic {
     public Club getClubById(int id) throws SQLException {
     	
     	return dcl.getById(id);
+    	
+    }
+    
+public Club getClubByPersonId(int id) throws SQLException {
+    	
+    	return dcl.getByPersonId(id);
     	
     }
 
@@ -438,6 +450,12 @@ public class Logic {
         return dto.getByAssociationId(id);
 
     }
+    
+    public LinkedList<Tournament> getTournamentsByClubId(int id) throws SQLException {
+
+        return dto.getByClubId(id);
+
+    }
 
     public LinkedList<Tournament> getTournamentByName(String name) throws SQLException {
 
@@ -478,6 +496,12 @@ public class Logic {
     public Contract getNextExpiringContract() throws SQLException {
         
     	return dco.getNextExpiringContract();
+    
+    }
+    
+    public Contract getNextExpiringContractByClub(Integer id_club) throws SQLException {
+        
+    	return dco.getNextExpiringContractByClub(id_club);
     
     }
 
@@ -635,6 +659,12 @@ public class Logic {
     public Match getNextMatch() throws SQLException {
         
     	return dm.getNextMatch();
+    
+    }
+    
+public Match getNextMatchClub(int id_club) throws SQLException {
+        
+    	return dm.getNextMatchClub(id_club);
     
     }
     

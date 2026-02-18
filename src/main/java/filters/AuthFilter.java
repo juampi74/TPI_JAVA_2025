@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import entities.Club;
 import entities.User;
 import enums.UserRole;
+import logic.Logic;
 
 @WebFilter("/*")
 public class AuthFilter implements Filter {
@@ -52,7 +54,8 @@ public class AuthFilter implements Filter {
         boolean isMixedServlet = 
         	path.startsWith("/actiontournament") || path.startsWith("/actionmatch") ||
         	path.startsWith("/actionclub") || path.startsWith("/actionplayer") ||
-            path.startsWith("/actioncoach") || path.startsWith("/actionpresident");
+            path.startsWith("/actioncoach") || path.startsWith("/actionpresident") ||
+            path.startsWith("/actioncontract");
         
         boolean isPublicResource = 
             path.equals("/") || path.equals("/index.html") ||
@@ -66,33 +69,95 @@ public class AuthFilter implements Filter {
         
         boolean isParticipantOnly = path.equals("/my-profile");
         
+        boolean isContractSection = path.startsWith("/actioncontract");
+        
         if (user != null) {
-        	
-        	if (isParticipantOnly && user.getRole() == UserRole.ADMIN) {
-                
-        		req.setAttribute("errorMessage", "Acceso denegado: Al ser administrador, no poseés un perfil de participante");
+            if (isParticipantOnly && user.getRole() == UserRole.ADMIN) {
+
+                req.setAttribute("errorMessage",
+                    "Acceso denegado: Al ser administrador, no poseés un perfil de participante");
+
                 req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
-                
-                return; 
-                
+                return;
             }
-        	
-        	if (isAdminOnly && user.getRole() != UserRole.ADMIN) {
-                
-        		req.setAttribute("errorMessage", "Acceso denegado: Se requieren permisos de administrador");
+            if (isAdminOnly && user.getRole() != UserRole.ADMIN) {
+
+                req.setAttribute("errorMessage",
+                    "Acceso denegado: Se requieren permisos de administrador");
+
                 req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
-                
                 return;
-            
-        	}
-        	
-            if (isRestrictedAction && user.getRole() != UserRole.ADMIN) {
-                
-            	req.setAttribute("errorMessage", "Acceso denegado: No tenés permisos para realizar esta operación");
+            }
+            if (isContractSection &&
+                user.getRole() != UserRole.ADMIN &&
+                user.getRole() != UserRole.PRESIDENT) {
+
+                req.setAttribute("errorMessage",
+                    "Acceso denegado: Solo presidentes y administradores pueden acceder a la sección de contratos");
+
                 req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
-                
                 return;
+            }
             
+            if (isContractSection) {
+
+                if (user.getRole() == UserRole.ADMIN) {
+                }
+                else if (user.getRole() == UserRole.PRESIDENT) {
+
+                    try {
+                        Logic ctrl = new Logic();
+                        Club club = ctrl.getClubByPersonId(user.getPerson().getId());
+
+                        if (club == null) {
+                            req.setAttribute("errorMessage",
+                                "Acceso denegado: El presidente no está asociado a ningún club");
+
+                            req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                            return;
+                        }
+
+                    } catch (Exception e) {
+                        req.setAttribute("errorMessage",
+                            "Error al verificar asociación del presidente");
+
+                        req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                        return;
+                    }
+
+                } else {
+
+                    req.setAttribute("errorMessage",
+                        "Acceso denegado: Solo presidentes asociados a un club o administradores pueden acceder a contratos");
+
+                    req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                    return;
+                }
+            }
+            
+            if (isRestrictedAction) {
+
+                if (isContractSection) {
+                    if (user.getRole() != UserRole.ADMIN &&
+                        user.getRole() != UserRole.PRESIDENT) {
+
+                        req.setAttribute("errorMessage",
+                            "Acceso denegado: Solo administradores y presidentes pueden modificar contratos");
+
+                        req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                        return;
+                    }
+
+                } else {
+                    if (user.getRole() != UserRole.ADMIN) {
+
+                        req.setAttribute("errorMessage",
+                            "Acceso denegado: No tenés permisos para realizar esta operación");
+
+                        req.getRequestDispatcher("/WEB-INF/ErrorMessage.jsp").forward(req, res);
+                        return;
+                    }
+                }
             }
             
         	chain.doFilter(request, response);
