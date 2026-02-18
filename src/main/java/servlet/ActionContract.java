@@ -118,11 +118,9 @@ public class ActionContract extends HttpServlet {
 
                 LinkedList<Player> players = ctrl.getAvailablePlayers();
                 LinkedList<Coach> coaches = ctrl.getAvailableCoaches();
-                LinkedList<President> presidents = ctrl.getAvailablePresidents();
-
+                
                 people.addAll(players);
                 people.addAll(coaches);
-                people.addAll(presidents);
                 
                 HttpSession session = request.getSession(false);
             	User userLogged = null;
@@ -141,6 +139,8 @@ public class ActionContract extends HttpServlet {
 	            		}
             		} else {
             			clubs = ctrl.getAllClubs();
+            			LinkedList<President> presidents = ctrl.getAvailablePresidents();
+            			people.addAll(presidents);
             		}
             	} else {
             		clubs = ctrl.getAllClubs();
