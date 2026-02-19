@@ -4,7 +4,9 @@ import entities.*;
 import enums.*;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class DataPresident {
 
@@ -138,7 +140,7 @@ public class DataPresident {
     
     }
     
-public LinkedList<President> getAvailable() throws SQLException {
+    public LinkedList<President> getAvailable() throws SQLException {
         
     	PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -195,6 +197,47 @@ public LinkedList<President> getAvailable() throws SQLException {
         }
         
         return presidents;
+    
+    }
+    
+    public Map<Integer, Club> getCurrentClubs() throws SQLException {
+        
+    	Map<Integer, Club> clubsMap = new HashMap<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+        
+        	stmt = DbConnector.getInstance().getConn().prepareStatement(
+                "SELECT con.id_person, c.id, c.name, c.badge_image "
+                + "FROM contract con "
+                + "INNER JOIN club c ON con.id_club = c.id "
+                + "WHERE con.release_date IS NULL "
+                + "AND con.end_date >= CURDATE()");
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+             
+            	Club club = new Club();
+                club.setId(rs.getInt("id"));
+                club.setName(rs.getString("name"));
+                club.setBadgeImage(rs.getString("badge_image"));
+                clubsMap.put(rs.getInt("id_person"), club);
+            
+            }
+
+        } catch (SQLException e) {
+        
+        	e.printStackTrace();
+            throw new SQLException("No se pudo conectar a la base de datos.", e);
+        
+        } finally {
+        
+        	closeResources(rs, stmt);
+        
+        }
+
+        return clubsMap;
     
     }
 

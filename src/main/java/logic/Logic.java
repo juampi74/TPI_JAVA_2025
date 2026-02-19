@@ -199,6 +199,12 @@ public class Logic {
         return dpr.getByFullname(fullname);
 
     }
+    
+    public Map<Integer, Club> getPresidentsCurrentClubs() throws SQLException {
+        
+    	return dpr.getCurrentClubs();
+    
+    }
 
     public void addPresident(President p) throws SQLException {
 

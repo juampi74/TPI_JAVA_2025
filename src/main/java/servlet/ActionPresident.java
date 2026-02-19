@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import entities.Club;
 import entities.Nationality;
 import entities.President;
 import enums.PersonRole;
@@ -131,6 +133,10 @@ public class ActionPresident extends HttpServlet {
 				
 				LinkedList<President> presidents = ctrl.getAllPresidents();
 			    request.setAttribute("presidentsList", presidents);
+			    
+			    Map<Integer, Club> currentClubsMap = ctrl.getPresidentsCurrentClubs();
+				request.setAttribute("currentClubsMap", currentClubsMap);
+			    
 			    request.getRequestDispatcher("/WEB-INF/Management/PresidentManagement.jsp").forward(request, response);
 			
 			}
